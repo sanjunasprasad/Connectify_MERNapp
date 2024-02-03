@@ -5,7 +5,7 @@ import { generateOTP, sendOTPByEmail } from '../../services/otpService.js';
 
 let savedOTP;
 export const userRegister = async (req, res) => {
-  // console.log("++++++++from register")
+  // console.log("++++++++from register");
     try {
       const { firstName, lastName, phoneNo, email, password, is_blocked} = req.body;
       // console.log('User dataoooo:', { firstName, lastName, phoneNo, email, password ,is_blocked});

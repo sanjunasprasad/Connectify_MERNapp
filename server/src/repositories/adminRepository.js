@@ -8,25 +8,7 @@ export const getAllUsers = async () => {
   return userData
 };
 
-// for admin to block user
-// export const updateUserstatus = async (id, isBlocked) => {
-//   try {
-//     const userToUpdate = await User.findById(id);
-//     console.log("tttt",userToUpdate)
-//     if (!userToUpdate) {
-//       throw new Error("User not found");
-//     }
-
-//     userToUpdate.is_blocked = isBlocked;
-//    const result= await userToUpdate.save();
-//    console.log("result is:",result)
-//     // return userToUpdate;
-//   } catch (error) {
-//     throw new Error("Failed to update user status");
-//   }
-// };
-
-
+//block/unblock
 export const updateUserstatus = async (id, isBlocked) => {
   try {
     const updatedUser = await User.findOneAndUpdate(
@@ -44,5 +26,15 @@ export const updateUserstatus = async (id, isBlocked) => {
   } catch (error) {
     console.error("Failed to update user status:", error);
     throw new Error("Failed to update user status");
+  }
+};
+
+// to delete user
+export const deleteOneUser = async (id) => {
+  const response = await User.findByIdAndDelete(id);
+  if (response) {
+    return response;
+  } else {
+    return { message: "User not found" };
   }
 };

@@ -1,6 +1,7 @@
 import {checkLogin} from '../../usecases/AdminUseCases/checkAdmin.js'
 import { getUsers  } from '../../usecases/AdminUseCases/getUsers.js';
 import {blockUsers} from '../../usecases/AdminUseCases/blockUsers.js'
+import { deleteUser } from '../../usecases/AdminUseCases/deleteUser.js';
 
 export const adminLogin =  (req, res) => {
     try{
@@ -42,3 +43,15 @@ export const userBlock = async (req,res) =>{
         res.status(500).send('Internal server error');
       }
   }
+
+
+  export const deleteuser = async (req,res) =>{
+    try{
+        const userId = req.params.id;
+        const response = await deleteUser(userId);
+        res.json(response)
+    }catch(err){
+        console.log(err);
+        res.json({message:"Couldnt delete the user"})
+    }
+}

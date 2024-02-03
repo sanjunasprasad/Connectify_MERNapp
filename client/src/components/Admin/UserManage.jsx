@@ -5,6 +5,8 @@ import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 
 function UserManage() {
+  
+
   const [users, setUsers] = useState([]);
   const navigate = useNavigate();
   useEffect(() => {
@@ -24,6 +26,10 @@ function UserManage() {
     }
   }, []);
 
+
+ 
+
+  // to block/unblock
   const toggleUserStatus = async (id) => {
     const userToUpdate = users.find((user) => user._id === id);
     console.log("usertoupdate:", userToUpdate);
@@ -44,6 +50,22 @@ function UserManage() {
     }
   };
 
+  //to delete user
+  const deleteUser = async (id) => {
+    try {
+        if (window.confirm("Are you sure you want to delete this user?")) {
+            const response = await axiosInstance.delete(`/admin/adminDeleteUser/${id}`, id)
+            if (response.data.email) {
+                setUsers(prevUsers => prevUsers.filter(user => user._id !== id))
+            } else {
+                alert(response.data.message);
+            }
+        }
+    } catch (err) {
+        console.log(err);
+    }
+}
+
   return (
     <div className="flex">
       <Sidebar />
@@ -59,14 +81,14 @@ function UserManage() {
                 delete existing ones.
               </p>
             </div>
-            {/* <div>
-            <button
+             <div>
+            {/* <button
               type="button"
               className="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
             >
               Add new employee
-            </button>
-          </div> */}
+            </button> */}
+          </div> 
           </div>
           <div className="mt-6 flex flex-col">
             <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -75,6 +97,12 @@ function UserManage() {
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
+                      <th
+                          scope="col"
+                          className="px-4 py-3.5 text-left text-sm font-normal text-gray-700"
+                        >
+                          No.
+                        </th>
                         <th
                           scope="col"
                           className="px-4 py-3.5 text-left text-sm font-normal text-gray-700"
@@ -112,8 +140,12 @@ function UserManage() {
                     </thead>
 
                     <tbody className="divide-y divide-gray-200 bg-white">
-                      {users.map((user) => (
+                      {users.map((user,index) => (
                         <tr key={user._id}>
+                          <td className="whitespace-nowrap text-sm px-4 py-4">
+                            {index+1}
+                          </td>
+
                           <td className="whitespace-nowrap px-4 py-4">
                             <div className="flex items-center">
                               <div className="h-10 w-10 flex-shrink-0">
@@ -159,7 +191,7 @@ function UserManage() {
                                 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
                                 {user.is_blocked ? "Unblock" : "Block"}
                               </button>
-                              <button type="button" 
+                              <button type="button" onClick={() => deleteUser(user._id)}
                                 className="rounded-md bg-red-600 px-2 py-1 text-xs font-semibold text-white
                                  shadow-sm hover:bg-red-600/80 focus-visible:outline focus-visible:outline-2 
                                  focus-visible:outline-offset-2 focus-visible:outline-red-600">
@@ -175,6 +207,7 @@ function UserManage() {
               </div>
             </div>
           </div>
+          {/* Pagination */}
           <div className="flex items-center justify-center pt-6">
             <a
               href="#"
@@ -212,6 +245,7 @@ function UserManage() {
               <span className="block lg:hidden">&rarr;</span>
             </a>
           </div>
+          
         </section>
       </div>
     </div>

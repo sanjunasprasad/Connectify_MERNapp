@@ -4,7 +4,7 @@ import cors from 'cors'
 import userRoute from './interfaces/routes/userRoutes.js';
 import adminRoute from './interfaces/routes/adminRoutes.js';
 
-const PORT = 9000;
+const PORT = 8000;
 const app = express();
 app.use(cors())
 app.use(express.json())
