@@ -1,6 +1,41 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axiosInstance from "../../services/axios/axios";
 
 const AdminLogin = () => {
+
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axiosInstance.post("/admin/adminLogin", {
+        email,
+        password,
+      });
+      console.log(response.data);
+      if (response.data && response.data.adminData) {
+        localStorage.setItem("adminToken", response.data.adminToken);
+        navigate("/dashboard");
+      } else {
+        alert(response.data.message);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem("adminToken");
+    if (token) {
+      navigate("/dashboard");
+    } else {
+      navigate("/admin");
+    }
+  }, []);
+
   return (
     <div className="flex flex-col h-screen bg-gradient-to-b from-[#063970] to-blue-200">
       <div className="grid place-items-center mx-2 my-20 sm:my-auto">
@@ -8,28 +43,36 @@ const AdminLogin = () => {
           <div className="text-center mb-4">
             <h6 className="font-semibold text-[#063970] text-xl">Welcome Back Admin</h6>
           </div>
-          <form className="space-y-5" method="POST">
+          <form className="space-y-5"onSubmit={handleSubmit} >
             <div>
               <input
-                id="email"
-                type="email"
-                placeholder="Enter Your Email"
                 className="block w-full py-3 px-3 mt-2 text-gray-800 appearance-none border-2 border-gray-100 focus:text-gray-500 focus:outline-none focus:border-gray-200 rounded-md"
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Enter Your Email"
+                onChange={(e) => setEmail(e.target.value)}
+                value={email}
+                required
               />
             </div>
             <div className="relative w-full">
               <input
-                type="password"
-                placeholder="Enter Your Password"
-                id="password"
                 className="block w-full py-3 px-3 mt-2 mb-4 text-gray-800 appearance-none border-2 border-gray-100 focus:text-gray-500 focus:outline-none focus:border-gray-200 rounded-md"
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter Your Password"
+                onChange={(e) => setPassword(e.target.value)}
+                value={password}
+                required
               />
             </div>
             <button
               type="submit"
               className="w-full py-3 mt-10 bg-[#063970] rounded-md font-medium text-white uppercase focus:outline-none hover:shadow-none"
             >
-           Continue
+           Login
             </button>
           </form>
         </div>

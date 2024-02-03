@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const logout = () => {
+        localStorage.removeItem('adminToken')
+        navigate('/admin')
+    }
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
@@ -12,7 +17,7 @@ const Navbar = () => {
       <div className="flex justify-between items-center">
         {/* Logo or Brand */}
         <div className="flex-shrink-0">
-          <a href="#" className="text-white font-semibold">Your Logo</a>
+          {/* <a href="#" className="text-white font-semibold">Your Logo</a> */}
         </div>
 
         {/* User Icon */}
@@ -30,7 +35,8 @@ const Navbar = () => {
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1">
                 <a href="#" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Settings</a>
                 <a href="#" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Notifications</a>
-                <a href="#" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Logout</a>
+                <button type="button" className="block px-4 py-2 text-gray-800 hover:bg-gray-200" onClick={logout}>Logout</button>
+
               </div>
             )}
           </div>

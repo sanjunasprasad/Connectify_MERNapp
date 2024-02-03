@@ -1,51 +1,158 @@
-import React from 'react'
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import axiosInstance from "../../services/axios/axios";
 
 function UserLogin() {
+  const navigate = useNavigate();
+  const [errors, setErrors] = useState({});
+  const [emailExist, setEmailExits] = useState("");
+  const [formdata, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const handleOnChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formdata,
+      [name]: value,
+    });
+    setErrors({ ...errors, [name]: "" }); // Clear error when input changes
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const validationErrors = validateForm(formdata);
+    console.log("validation error:", Object.keys(validationErrors).length);
+    if (Object.keys(validationErrors).length === 0) {
+      try {
+        const response = await axiosInstance.post("/userLogin", formdata);
+        console.log("Responseeee:", response);
+
+        if (response.status === 200) {
+          localStorage.setItem("token", response.data);
+          navigate("/feedhome");
+        }
+      } catch (err) {
+        // console.log("2222 err is", err);
+        // console.log("4444 err is", err.response);
+        if (err.response && err.response.data) {
+          if (err.response.data.message === "User account is blocked.") {
+            setEmailExits("Your account is blocked!!!");
+          }
+        } else if (err.response && err.response.status === 401) {
+          setEmailExits("Incorrect email or password");
+        }
+      }
+    } else {
+      setErrors(validationErrors);
+    }
+  };
+
+  const validateForm = (data) => {
+    const errors = {};
+    if (!data.email) {
+      errors.email = "Email  cannot be empty";
+    }
+
+    if (!data.password) {
+      errors.password = "Password  cannot be empty";
+    }
+    return errors;
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/feedhome"); //change to userprofile
+    } else {
+      navigate("/");
+    }
+  }, []);
+
   return (
     <div>
-         <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(to bottom right, #E86D9C, #FAAFCE, #FEADB9)' }}>
-      <div className="bg-white bg-opacity-25 backdrop-blur-lg p-10 rounded-lg shadow-lg" style={{ width: '400px', height: '500px' }}>
-        <h1 className="text-3xl font-semibold text-white mb-5">Login</h1>
-        <form>
-          <div className="mb-4">
-            <label className="block text-white text-sm font-bold mb-2" htmlFor="username">
-              Username
-            </label>
-            <input
-              className="appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="username"
-              type="text"
-              placeholder="Username"
-            />
-          </div>
-          <div className="mb-6">
-            <label className="block text-white text-sm font-bold mb-2" htmlFor="password">
-              Password
-            </label>
-            <input
-              className="appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-              id="password"
-              type="password"
-              placeholder="********"
-            />
-          </div>
-          <div className="flex items-center justify-between">
-            <button
-              className="bg-gradient-to-r from-pink-600 via-pink-400 to-pink-500 hover:from-pink-500 hover:via-pink-400 hover:to-pink-600 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline"
-              type="button"
-            >
-              Sign In
-            </button>
-            <a className="inline-block align-baseline font-bold text-sm text-white hover:text-pink-600" href="#">
-              Forgot Password?
-            </a>
-          </div>
-          <p className="text-white text-center mt-3">I'm already a member! <a href="#">Sign In</a></p>
-        </form>
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{
+          background:
+            "linear-gradient(to bottom right, #E86D9C, #FAAFCE, #FEADB9)",
+        }}
+      >
+        <div
+          className="bg-white bg-opacity-25 backdrop-blur-lg p-10 rounded-lg shadow-lg"
+          style={{ width: "400px", height: "500px" }}
+        >
+          <h1 className="text-3xl font-semibold text-white mb-5">Login</h1>
+          <form onSubmit={handleSubmit}>
+         
+            <div className="mb-4">
+              <label
+                className="block text-white text-sm font-bold mb-2"
+                htmlFor="email"
+              >
+                Email
+              </label>
+              <input
+                className="appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                type="email"
+                name="email"
+                placeholder="Email"
+                id="email"
+                onChange={handleOnChange}
+                value={formdata.email}
+              />
+              {errors.email && <p className="error-message text-red-500">{errors.email}</p>}
+            </div>
+
+            <div className="mb-6">
+              <label
+                className="block text-white text-sm font-bold mb-2"
+                htmlFor="password"
+              >
+                Password
+              </label>
+              <input
+                className="appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                id="password"
+                type="password"
+                placeholder="********"
+                name="password"
+                onChange={handleOnChange}
+                value={formdata.password}
+              />
+              {errors.password && (
+                <p className="error-message text-red-500">{errors.password}</p>
+              )}
+            </div>
+            <div className="flex items-center justify-between">
+              <button
+                className="bg-gradient-to-r from-pink-600 via-pink-400 to-pink-500 hover:from-pink-500 hover:via-pink-400 hover:to-pink-600 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline"
+                type="submit"
+                value="Sign Up"
+              >
+                Sign In
+              </button>
+              <a
+                className="inline-block align-baseline font-bold text-sm text-white hover:text-pink-600"
+                href="#"
+              >
+                Forgot Password?
+              </a>
+            </div>
+            <p className="text-white text-center mt-3">
+              Dont have an account? <Link to="/signup">Sign Up</Link>
+            </p>
+            {emailExist && (
+              <p className="error-message text-center text-red-500">{emailExist}</p>
+            )}
+          </form>
+        </div>
+        
       </div>
     </div>
-    </div>
-  )
+  );
 }
 
-export default UserLogin
+export default UserLogin;
