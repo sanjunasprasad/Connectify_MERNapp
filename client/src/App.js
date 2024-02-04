@@ -1,28 +1,3 @@
-
-
-
-// import Sidebar from "./components/Admin/Sidebar";
-// import UserManage from "./components/Admin/UserManage";
-// function App() {
-//   return (
-//     <>
-//
-//       <Sidebar />
-//       <Navbar />
-//       <UserManage />
-//    
-// 
-//     </>
-//   );
-// }
-// export default App;
-
-
-
-
-
-
-
 import React from 'react'
 import { Route, Routes } from "react-router-dom";
 import UserHomePage from "./pages/UserHomePage";
