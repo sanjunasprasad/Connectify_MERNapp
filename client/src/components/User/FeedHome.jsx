@@ -1,6 +1,8 @@
-import React from "react";
+import React,{useEffect,useState} from "react";
 import { useNavigate } from "react-router-dom";
 import "./FeedHome.css";
+import Swal from "sweetalert2"
+import 'sweetalert2/dist/sweetalert2.min.css'
 import connectify from "./img/connectify.png";
 import post1 from "./img/post1.jpg";
 import post2 from "./img/post2.jpg";
@@ -11,11 +13,63 @@ import profile7 from "./img/profile7.jpg";
 import profile10 from "./img/profile10.jpg";
 
 const FeedHome = () => {
+  const [username, setUsername] = useState("");
   const navigate = useNavigate();
   const signOut = () => {
+    
     localStorage.removeItem("token");
+  
     navigate("/");
+    const Toast = Swal.mixin({
+      toast: true,
+      position: "top-end",
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.onmouseenter = Swal.stopTimer;
+        toast.onmouseleave = Swal.resumeTimer;
+      }
+    });
+    Toast.fire({
+      icon: "success",
+      title: "Logged out successfully"
+    });
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    // console.log("usertoken",token)
+    if(!token){
+      navigate("/")
+    }
+    else if (token) {
+      console.log("222222, usertoken",token)
+      fetchUserData(token);
+      navigate("/feedhome"); //change to userprofile
+    } 
+  }, [navigate]);
+
+
+  // to fetch user data
+  const fetchUserData = (token) => {
+    fetch("/userProfile", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // Assuming the username is present in the response data
+        setUsername(data.username);
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
+  };
+
+  
   return (
     <div>
       {/* Sidebar */}

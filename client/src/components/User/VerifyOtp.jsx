@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../services/axios/axios.js";
+import Swal from "sweetalert2"
+import 'sweetalert2/dist/sweetalert2.min.css'
+
 
 function VerifyOTP() {
   const navigate = useNavigate();
@@ -42,13 +45,19 @@ function VerifyOTP() {
       const response = await axiosInstance.post('/otpVerify', { Otp });
       console.log('Response from backend:', response);
       if (response.status === 200) {
+       
         navigate("/");
       } else {
         alert('Invalid OTP. Please enter the correct OTP.');
       }
     } catch (error) {
       console.error('Axios error:', error);
-      alert('An error occurred while verifying OTP. Please try again later.');
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Invalid OTP!",
+       
+      });
     }
   };
 

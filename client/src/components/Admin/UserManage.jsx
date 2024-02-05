@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2"
+import 'sweetalert2/dist/sweetalert2.min.css'
 import axiosInstance from "../../services/axios/axios";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
@@ -24,46 +26,111 @@ function UserManage() {
           console.log(err);
         });
     }
-  }, []);
+  }, [navigate]);
 
 
  
 
   // to block/unblock
+  // const toggleUserStatus = async (id) => {
+  //   const userToUpdate = users.find((user) => user._id === id);
+  //   console.log("usertoupdate:", userToUpdate);
+  //   const newStatus = !userToUpdate.is_blocked;
+  //   console.log("newstatus", newStatus);
+  //   try {
+  //     const response = await axiosInstance.patch(`/admin/blockuser/${id}`, {
+  //       is_blocked: newStatus,
+  //     });
+  //     // Update the local state to reflect the change
+  //     setUsers(
+  //       users.map((user) =>
+  //         user._id === id ? { ...user, is_blocked: newStatus } : user
+  //       )
+  //     );
+  //   } catch (error) {
+  //     console.error("Error toggling user status:", error);
+  //   }
+  // };
   const toggleUserStatus = async (id) => {
     const userToUpdate = users.find((user) => user._id === id);
     console.log("usertoupdate:", userToUpdate);
     const newStatus = !userToUpdate.is_blocked;
     console.log("newstatus", newStatus);
     try {
-      const response = await axiosInstance.patch(`/admin/blockuser/${id}`, {
-        is_blocked: newStatus,
-      });
-      // Update the local state to reflect the change
-      setUsers(
-        users.map((user) =>
-          user._id === id ? { ...user, is_blocked: newStatus } : user
-        )
-      );
+        const result = await Swal.fire({
+            title: `Are you sure you want to ${newStatus ? 'block' : 'unblock'} this user?`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, proceed!"
+        });
+
+        if (result.isConfirmed) {
+            const response = await axiosInstance.patch(`/admin/blockuser/${id}`, {
+                is_blocked: newStatus,
+            });
+            // Update the local state to reflect the change
+            setUsers(
+                users.map((user) =>
+                    user._id === id ? { ...user, is_blocked: newStatus } : user
+                )
+            );
+            Swal.fire({
+                title: "Success!",
+                text: `User has been ${newStatus ? 'blocked' : 'unblocked'} successfully.`,
+                icon: "success"
+            });
+        } else {
+            // Handle the cancel action here
+            Swal.fire({
+                title: "Cancelled",
+                text: "The action has been cancelled.",
+                icon: "info"
+            });
+        }
     } catch (error) {
-      console.error("Error toggling user status:", error);
+        console.error("Error toggling user status:", error);
     }
-  };
+};
+
 
   //to delete user
-  const deleteUser = async (id) => {
-    try {
-        if (window.confirm("Are you sure you want to delete this user?")) {
-            const response = await axiosInstance.delete(`/admin/adminDeleteUser/${id}`, id)
-            if (response.data.email) {
-                setUsers(prevUsers => prevUsers.filter(user => user._id !== id))
-            } else {
-                alert(response.data.message);
-            }
-        }
-    } catch (err) {
-        console.log(err);
-    }
+const deleteUser = async (id) => {
+  try {
+      const result = await Swal.fire({
+          title: "Are you sure?",
+          text: "You won't be able to revert this!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, delete it!"
+      });
+
+      if (result.isConfirmed) {
+          const response = await axiosInstance.delete(`/admin/adminDeleteUser/${id}`);
+          if (response.data.email) {
+              setUsers(prevUsers => prevUsers.filter(user => user._id !== id));
+              Swal.fire({
+                  title: "Deleted!",
+                  text: "User has been deleted.",
+                  icon: "success"
+              });
+          } else {
+              alert(response.data.message);
+          }
+      } else {
+          // Handle the cancel action here
+          Swal.fire({
+              title: "Cancelled",
+              text: "The action has been cancelled.",
+              icon: "info"
+          });
+      }
+  } catch (err) {
+      console.log(err);
+  }
 }
 
   return (

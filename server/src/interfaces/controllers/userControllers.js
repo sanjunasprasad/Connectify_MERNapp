@@ -66,11 +66,13 @@ export const userRegister = async (req, res) => {
   }
   
 
-
+// for user home page
   export const fetchProfile = async (req, res) => {
+    console.log("++++userdata:")
     try{
       const userId = req.token.userId
       const response = await findOneUser(userId);
+     
       return res.status(200).json(response);
     }catch(err){
       console.log(err);
@@ -83,7 +85,7 @@ export const userLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
     const response = await loginUser(email,password);
-    console.log("from login controller",response)
+    // console.log("from login controller token",response)
     if (!response) {
       return res.status(401).end(); // User not found or password incorrect
     } else if (response.blocked) {

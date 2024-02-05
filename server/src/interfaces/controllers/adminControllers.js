@@ -26,7 +26,7 @@ export const loadUsers = async(req, res) =>{
 
 export const userBlock = async (req,res) =>{
     try {
-        console.log("-----")
+       
         const { id } = req.params;
         const { is_blocked } = req.body;
         const response = await blockUsers(id, is_blocked)

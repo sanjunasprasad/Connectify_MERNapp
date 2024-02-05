@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import axiosInstance from "../../services/axios/axios";
+import Swal from "sweetalert2"
+import 'sweetalert2/dist/sweetalert2.min.css'
 
 function UserLogin() {
   const navigate = useNavigate();
@@ -31,7 +33,24 @@ function UserLogin() {
         console.log("Responseeee:", response);
 
         if (response.status === 200) {
+          const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+              toast.onmouseenter = Swal.stopTimer;
+              toast.onmouseleave = Swal.resumeTimer;
+            }
+          });
+          Toast.fire({
+            icon: "success",
+            title: "Signed in successfully"
+          });
           localStorage.setItem("token", response.data);
+          // console.log("to:",response.data)
+        
           navigate("/feedhome");
         }
       } catch (err) {
@@ -64,12 +83,11 @@ function UserLogin() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    // console.log("usertoken",token)
     if (token) {
-      navigate("/feedhome"); //change to userprofile
-    } else {
-      navigate("/");
-    }
-  }, []);
+      navigate("/feedhome"); 
+    } 
+  }, [navigate]);
 
   return (
     <div>
@@ -134,12 +152,12 @@ function UserLogin() {
               >
                 Sign In
               </button>
-              <a
+              {/* <a
                 className="inline-block align-baseline font-bold text-sm text-white hover:text-pink-600"
                 href="#"
               >
                 Forgot Password?
-              </a>
+              </a> */}
             </div>
             <p className="text-white text-center mt-3">
               Dont have an account? <Link to="/signup">Sign Up</Link>
