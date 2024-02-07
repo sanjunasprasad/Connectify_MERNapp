@@ -32,25 +32,6 @@ function UserManage() {
  
 
   // to block/unblock
-  // const toggleUserStatus = async (id) => {
-  //   const userToUpdate = users.find((user) => user._id === id);
-  //   console.log("usertoupdate:", userToUpdate);
-  //   const newStatus = !userToUpdate.is_blocked;
-  //   console.log("newstatus", newStatus);
-  //   try {
-  //     const response = await axiosInstance.patch(`/admin/blockuser/${id}`, {
-  //       is_blocked: newStatus,
-  //     });
-  //     // Update the local state to reflect the change
-  //     setUsers(
-  //       users.map((user) =>
-  //         user._id === id ? { ...user, is_blocked: newStatus } : user
-  //       )
-  //     );
-  //   } catch (error) {
-  //     console.error("Error toggling user status:", error);
-  //   }
-  // };
   const toggleUserStatus = async (id) => {
     const userToUpdate = users.find((user) => user._id === id);
     console.log("usertoupdate:", userToUpdate);
@@ -59,7 +40,6 @@ function UserManage() {
     try {
         const result = await Swal.fire({
             title: `Are you sure you want to ${newStatus ? 'block' : 'unblock'} this user?`,
-            icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",

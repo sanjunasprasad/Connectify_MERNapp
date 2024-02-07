@@ -6,7 +6,7 @@ import {userRegister,fetchProfile,userLogin,otpVerify,resendotpVerify } from '..
 
 userRoute.post('/userRegister',  userRegister);
 userRoute.post('/otpVerify',  otpVerify);
-// userRoute.post('/resendotpVerify',  resendotpVerify);
+userRoute.post('/resendotpVerify',  resendotpVerify);
 userRoute.get('/userProfile', decodeToken, fetchProfile);
 userRoute.post('/userLogin', userLogin);
 

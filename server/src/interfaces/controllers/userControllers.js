@@ -3,12 +3,13 @@ import { findOneUser } from "../../repositories/userRepository.js";
 import {loginUser} from '../../usecases/UserUseCases/loginUser.js';
 import { generateOTP, sendOTPByEmail } from '../../services/otpService.js';
 
-let savedOTP;
+let savedOTP,newOTP,userMail
 export const userRegister = async (req, res) => {
   // console.log("++++++++from register");
     try {
       const { firstName, lastName, phoneNo, email, password, is_blocked} = req.body;
       // console.log('User dataoooo:', { firstName, lastName, phoneNo, email, password ,is_blocked});
+       userMail=req.body.email
       savedOTP = generateOTP(); 
       await sendOTPByEmail(email, savedOTP);
   
@@ -41,17 +42,14 @@ export const userRegister = async (req, res) => {
 
   export const resendotpVerify = async(req,res) =>{
     try{
-
-
-      const { Otp ,email } = req.body;
-      console.log("email is:",email)
+      const { Otp  } = req.body;
       const OTP = parseInt(Otp, 10);
-
-      savedOTP = generateOTP(); 
-      await sendOTPByEmail(email, savedOTP);
-      console.log("back",savedOTP)
-      console.log("front",OTP)
-      if( OTP === savedOTP){
+      newOTP = generateOTP(); 
+      console.log("maillllll",userMail)
+      await sendOTPByEmail(userMail, newOTP);
+      console.log("otp backend",newOTP)
+      console.log("frontend user entered otp",OTP)
+      if( OTP === newOTP){
         res.status(200).json({ success: true, message: "OTP matched successfully." });
       }
       else {
