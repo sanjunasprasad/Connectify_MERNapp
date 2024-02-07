@@ -1,0 +1,10 @@
+.LeftCard
+{
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    background-color: var(--cardColor);
+    padding: 1rem;
+    border-radius: 1rem;
+    width: 90%;
+}

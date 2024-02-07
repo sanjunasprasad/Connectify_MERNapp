@@ -90,7 +90,7 @@ function VerifyOTP() {
       setTimer(60);
     } catch (error) {
       console.error('Axios error (resend OTP):', error);
-      alert('An error occurred while resending OTP. Please try again later.');
+      alert('An error occurred while resending OTP. Please try again later');
     }
   };
   
