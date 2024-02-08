@@ -1,27 +1,23 @@
 import React from "react";
 import "./RightSide.css";
 import FollowersCard from '../FollowersCard/FollowersCard'
-// import TrendCard from "../TrendCard/TrendCard";
+// import InfoCard from '../InfoCard/InfoCard'
 import Home from "../../../img/home.png";
 import Noti from "../../../img/noti.png";
 import Comment from "../../../img/comment.png";
-// import { UilSetting } from "@iconscout/react-unicons";
+import { UilSetting } from "@iconscout/react-unicons";
 
 const RightSide = () => {
   return (
     <div className="RightSide">
       <div className="navIcons">
         <img src={Home} alt="" />
-        {/* <UilSetting /> */}
+        <UilSetting />
         <img src={Noti} alt="" />
         <img src={Comment} alt="" />
       </div>
-
-      {/* <TrendCard /> */}
+      {/* <InfoCard /> */}
       <FollowersCard />
-      {/* <button className="button r-button" >
-        Share
-      </button> */}
     </div>
   );
 };

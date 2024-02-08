@@ -1,6 +1,7 @@
 import React from 'react'
 import { Route, Routes } from "react-router-dom";
 import UserHomePage from "./pages/UserHomePage";
+import UserProfilePage from "./pages/UserProfilePage";
 import AdminPage from "./pages/AdminPage";
 import UserLogin from "./components/User/UserLogin";
 import UserSignup from "./components/User/UserSignup";
@@ -17,6 +18,7 @@ function App() {
             <Route element={< UserSignup />} path="/signup" />
             <Route element={<VerifyOtp />} path="/otp" />
             <Route element={<UserHomePage />} path="/feedhome" />
+            <Route element={<UserProfilePage />} path="/profile" />
 
 
             <Route element={<AdminLogin />} path="/admin" />

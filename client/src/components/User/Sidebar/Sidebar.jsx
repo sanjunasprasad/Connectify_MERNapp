@@ -1,5 +1,9 @@
 import React from 'react'
+import { Link } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import "./Sidebar.css"
+import Swal from "sweetalert2"
+import 'sweetalert2/dist/sweetalert2.min.css'
 import { UilSearch } from '@iconscout/react-unicons'
 import { UilMessage } from '@iconscout/react-unicons'
 import { UilHeart } from '@iconscout/react-unicons'
@@ -10,6 +14,32 @@ import { UilSignout } from '@iconscout/react-unicons'
 import { UilHouseUser } from '@iconscout/react-unicons'
 
 function Sidebar() {
+
+  const navigate = useNavigate();
+
+  const signOut = () => {
+    localStorage.removeItem("token");
+    navigate("/");
+    console.log("logout successfully")
+    const Toast = Swal.mixin({
+      toast: true,
+      position: "top-end",
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.onmouseenter = Swal.stopTimer;
+        toast.onmouseleave = Swal.resumeTimer;
+      }
+    });
+  
+    Toast.fire({
+      icon: "success",
+      title: "Signed out successfully"
+    });
+  };
+  
+
   return (
     <div className="InfoCard">
       <div className="infoHead">
@@ -17,7 +47,8 @@ function Sidebar() {
       </div>
       <br/>
       <div className="info">
-        <span className="icon"> <UilHouseUser/> </span>
+        {/* <span className="icon"> <UilHouseUser/> </span> */}
+        <Link to="/feedhome" className="icon"> <UilHouseUser/>  </Link>
         <span>Home</span>
       </div>
      
@@ -51,11 +82,12 @@ function Sidebar() {
 
     
       <div className="info">
-        <span className="icon"> <UilUserCircle/> </span>
+        {/* <span className="icon"> <UilUserCircle/> </span> */}
+        <Link to="/profile" className="icon"><UilUserCircle/></Link>
         <span>Profile</span>
       </div>
 
-      <div className="info">
+      <div className="info" onClick={signOut}>
         <span className="icon"> <UilSignout/> </span>
         <span>Logout</span>
       </div>
