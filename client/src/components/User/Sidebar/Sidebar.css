@@ -1,4 +1,4 @@
-.LeftCard
+.InfoCard
 {
     display: flex;
     flex-direction: column;
@@ -7,4 +7,37 @@
     padding: 1rem;
     border-radius: 1rem;
     width: 90%;
+    height: 680px;
+}
+#name{
+   font-size: 35px;
+   font-weight: lighter;
+}
+
+.infoHead{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.infoHead>div:hover{
+    cursor: pointer;
+}
+
+.logout-button{
+    width: 7rem;
+    height: 2rem;
+    margin-top: 6rem;
+    align-self: flex-end;
+}
+
+
+.info {
+    display: flex; 
+    align-items: center; 
+    margin-bottom: 2rem;
+}
+
+.icon {
+    margin-right: 0.5rem; /* Added margin for spacing between icon and text */
 }

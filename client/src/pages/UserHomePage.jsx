@@ -1,6 +1,6 @@
 import React from 'react'
-// import "../App.css"
-import "./UserHomePage.css"
+import "../App.css"
+// import "./UserHomePage.css"
 import FeedHome from "../components/User/FeedHome/FeedHome";
 function UserHomePage() {
   return (
