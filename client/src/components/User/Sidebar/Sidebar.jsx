@@ -18,9 +18,6 @@ import Iconsfromcreatemodal from "../../../Icons/Icon to represent media such as
 import InstagramIcon from "../../../Icons/Instagramlogo.png" //instagram logotext
 import { Profiledata } from '../data';
 
-
-
-
  function Sidebar() {
 //for logout
 const navigate = useNavigate();
@@ -99,11 +96,6 @@ const handleCreatePost = async () => {
                     console.error('Error creating post:', error);
                 }
             };
-              
-     
-
-  
-  
 
     return (
         <div className='mainsidebar'>
@@ -126,7 +118,7 @@ const handleCreatePost = async () => {
                             <div  style={{backgroundColor:"#0095F6" , paddingLeft:25 , marginLeft:-20 , borderRadius:4 }}>
                               <p style={{paddingTop:"6px" ,  paddingBottom:"7px"}}>Select from computer</p>
                             </div>
-                          <input type="file" name="file" id='file' accept='image/*' onChange={(e)=>[setFile(e.target?.files[0]), setImagePre(URL.createObjectURL(e.target.files[0]))]} style={{display:"none"}}/>
+                          <input type="file" name="file" id='file' accept='image/*,video/*' onChange={(e)=>[setFile(e.target?.files[0]), setImagePre(URL.createObjectURL(e.target.files[0]))]} style={{display:"none"}}/>
                          </label> 
                         </div>
                        </div>

@@ -65,7 +65,7 @@ export default function Post(item) {
              >
                 <div style={{display:"flex"}}>
                 <div style={{flex:1.3}} >
-                    <img style={{width:"100%" , height:"90vh" , objectFit:"cover"}} src={item?.item?.postimage}  alt="" />
+                    <img style={{width:"100%" , height:"90vh" , objectFit:"cover"}} src={item?.item?.file}  alt="" />
                 </div>
                 <div style={{flex:1 , height:"90vh"}}>
                     <div >
@@ -164,7 +164,7 @@ export default function Post(item) {
                 </div>
             </Modal>
 
-            <img src={item?.item?.postimage} style={{ height: "auto", width: "100%", objectFit: "contain" }} alt="" />
+            <img src={item?.item?.file} style={{ height: "auto", width: "100%", objectFit: "contain" }} alt="" />
             <div style={{display:"flex" , alignItems:"center" , justifyContent:'space-between'}}>  {/* to style icons like,comment,save,share  */}
                 <div style={{display:'flex' , alignItems:"center" , justifyContent:"space-between"}}>
                     <div  onClick={handleLike}>
@@ -181,7 +181,7 @@ export default function Post(item) {
             </div>
             
             <p style={{display:"flex" , marginTop:"0px"}}>147,284 likes</p>
-            <p style={{textAlign:'start' , }}>zuck Sharing an update on some of Meta's next generation infra to power new AI experiences…</p>
+            <p style={{textAlign:'start' , }}>{item?.item?.caption}</p>
             <div onClick={handleShowmodal} style={{cursor:"pointer"}}>
                 <p style={{textAlign:"start" , color:"#A8A8A8"}}>View all 3,250 comments</p>
             </div>

@@ -1,14 +1,29 @@
-import React from 'react'
+import React,{useState,useEffect} from 'react'
 import "./rightbar.css"
+import axiosInstance from "../../../services/axios/axios";
 import Post from '../Post/Post'
 import { PostExplore } from '../data'
+
+
+
 function Rightbar() {
+  const [posts, setPosts] = useState([]);
+  useEffect(() => {
+    axiosInstance.get('/loadPost')
+      .then(response => {
+        setPosts(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching posts:', error);
+      });
+  }, []); 
+
   return (
     <div className='MainRigntBar'>
       <div className='submainrightbar'>
         {/* post area */}
         <div style={{flex:1.7 , padding:20}}>
-          {PostExplore.map((item)=>(
+          {posts.map((item)=>(
             <Post item={item}/>
           ))}
         </div>
