@@ -5,6 +5,7 @@ import axiosInstance from "../../services/axios/axios";
 import Swal from "sweetalert2"
 import 'sweetalert2/dist/sweetalert2.min.css'
 
+
 function UserLogin() {
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
@@ -49,13 +50,10 @@ function UserLogin() {
             title: "Signed in successfully"
           });
           localStorage.setItem("token", response.data);
-          // console.log("to:",response.data)
-        
+          console.log("token:",response.data)
           navigate("/feedhome");
         }
       } catch (err) {
-        // console.log("2222 err is", err);
-        // console.log("4444 err is", err.response);
         if (err.response && err.response.data) {
           if (err.response.data.message === "User account is blocked.") {
             setEmailExits("Your account is blocked!!!");
@@ -83,10 +81,13 @@ function UserLogin() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    // console.log("usertoken",token)
-    if (token) {
-      navigate("/feedhome"); 
+      console.log("usertoken",token)
+    if (!token) {
+      navigate("/"); 
     } 
+    else {
+      navigate("/feedhome")
+    }
   }, [navigate]);
 
   return (

@@ -1,0 +1,22 @@
+.Profilerightbar{
+    flex: 1;
+    background-color: black;
+    padding-left: 40px;
+    color:white;
+    padding-top: 20px;
+    padding-left: 250px;
+}
+
+.subProfilerightbar{
+    background-color: black;
+    color:white;
+    padding-top: 20px;
+    display: flex;
+    margin-left: 80px;
+}
+
+.postContainerForProfile{
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 100px;
+}

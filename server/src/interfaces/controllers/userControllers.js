@@ -63,22 +63,7 @@ export const userRegister = async (req, res) => {
     }
   }
   
-
-// for user home page
-  export const fetchProfile = async (req, res) => {
-    console.log("++++userdata:")
-    try{
-      const userId = req.token.userId
-      const response = await findOneUser(userId);
-     
-      return res.status(200).json(response);
-    }catch(err){
-      console.log(err);
-    }
-  }
-
-
-  
+ //user login 
 export const userLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -97,4 +82,16 @@ export const userLogin = async (req, res) => {
     console.log(err);
   }
 };
+
+// for user home page
+export const fetchProfile = async (req, res) => {
+  console.log("++++userdata:")
+  try{
+    const userId = req.token.userId
+    const response = await findOneUser(userId);
+    return res.status(200).json(response);
+  }catch(err){
+    console.log(err);
+  }
+}
 
