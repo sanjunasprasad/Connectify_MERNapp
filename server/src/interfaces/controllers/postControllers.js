@@ -1,33 +1,33 @@
-import Post from  '../../entities/postModel.js'
-import cloudinary from "../../config/cloudinary.js"
-import path from 'path';
-
+import Post from "../../entities/postModel.js";
+import cloudinary from "../../config/cloudinary.js";
+import path from "path";
 
 //create post
-  export const createPost = async(req,res) =>{
-    try {
-      console.log(11111)
-      const { caption } = req.body;
+export const createPost = async (req, res) => {
+  try {
+    const { caption, user } = req.body;
+    const userData = JSON.parse(user);
     const file = req.file;
-        console.log("caption:",caption)
-        console.log("file",file)
-    const folder = 'posts_folder';
-    const cloudinaryResponse = await cloudinary.uploader.upload(file.path,{folder: folder});
+    // console.log("User Data:", userData);
+    // console.log("caption:", caption);
+    // console.log("file", file);
+    const folder = "posts_folder";
+    const cloudinaryResponse = await cloudinary.uploader.upload(file.path, {
+      folder: folder,
+    });
     const newPost = new Post({
       caption,
-      file: cloudinaryResponse.secure_url 
+      file: cloudinaryResponse.secure_url,
+      user: userData._id,
     });
     await newPost.save();
-    res.status(201).send('Post created successfully');
-    } catch (error) {
-      console.log(10000)
-      console.error('Error creating post:', error);
-      res.status(500).json({ message: 'Internal server error' });
-    }
-    
+    res.status(201).send("Post created successfully");
+  } catch (error) {
+    console.log(10000);
+    console.error("Error creating post:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
-
-
+};
 
 // import Post from '../../entities/postModel.js';
 // import cloudinary from "../../config/cloudinary.js";
@@ -45,11 +45,11 @@ import path from 'path';
 //         if (file.mimetype.startsWith('video')) {
 //             cloudinaryResponse = await cloudinary.uploader.upload(file.path, {
 //                 folder: folder,
-//                 resource_type: 'video' 
+//                 resource_type: 'video'
 //             });
 //             console.log("path video",cloudinaryResponse)
 //         } else {
-  
+
 //             cloudinaryResponse = await cloudinary.uploader.upload(file.path, {
 //                 folder: folder
 //             });
@@ -57,7 +57,7 @@ import path from 'path';
 //         }
 //         const newPost = new Post({
 //             caption,
-//             file: cloudinaryResponse.secure_url 
+//             file: cloudinaryResponse.secure_url
 //         });
 //         await newPost.save();
 //         res.status(201).send('Post created successfully');
@@ -68,17 +68,14 @@ import path from 'path';
 //     }
 // };
 
-
-
-
-  //loadpost
-  export const loadPost = async(req,res) =>{
-    try {
-      const posts = await Post.find(); 
-      console.log("list ofposts:",posts)
-      res.status(200).json(posts);
-    } catch (error) {
-      console.error('Error fetching posts:', error);
-      res.status(500).json({ error: 'Internal server error' });
-    }
+//loadpost
+export const loadPost = async (req, res) => {
+  try {
+    const posts = await Post.find();
+    // console.log("list ofposts:",posts)
+    res.status(200).json(posts);
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
+};

@@ -1,26 +1,29 @@
-import React, { useState } from 'react'
-import Modal from 'react-modal'
-import { Link ,useNavigate} from 'react-router-dom';
+import React, { useState } from "react";
+import Modal from "react-modal";
+import { Link, useNavigate } from "react-router-dom";
 import axiosInstance from "../../../services/axios/axios";
-import Swal from "sweetalert2"
-import 'sweetalert2/dist/sweetalert2.min.css'
-import "./sidebar.css"
+import Swal from "sweetalert2";
+import "sweetalert2/dist/sweetalert2.min.css";
+import "./sidebar.css";
 import Homeicon from "../../../Icons/home.png";
-import SearchIcon from "../../../Icons/Search.png"
-import Exploreicon from "../../../Icons/Explore.png"
-import Reels from "../../../Icons/Reels.png"
-import Messages from "../../../Icons/Messenger.png"
-import Notifications from "../../../Icons/Notifications.png"
-import createicon from "../../../Icons/New post.png"
-import Instragramicon from "../../../Icons/Instagram.png"
-import More from "../../../Icons/Settings.png"
+import SearchIcon from "../../../Icons/Search.png";
+import Exploreicon from "../../../Icons/Explore.png";
+import Reels from "../../../Icons/Reels.png";
+import Messages from "../../../Icons/Messenger.png";
+import Notifications from "../../../Icons/Notifications.png";
+import createicon from "../../../Icons/New post.png";
+import Instragramicon from "../../../Icons/Instagram.png";
+import More from "../../../Icons/Settings.png";
 import Iconsfromcreatemodal from "../../../Icons/Icon to represent media such as images or videos.png";
-import InstagramIcon from "../../../Icons/Instagramlogo.png" //instagram logotext
-import { Profiledata } from '../data';
+import InstagramIcon from "../../../Icons/Instagramlogo.png"; //instagram logotext
+import { Profiledata } from "../data";
 
- function Sidebar() {
-//for logout
-const navigate = useNavigate();
+function Sidebar({ user }) {
+  //acces user data
+  const { _id, firstName, lastName, email } = user;
+
+  //for logout
+  const navigate = useNavigate();
   const signOut = () => {
     localStorage.removeItem("token");
     navigate("/");
@@ -33,219 +36,446 @@ const navigate = useNavigate();
       didOpen: (toast) => {
         toast.onmouseenter = Swal.stopTimer;
         toast.onmouseleave = Swal.resumeTimer;
-      }
+      },
     });
     Toast.fire({
       icon: "success",
-      title: "Logged out successfully"
+      title: "Logged out successfully",
     });
   };
 
-     //search
-   const [ShowSearch , setShowSearch] = useState(true);
-   const toggleSeachText=()=>{
+  //search
+  const [ShowSearch, setShowSearch] = useState(true);
+  const toggleSeachText = () => {
     setShowSearch(!ShowSearch);
-   }
+  };
 
+  //modal
+  const [modalIsOpen, setmodalIsOpen] = useState(false);
+  const handleShowmodal = () => {
+    setmodalIsOpen(true);
+  };
+  //file selection
+  const [file, setFile] = useState(null);
+  const [imagepre, setImagePre] = useState(null);
 
-    //modal
-    const [modalIsOpen ,setmodalIsOpen] = useState(false);
-    const handleShowmodal = ()=>{
-        setmodalIsOpen(true)
-    }
-    //file selection
-    const [file , setFile] = useState(null);
-    const [imagepre , setImagePre] = useState(null);
-
-   // Form input change
-   const [formData, setFormData] = useState({caption: '',file: '',});
-const handleChange = (e) => {
+  // Form input change
+  const [formData, setFormData] = useState({ caption: "", file: "" });
+  const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-};
+  };
 
-// Create post
-const handleCreatePost = async () => {
+  // Create post
+  const handleCreatePost = async () => {
     try {
-        let response
-        const formData = new FormData();
-        const caption = document.querySelector('textarea[name="caption"]').value; 
-        formData.append('caption', caption);
-        formData.append('file', file); 
-        console.log('Post Data:', {
-            caption: caption,
-            file: file.name,
-            fileSize: file.size,
-            fileType: file.type,
+      let response;
+      const formData = new FormData();
+      const caption = document.querySelector('textarea[name="caption"]').value;
+      formData.append("caption", caption);
+      formData.append("file", file);
+      formData.append("user", JSON.stringify(user));
+      console.log("Post Data:", {
+        caption: caption,
+        file: file.name,
+        fileSize: file.size,
+        fileType: file.type,
+        userData: user,
+      });
+      console.log("my type:", typeof formData);
+      axiosInstance
+        .post("/createPost", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((response) => {
+          console.log(response.data);
+        })
+        .catch((error) => {
+          console.error(error);
         });
-        console.log("my type:",typeof(formData))
-        axiosInstance.post('/createPost', formData, {
-              headers: {
-                'Content-Type': 'multipart/form-data'
-              }
-            })
-            .then(response => {
-              console.log(response.data);
-            })
-            .catch(error => {
-              console.error(error);
-            });
-                    console.log('Post created successfully:', response.data);
-                    setFormData({ caption: '', file: '' });
-                    setmodalIsOpen(false);
-                } catch (error) {
-                    console.error('Error creating post:', error);
-                }
-            };
+      console.log("Post created successfully:", response.data);
+      setFormData({ caption: "", file: "" });
+      setmodalIsOpen(false);
+    } catch (error) {
+      console.error("Error creating post:", error);
+    }
+  };
 
-    return (
-        <div className='mainsidebar'>
-
-        <Modal
-             isOpen = {modalIsOpen}
-             onRequestClose={()=>setmodalIsOpen(false)}
-             style={{overlay:{backgroundColor:"#2e2b2bc7"}}}
-             className={"modalclassNameforAPost"}>
-                <div style={{flex:1 , height:"70vh"}}>
-                    {imagepre == null ?
-                    
-                    <div >
-                       <p style={{display:'flex' , alignItems:"center" , margin:'auto' , justifyContent:'center' ,fontWeight:600 , marginTop:-10}}>Create new post</p>
-                       <div style={{display:'flex',alignItems:"center" , margin:'auto' , justifyContent:'center', marginTop:-10}}>
-                        <div style={{marginTop:240 , marginLeft:100}}>
-                         <img src={Iconsfromcreatemodal} style={{marginLeft:30}} alt=''/>
-                         <p style={{fontWeight:"600" , marginLeft:"-40px" , fontSize:18}}>Drag photos and videos here</p>
-                         <label htmlFor="file">
-                            <div  style={{backgroundColor:"#0095F6" , paddingLeft:25 , marginLeft:-20 , borderRadius:4 }}>
-                              <p style={{paddingTop:"6px" ,  paddingBottom:"7px"}}>Select from computer</p>
-                            </div>
-                          <input type="file" name="file" id='file' accept='image/*,video/*' onChange={(e)=>[setFile(e.target?.files[0]), setImagePre(URL.createObjectURL(e.target.files[0]))]} style={{display:"none"}}/>
-                         </label> 
-                        </div>
-                       </div>
-                    </div>
-                  :
-                  <div>
-                    <div style={{display:"flex" }}>
-                        <img src={imagepre} style={{width:"60%" , height:"60vh", objectFit:"cover"}} alt=''/>   
-                        <div style={{marginLeft:20 , width:"40%"}}>
-                            <div style={{display:'flex' , alignItems:"center"}}>
-                                <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQATOWAXKfh8Bt6g6wp2nobJIWLTX5PQqcp3Q&usqp=CAU' style={{width:"30px" , height:"30px" , borderRadius:"50%" , objectFit:"cover"}} alt=''/>
-                                <p style={{marginLeft:10 , fontWeight:600 , fontSize:16}}>madan khadka</p>
-                            </div>
-                            <textarea type='text' name='caption' value={formData.caption} onChange={handleChange}  placeholder='Write a caption for post'  className='textinputforpost'/>
-                            <button className='createpost'onClick={handleCreatePost} >Post</button>
-                        </div>
-                    </div>
-                 </div>}
-                </div>
-        </Modal>
-
-
+  return (
+    <div className="mainsidebar">
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={() => setmodalIsOpen(false)}
+        style={{ overlay: { backgroundColor: "#2e2b2bc7" } }}
+        className={"modalclassNameforAPost"}
+      >
+        <div style={{ flex: 1, height: "70vh" }}>
+          {imagepre == null ? (
             <div>
-                {/* logotext on sidebar */}
-                <div style={{ display: 'flex', marginTop: "45px", marginLeft: "20px" }}>
-                {ShowSearch === false ? <img src={InstagramIcon} alt='' className='logos' />:<img src={Instragramicon} alt='' className='logos' />}
-                </div>
-
-                {/* sidebar items */}
-                <Link to={"/"} style={{textDecoration:"none" , color:"white"}}>
-                <div style={{ display: "flex", alignItems: "center", marginTop: "40px" , cursor:'pointer', marginLeft: "20px" }}>
-                    <img src={Homeicon} alt='' className='logos' />
-                    {ShowSearch &&  <ui style={{ marginLeft: "20px" }}>
-                        < li className='listtext'> Home </li>
-                    </ui>}
-                </div>
-                </Link>
-
-                <div style={{ display: "flex", alignItems: "center", marginTop: "40px", cursor:'pointer', marginLeft: "20px" }} onClick={toggleSeachText}>
-                    <img src={SearchIcon} alt='' className='logos' />
-                    {ShowSearch && <ui style={{ marginLeft: "20px" }}>
-                        <li className='listtext'> Search</li>
-                    </ui>} 
-                </div>
-
-                <div style={{ display: "flex", alignItems: "center", marginTop: "40px",  cursor:'pointer', marginLeft: "20px" }}>
-                    <img src={Exploreicon} alt='' className='logos' />
-                    {ShowSearch &&<ui style={{ marginLeft: "20px" }}>
-                        <li className='listtext'>
-                        <Link to={"/Explore"} style={{textDecoration:"none" , color:"white"}}>Explore</Link>
-                        </li>
-                    </ui>}
-                </div>
-
-                <div style={{ display: "flex", alignItems: "center", marginTop: "40px",  cursor:'pointer', marginLeft: "20px" }}>
-                    <img src={Reels} alt='' className='logos' /> 
-                    {ShowSearch && <ui style={{ marginLeft: "20px" }}>
-                        <li className='listtext'> Reels</li>
-                    </ui>}
-                </div>
-
-                <div style={{ display: "flex", alignItems: "center", marginTop: "40px",  cursor:'pointer', marginLeft: "20px" }}>
-                    <img src={Messages} alt='' className='logos' />
-                    {ShowSearch && <ui style={{ marginLeft: "20px" }}>
-                        <li className='listtext'>Messages</li>
-                    </ui>}
-                </div>
-
-                <div style={{ display: "flex", alignItems: "center", marginTop: "40px",  cursor:'pointer', marginLeft: "20px" }}>
-                    <img src={Notifications} alt='' className='logos' />
-                    {ShowSearch && <ui style={{ marginLeft: "20px" }}>
-                        <li className='listtext'> Notifications</li>
-                    </ui>}
-                </div>
-
-                <div style={{ display: "flex", alignItems: "center", marginTop: "40px",  cursor:'pointer', marginLeft: "20px" }}onClick={handleShowmodal}>
-                    <img src={createicon} alt='' className='logos' />
-                    {ShowSearch && <ui style={{ marginLeft: "20px" }}>
-                        <li className='listtext'>Create</li>
-                    </ui>}
-                </div>
-
-                <Link to={"/username"}>
-                  <div style={{ display: "flex", alignItems: "center", marginTop: "40px", marginLeft: "20px",  cursor:'pointer', }}>
-                      <img src={"https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aHVtYW58ZW58MHx8MHx8fDA%3D&w=1000&q=80"} alt='' className='profileicon' />
-                      {ShowSearch && <ui style={{ marginLeft: "20px" }}>
-                          <li className='listtext'> Profile</li>
-                      </ui>}
-                  </div>
-                </Link>
-
-
-                <div style={{ display: "flex", alignItems: "center", marginTop: "40px",  cursor:'pointer', marginLeft: "20px" }}onClick={signOut}>
-                    <img src={More} alt='' className='logos' />
-                    {ShowSearch && <ui style={{ marginLeft: "20px" }}>
-                        <li className='listtext'>Logout</li>
-                    </ui>}
-                </div>
-
-            </div>
-
-            {!ShowSearch && 
-            <div style={{width:"100%" , height:"100vh" , backgroundColor:"black" , marginLeft:35}}>
-                <p style={{color:"white" ,fontWeight:600 , fontSize:27 , marginLeft:10 , marginTop:35}}>Search</p>
-                <div style={{display:'flex' , alignContent:"center" , marginLeft:10}}>
-                    <img src={SearchIcon} style={{width:15 , height:15 , marginTop:0}} alt='' />
-                    <input className='showsearchinput' placeholder='Search' name='text'/>
-                </div>  
-                <p style={{marginLeft:10 , fontWeight:600 , fontSize:17}}>Recent</p> 
-                <div style={{height:"80vh" , overflow:"auto"}}>
-
-                {Profiledata?.map((item)=>(
-                <div style={{display:'flex' , alignItems:'center', marginLeft:10 , marginTop:-25 }}>
-                    <img src={item.profile} style={{width:"40px",objectFit:"cover" , height:"40px" , borderRadius:"50%"}} alt=''/>
-                    <div style={{marginLeft:10}}>
-                        <p style={{marginTop:20 , fontSize:14}}>{item.name}</p>
-                        <p style={{marginTop:-12 , color:"#A8A8A8"}}>{item.email}</p>
+              <p
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  margin: "auto",
+                  justifyContent: "center",
+                  fontWeight: 600,
+                  marginTop: -10,
+                }}
+              >
+                Create new post
+              </p>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  margin: "auto",
+                  justifyContent: "center",
+                  marginTop: -10,
+                }}
+              >
+                <div style={{ marginTop: 240, marginLeft: 100 }}>
+                  <img
+                    src={Iconsfromcreatemodal}
+                    style={{ marginLeft: 30 }}
+                    alt=""
+                  />
+                  <p
+                    style={{
+                      fontWeight: "600",
+                      marginLeft: "-40px",
+                      fontSize: 18,
+                    }}
+                  >
+                    Drag photos and videos here
+                  </p>
+                  <label htmlFor="file">
+                    <div
+                      style={{
+                        backgroundColor: "#0095F6",
+                        paddingLeft: 25,
+                        marginLeft: -20,
+                        borderRadius: 4,
+                      }}
+                    >
+                      <p style={{ paddingTop: "6px", paddingBottom: "7px" }}>
+                        Select from computer
+                      </p>
                     </div>
+                    <input
+                      type="file"
+                      name="file"
+                      id="file"
+                      accept="image/*,video/*"
+                      onChange={(e) => [
+                        setFile(e.target?.files[0]),
+                        setImagePre(URL.createObjectURL(e.target.files[0])),
+                      ]}
+                      style={{ display: "none" }}
+                    />
+                  </label>
                 </div>
-                ))}         
-                </div>
+              </div>
             </div>
-            }
-
-
+          ) : (
+            <div>
+              <div style={{ display: "flex" }}>
+                <img
+                  src={imagepre}
+                  style={{ width: "60%", height: "60vh", objectFit: "cover" }}
+                  alt=""
+                />
+                <div style={{ marginLeft: 20, width: "40%" }}>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <img
+                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQATOWAXKfh8Bt6g6wp2nobJIWLTX5PQqcp3Q&usqp=CAU"
+                      style={{
+                        width: "30px",
+                        height: "30px",
+                        borderRadius: "50%",
+                        objectFit: "cover",
+                      }}
+                      alt=""
+                    />
+                    <p
+                      style={{ marginLeft: 10, fontWeight: 600, fontSize: 16 }}
+                    >
+                      madan khadka
+                    </p>
+                  </div>
+                  <textarea
+                    type="text"
+                    name="caption"
+                    value={formData.caption}
+                    onChange={handleChange}
+                    placeholder="Write a caption for post"
+                    className="textinputforpost"
+                  />
+                  <button className="createpost" onClick={handleCreatePost}>
+                    Post
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-    )
+      </Modal>
+
+      <div>
+        {/* logotext on sidebar */}
+        <div style={{ display: "flex", marginTop: "45px", marginLeft: "20px" }}>
+          {ShowSearch === false ? (
+            <img src={InstagramIcon} alt="" className="logos" />
+          ) : (
+            <img src={Instragramicon} alt="" className="logos" />
+          )}
+        </div>
+
+        {/* sidebar items */}
+        <Link to={"/"} style={{ textDecoration: "none", color: "white" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              marginTop: "40px",
+              cursor: "pointer",
+              marginLeft: "20px",
+            }}
+          >
+            <img src={Homeicon} alt="" className="logos" />
+            {ShowSearch && (
+              <ui style={{ marginLeft: "20px" }}>
+                <li className="listtext"> Home </li>
+              </ui>
+            )}
+          </div>
+        </Link>
+
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginTop: "40px",
+            cursor: "pointer",
+            marginLeft: "20px",
+          }}
+          onClick={toggleSeachText}
+        >
+          <img src={SearchIcon} alt="" className="logos" />
+          {ShowSearch && (
+            <ui style={{ marginLeft: "20px" }}>
+              <li className="listtext"> Search</li>
+            </ui>
+          )}
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginTop: "40px",
+            cursor: "pointer",
+            marginLeft: "20px",
+          }}
+        >
+          <img src={Exploreicon} alt="" className="logos" />
+          {ShowSearch && (
+            <ui style={{ marginLeft: "20px" }}>
+              <li className="listtext">
+                <Link
+                  to={"/Explore"}
+                  style={{ textDecoration: "none", color: "white" }}
+                >
+                  Explore
+                </Link>
+              </li>
+            </ui>
+          )}
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginTop: "40px",
+            cursor: "pointer",
+            marginLeft: "20px",
+          }}
+        >
+          <img src={Reels} alt="" className="logos" />
+          {ShowSearch && (
+            <ui style={{ marginLeft: "20px" }}>
+              <li className="listtext"> Reels</li>
+            </ui>
+          )}
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginTop: "40px",
+            cursor: "pointer",
+            marginLeft: "20px",
+          }}
+        >
+          <img src={Messages} alt="" className="logos" />
+          {ShowSearch && (
+            <ui style={{ marginLeft: "20px" }}>
+              <li className="listtext">Messages</li>
+            </ui>
+          )}
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginTop: "40px",
+            cursor: "pointer",
+            marginLeft: "20px",
+          }}
+        >
+          <img src={Notifications} alt="" className="logos" />
+          {ShowSearch && (
+            <ui style={{ marginLeft: "20px" }}>
+              <li className="listtext"> Notifications</li>
+            </ui>
+          )}
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginTop: "40px",
+            cursor: "pointer",
+            marginLeft: "20px",
+          }}
+          onClick={handleShowmodal}
+        >
+          <img src={createicon} alt="" className="logos" />
+          {ShowSearch && (
+            <ui style={{ marginLeft: "20px" }}>
+              <li className="listtext">Create</li>
+            </ui>
+          )}
+        </div>
+
+        <Link to={"/username"}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              marginTop: "40px",
+              marginLeft: "20px",
+              cursor: "pointer",
+            }}
+          >
+            <img
+              src={
+                "https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aHVtYW58ZW58MHx8MHx8fDA%3D&w=1000&q=80"
+              }
+              alt=""
+              className="profileicon"
+            />
+            {ShowSearch && (
+              <ui style={{ marginLeft: "20px" }}>
+                <li className="listtext"> {user.firstName}</li>
+              </ui>
+            )}
+          </div>
+        </Link>
+
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginTop: "40px",
+            cursor: "pointer",
+            marginLeft: "20px",
+          }}
+          onClick={signOut}
+        >
+          <img src={More} alt="" className="logos" />
+          {ShowSearch && (
+            <ui style={{ marginLeft: "20px" }}>
+              <li className="listtext">Logout</li>
+            </ui>
+          )}
+        </div>
+      </div>
+
+      {!ShowSearch && (
+        <div
+          style={{
+            width: "100%",
+            height: "100vh",
+            backgroundColor: "black",
+            marginLeft: 35,
+          }}
+        >
+          <p
+            style={{
+              color: "white",
+              fontWeight: 600,
+              fontSize: 27,
+              marginLeft: 10,
+              marginTop: 35,
+            }}
+          >
+            Search
+          </p>
+          <div
+            style={{ display: "flex", alignContent: "center", marginLeft: 10 }}
+          >
+            <img
+              src={SearchIcon}
+              style={{ width: 15, height: 15, marginTop: 0 }}
+              alt=""
+            />
+            <input
+              className="showsearchinput"
+              placeholder="Search"
+              name="text"
+            />
+          </div>
+          <p style={{ marginLeft: 10, fontWeight: 600, fontSize: 17 }}>
+            Recent
+          </p>
+          <div style={{ height: "80vh", overflow: "auto" }}>
+            {Profiledata?.map((item) => (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginLeft: 10,
+                  marginTop: -25,
+                }}
+              >
+                <img
+                  src={item.profile}
+                  style={{
+                    width: "40px",
+                    objectFit: "cover",
+                    height: "40px",
+                    borderRadius: "50%",
+                  }}
+                  alt=""
+                />
+                <div style={{ marginLeft: 10 }}>
+                  <p style={{ marginTop: 20, fontSize: 14 }}>{item.name}</p>
+                  <p style={{ marginTop: -12, color: "#A8A8A8" }}>
+                    {item.email}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
-export default Sidebar
+export default Sidebar;

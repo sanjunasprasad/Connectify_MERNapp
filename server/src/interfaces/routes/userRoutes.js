@@ -9,8 +9,8 @@ import {createPost,loadPost} from '../controllers/postControllers.js';
 userRoute.post('/userRegister',  userRegister);
 userRoute.post('/otpVerify',  otpVerify);
 userRoute.post('/resendotpVerify',  resendotpVerify);
-userRoute.get('/userProfile', decodeToken, fetchProfile);
 userRoute.post('/userLogin', userLogin);
+userRoute.get('/userProfile', decodeToken, fetchProfile); //afterlogin user homepage
 userRoute.post('/createPost',upload.single('file'), createPost);
 userRoute.get('/loadPost', loadPost);
 

@@ -83,12 +83,14 @@ export const userLogin = async (req, res) => {
   }
 };
 
+
+
 // for user home page
 export const fetchProfile = async (req, res) => {
-  console.log("++++userdata:")
   try{
     const userId = req.token.userId
     const response = await findOneUser(userId);
+    // console.log(" userdata from loadprofile route is:",response)
     return res.status(200).json(response);
   }catch(err){
     console.log(err);

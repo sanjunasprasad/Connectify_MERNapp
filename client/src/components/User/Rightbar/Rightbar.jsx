@@ -6,7 +6,9 @@ import { PostExplore } from '../data'
 
 
 
-function Rightbar() {
+function Rightbar({user}) {
+    //acces user data
+    const { _id, firstName, lastName, email } = user;
   const [posts, setPosts] = useState([]);
   useEffect(() => {
     axiosInstance.get('/loadPost')
@@ -36,8 +38,8 @@ function Rightbar() {
             <div style={{ display: "flex", alignItems: "center" , marginLeft:20 , marginTop:30 , cursor:"pointer"}}>
              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVVIYDt6bSnhK21l1e1eGY0FnEBcTkTYeyEgEL53gv&s" style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover" }} alt="" />
               <div style={{marginLeft:10}}>
-                <p style={{textAlign:'start'}}>Sumank9787</p>
-                <p style={{marginTop:-4 , textAlign:'start' , color:"#A8A8A8"}}>Suman khadka</p>
+                <p style={{textAlign:'start'}}>{user.firstName}</p>
+                <p style={{marginTop:-4 , textAlign:'start' , color:"#A8A8A8"}}>{user.email}</p>
               </div>
               <div style={{marginLeft:"100px" , cursor:"pointer"}}>
                 <p style={{color:"#0095f6" , fontSize:15 , fontWeight:"500"}}>Switch</p>
