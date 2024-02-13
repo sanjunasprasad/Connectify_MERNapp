@@ -8,7 +8,6 @@ import Rightbar from "../../components/User/Rightbar/Rightbar";
 function UserHomePage() {
   const [user, setUser] = useState("");
   const navigate = useNavigate();
-
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -22,6 +21,7 @@ function UserHomePage() {
         })
         .then((response) => {
           setUser(response.data);
+        //   console.log("response from back to userprofilehomepage:",response)
         })
         .catch((err) => {
           console.log(err.response);

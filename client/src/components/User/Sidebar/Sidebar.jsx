@@ -22,6 +22,7 @@ function Sidebar({ user }) {
   //acces user data
   const { _id, firstName, lastName, email } = user;
 
+
   //for logout
   const navigate = useNavigate();
   const signOut = () => {
@@ -89,12 +90,12 @@ function Sidebar({ user }) {
           },
         })
         .then((response) => {
-          console.log(response.data);
+          console.log(response);
         })
         .catch((error) => {
           console.error(error);
         });
-      console.log("Post created successfully:", response.data);
+      console.log("Post posted successfully:", response.data);
       setFormData({ caption: "", file: "" });
       setmodalIsOpen(false);
     } catch (error) {

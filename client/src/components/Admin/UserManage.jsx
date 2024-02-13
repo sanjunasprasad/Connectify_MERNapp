@@ -19,7 +19,6 @@ function UserManage() {
       axiosInstance
         .get("/admin/loadDashboard")
         .then((response) => {
-          // console.log("88888",response.data);
           setUsers(response.data);
         })
         .catch((err) => {

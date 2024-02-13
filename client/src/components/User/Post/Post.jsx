@@ -1,32 +1,75 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
+import axiosInstance from "../../../services/axios/axios";
 import "./post.css"
 import Moreoptions from "../../../Icons/Moreoptions.png"
 import Likeicon from "../../../Icons/Notifications.png"
 import commneticon from "../../../Icons/Comment.png"
 import Shareicon from "../../../Icons/SharePost.png"
 import Saveicon from "../../../Icons/Save.png"
-import unlike from "../../../Icons/Unlike.png"
+import unlikeicon from "../../../Icons/Unlike.png"
 import Emoji from "../../../Icons/Emoji.png"
 import Modal from "react-modal";
-export default function Post(item) {
+
+
+export default function Post({item,user}) {
+    console.log("item from post compo is",item);
+    // console.log("user from post compo  is",user)
+   
+
+
+    //fetch post username
+    const [postuser, setPostuser] = useState("");
+    useEffect(() => {
+        axiosInstance.get(`/post/getPostuser/${item.user}`)
+          .then(response => {
+            // console.log("postusername", response.data.user.firstName);
+            setPostuser(response.data.user.firstName);
+            // console.log("state change postusername:", postuser);
+          })
+          .catch(error => {
+            console.error('Error fetching username:', error);
+          });
+      }, []);
+      
+
+    //like handler
+    // const [Like , SetLike] = useState(Likeicon)
+    // const handleLike = ()=>{
+    //     if(Like === Likeicon){
+    //         SetLike(unlikeicon)
+    //     }else{
+    //         SetLike(Likeicon)
+    //     }
+    // }
+    const [Like, setLike] = useState(Likeicon);
+    const [likesCount, setLikesCount] = useState(item.likes.length);
+  useEffect(() => {
+    // Check if the current user has liked the post
+    setLike(item.likes.some(like => like.user === user._id));
+  }, [item.likes, user._id]);
+
+  const handleLike = async () => {
+    try {
+      const response = await axiosInstance.post(`/posts/likepost/${item._id}`);
+      if (response.status === 200) {
+        setLike(Likeicon);
+        setLikesCount(likesCount + 1);
+      }
+    } catch (error) {
+      console.error('Error liking post:', error);
+    }
+  };
+    
 
     const [modalIsOpen ,setmodalIsOpen] = useState(false);
-    const [Like , SetLike] = useState(Likeicon)
     const handleShowmodal = ()=>{
         setmodalIsOpen(true)
     }
 
-    const handleLike = ()=>{
-        if(Like === Likeicon){
-            SetLike(unlike)
-        }else{
-            SetLike(Likeicon)
-        }
-    }
-
+    
     const [comments , SetComments] = useState([]);
     const [commetwriting , setcommentwriting] = useState('');
-    console.log(commetwriting);
+    // console.log(commetwriting);
 
     const addComment = async()=>{
         const comment = {
@@ -43,20 +86,23 @@ export default function Post(item) {
         addComment();
     };
 
-    console.log(comments)
+    
     
     return (
+        // area for profileimage+profilename on post top
         <div style={{ marginLeft: "120px" , marginTop:20 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: "space-between" ,marginBottom:10}}>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVVIYDt6bSnhK21l1e1eGY0FnEBcTkTYeyEgEL53gv&s" style={{ width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover",}} alt="" />
-                    <p style={{marginLeft:10}}>Zuck</p>
+                    <p style={{marginLeft:10}}>{postuser}</p> {/* username */}
                 </div>
                 <div>
                     <img src={Moreoptions} alt="" />
                 </div>
             </div>
             
+
+            {/* modal for comments */}
             <Modal
              style={{overlay:{backgroundColor:"#2e2b2bc7"}}}
              isOpen = {modalIsOpen}
@@ -137,7 +183,7 @@ export default function Post(item) {
                     <div style={{marginLeft:30 , marginTop:0}}>
                         <div style={{display:'flex' , justifyContent:"space-between" , alignContent:'center'}}>
                             <div style={{marginTop:10 , marginLeft:-15}}>
-                                   <img onClick={handleLike} src={Like} style={{marginLeft:13 , cursor:"pointer"}} alt="" />
+                                   {/* <img onClick={handleLike} src={Like} style={{marginLeft:13 , cursor:"pointer"}} alt="" /> */}
                                 <img src={commneticon} style={{marginLeft:13 , cursor:"pointer"}} alt="" />
                                 <img src={Shareicon} style={{marginLeft:13 , cursor:"pointer"}} alt="" />
                             </div>
@@ -164,12 +210,21 @@ export default function Post(item) {
                 </div>
             </Modal>
 
-            <img src={item?.item?.file} style={{ height: "auto", width: "100%", objectFit: "contain" }} alt="" />
+             {/* area for postimage+caption+comment */}
+            <img src={item?.file} style={{ height: "auto", width: "100%", objectFit: "contain" }} alt="" />
             <div style={{display:"flex" , alignItems:"center" , justifyContent:'space-between'}}>  {/* to style icons like,comment,save,share  */}
                 <div style={{display:'flex' , alignItems:"center" , justifyContent:"space-between"}}>
+
+
+                    
+
                     <div  onClick={handleLike}>
                       <img src={Like} className='logoforpost' alt="" />
                     </div>
+
+            
+
+
                     <div onClick={handleShowmodal} style={{cursor:"pointer"}}>
                      <img src={commneticon} className='logoforpost' alt="" />
                     </div>
@@ -180,13 +235,14 @@ export default function Post(item) {
                 </div>
             </div>
             
-            <p style={{display:"flex" , marginTop:"0px"}}>147,284 likes</p>
-            <p style={{textAlign:'start' , }}>{item?.item?.caption}</p>
+            <p style={{display:"flex" , marginTop:"0px"}}> likes</p>  {/* likes count */} 
+            <p style={{textAlign:'start' , }}>{item?.caption}</p> {/* caption */} 
             <div onClick={handleShowmodal} style={{cursor:"pointer"}}>
                 <p style={{textAlign:"start" , color:"#A8A8A8"}}>View all 3,250 comments</p>
             </div>
             <p style={{textAlign:"start" , fontSize:"11px" , color:"#A8A8A8"}}>3 DAYS AGO</p>
         </div>
+        
     )
 }
 

@@ -3,6 +3,7 @@ import connectDB from './config/mongo.js';
 import cors from 'cors'
 import userRoute from './interfaces/routes/userRoutes.js';
 import adminRoute from './interfaces/routes/adminRoutes.js';
+import postRoute from './interfaces/routes/postRoutes.js';
 import {configDotenv} from "dotenv"
 
 
@@ -36,6 +37,7 @@ app.use(
 connectDB();
 app.use('/', userRoute);
 app.use('/admin', adminRoute);
+app.use('/post', postRoute);
 
 
 

@@ -9,6 +9,7 @@ import { PostExplore } from '../data'
 function Rightbar({user}) {
     //acces user data
     const { _id, firstName, lastName, email } = user;
+    
   const [posts, setPosts] = useState([]);
   useEffect(() => {
     axiosInstance.get('/loadPost')
@@ -26,7 +27,8 @@ function Rightbar({user}) {
         {/* post area */}
         <div style={{flex:1.7 , padding:20}}>
           {posts.map((item)=>(
-            <Post item={item}/>
+            <Post item={item} user={user}/>
+           
           ))}
         </div>
 
