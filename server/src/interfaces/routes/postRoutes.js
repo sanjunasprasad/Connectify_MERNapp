@@ -1,11 +1,14 @@
 import {Router} from 'express'
 const postRoute = Router();
-import {getPostedUser,likePost} from "../controllers/postControllers.js"
+import {getPostedUser,likePost,unlikePost} from "../controllers/postControllers.js"
+
+
+
 
 
 postRoute.get('/getPostuser/:user',getPostedUser)
 postRoute.post('/likepost/:postid', likePost);
-// postRoute.get('/unlikepost', unlikePost);
+postRoute.post('/unlikepost/:postid', unlikePost);
 
 
 

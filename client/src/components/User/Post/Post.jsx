@@ -20,9 +20,12 @@ export default function Post({item,user}) {
     //fetch post username
     const [postuser, setPostuser] = useState("");
     useEffect(() => {
+            // console.log("post user id:",item.user);
+      // console.log("type of userid from post:",typeof(item.user));
         axiosInstance.get(`/post/getPostuser/${item.user}`)
           .then(response => {
-            // console.log("postusername", response.data.user.firstName);
+            // console.log("username from backend respo:", response.data.user.firstName);
+            // console.log("type of username from backend respo:",typeof(response.data.user.firstName))
             setPostuser(response.data.user.firstName);
             // console.log("state change postusername:", postuser);
           })
@@ -32,15 +35,7 @@ export default function Post({item,user}) {
       }, []);
       
 
-    //like handler
-    // const [Like , SetLike] = useState(Likeicon)
-    // const handleLike = ()=>{
-    //     if(Like === Likeicon){
-    //         SetLike(unlikeicon)
-    //     }else{
-    //         SetLike(Likeicon)
-    //     }
-    // }
+   //LIKES +DISLIKES
     const [Like, setLike] = useState(unlikeicon);
     const [likesCount, setLikesCount] = useState(item.likes.length);
     useEffect(() => {
@@ -48,22 +43,26 @@ export default function Post({item,user}) {
       // console.log("User IDddd:", user._id);
     // Check if the current user has liked the post
     setLike(item.likes.some(like => like.user === user._id));
-    console.log('Like state:', item.likes.some(like => like.user === user._id));
-  }, [item.likes, user._id]);
+    // console.log('Like state:', item.likes.some(like => like.user === user._id));
+    console.log(`Post ID: ${item._id}, Like state: ${item.likes.some(like => like.user === user._id)}`);
+  },[item.likes, user._id]);
+
+ 
+
 
   const handleLike = async () => {
     try {
-      setLike(Likeicon);
       // console.log("postid:",item._id);
       // console.log("type of postid:",typeof(item._id));
       const userid = user._id
       // console.log("user id from props",userid)
       // console.log("type of userid", typeof(userid))
       const response = await axiosInstance.post(`/post/likepost/${item._id}`,{userid});
-      console.log(response)
+      // console.log(response)
       if (response.status === 200) {
+        setLike(Likeicon);
         setLikesCount(likesCount + 1);
-        console.log('Likes Count:', likesCount + 1);
+        // console.log('Likes Count:', likesCount + 1);
       }
     } catch (error) {
       console.error('Error liking post:', error);
@@ -73,11 +72,17 @@ export default function Post({item,user}) {
   const handleUnlike = async () => {
     try {
      
-      const response = await axiosInstance.post(`/posts/likepost/${item._id}`);
-      setLike(unlikeicon);
+      // console.log("postid unlike:",item._id);
+      // console.log("type of postid unlike:",typeof(item._id));
+      const userid = user._id
+      // console.log("user id from props unlike",userid)
+      // console.log("type of userid unlike", typeof(userid))
+      const response = await axiosInstance.post(`/post/unlikepost/${item._id}`,{userid});
+      // console.log("response from unlike",response)
       if (response.status === 200) {
-
+        setLike(unlikeicon);
         setLikesCount(likesCount - 1);
+        console.log('unLikes Count:', likesCount - 1);
       }
     } catch (error) {
       console.error('Error unliking post:', error);
@@ -246,6 +251,7 @@ export default function Post({item,user}) {
                       <img src={Like ? unlikeicon: Likeicon} className='logoforpost' alt="" />
                     </div>
 
+                   
                     
 
                     <div onClick={handleShowmodal} style={{cursor:"pointer"}}>

@@ -4,7 +4,7 @@ import User from "../entities/userModel.js";
 export const getAllUsers = async () => {
 
   const userData = await User.find().lean();
-  console.log("reached last of loaduser admin repo:",userData);
+  // console.log("reached last of loaduser admin repo:",userData);
   return userData
 };
 

@@ -20,7 +20,8 @@ import { Profiledata } from "../data";
 
 function Sidebar({ user }) {
   //acces user data
-  const { _id, firstName, lastName, email } = user;
+  const { firstName, lastName, email } = user;
+  // console.log('User in Sidebar:', user);
 
 
   //for logout
@@ -383,6 +384,7 @@ function Sidebar({ user }) {
             {ShowSearch && (
               <ui style={{ marginLeft: "20px" }}>
                 <li className="listtext"> {user.firstName}</li>
+                {/* <li className="listtext"> profile</li> */}
               </ui>
             )}
           </div>

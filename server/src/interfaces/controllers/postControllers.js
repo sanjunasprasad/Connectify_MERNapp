@@ -1,7 +1,6 @@
 import Post from "../../entities/postModel.js";
 import User from  '../../entities/userModel.js'
 import cloudinary from "../../config/cloudinary.js";
-import mongoose from 'mongoose';
 import path from "path";
 
 //create post
@@ -88,7 +87,11 @@ export const loadPost = async (req, res) => {
 export const getPostedUser = async(req,res) =>{
   try {
     const userId = req.params.user;
+    // console.log("user id  :",userId)
+    // console.log("type of userid:",typeof(userId));
     const user = await User.findById(userId);
+    // console.log("user from mongo:",user)
+    // console.log("type of user from mongo:",typeof(user))
     //  console.log("user id",userId + "name:",user.firstName)
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -103,7 +106,6 @@ export const getPostedUser = async(req,res) =>{
 
 //like post
 export const likePost = async(req,res) =>{
-
   const  postId  = req.params.postid;
   console.log("postid :",postId)
   console.log("type of postid:",typeof(postId));
@@ -131,3 +133,38 @@ export const likePost = async(req,res) =>{
     res.status(500).json({ message: 'Internal server error' });
   }
 }
+
+
+//unlike post
+export const unlikePost = async(req,res) =>{
+  const  postId  = req.params.postid;
+  // console.log("postid :",postId)
+  // console.log("type of postid:",typeof(postId));
+
+  const {userid} = req.body;
+  // console.log("userid",userid)
+  // console.log("type of userid:",typeof(userid));
+
+  try {
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    // Check if the user has already liked the post
+    const likeIndex = post.likes.findIndex(like => like.user.toString() === userid);
+    if (likeIndex === -1) {
+      return res.status(400).json({ message: 'Post not liked' });
+    }
+    // Remove the user's like from the post
+    post.likes.splice(likeIndex, 1);
+    await post.save();
+        console.log("post data from db",post)
+    res.status(200).json({ message: 'Post unliked successfully' });
+  } 
+  catch (error) {
+    console.error('Error unliking post:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
