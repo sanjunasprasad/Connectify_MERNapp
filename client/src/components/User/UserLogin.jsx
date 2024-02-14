@@ -27,11 +27,11 @@ function UserLogin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validateForm(formdata);
-    console.log("validation error:", Object.keys(validationErrors).length);
+    // console.log("validation error:", Object.keys(validationErrors).length);
     if (Object.keys(validationErrors).length === 0) {
       try {
         const response = await axiosInstance.post("/userLogin", formdata);
-        console.log("Responseeee:", response);
+        // console.log("Responseeee:", response);
 
         if (response.status === 200) {
           const Toast = Swal.mixin({
@@ -50,7 +50,7 @@ function UserLogin() {
             title: "Signed in successfully"
           });
           localStorage.setItem("token", response.data);
-          console.log("token:",response.data)
+          // console.log("token:",response.data)
           navigate("/feedhome");
         }
       } catch (err) {
@@ -81,7 +81,7 @@ function UserLogin() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-      console.log("usertoken",token)
+      // console.log("usertoken",token)
     if (!token) {
       navigate("/"); 
     } 

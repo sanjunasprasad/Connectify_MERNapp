@@ -1,6 +1,7 @@
 import Post from "../../entities/postModel.js";
 import User from  '../../entities/userModel.js'
 import cloudinary from "../../config/cloudinary.js";
+import mongoose from 'mongoose';
 import path from "path";
 
 //create post
@@ -101,12 +102,32 @@ export const getPostedUser = async(req,res) =>{
 
 
 //like post
-
 export const likePost = async(req,res) =>{
-  try{
 
-  }
-  catch(error){
+  const  postId  = req.params.postid;
+  console.log("postid :",postId)
+  console.log("type of postid:",typeof(postId));
 
+  const {userid} = req.body;
+  console.log("userid",userid)
+  console.log("type of userid:",typeof(userid));
+  try {
+    const post = await Post.findById(postId);
+    // console.log("post data from db",post)
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    // Check if the user has already liked the post
+    if (post.likes.some(like => like.user.toString() === userid)) {
+      return res.status(400).json({ message: 'Post already liked' });
+    }
+    post.likes.push({ user: userid });
+    await post.save();
+    res.status(200).json({ message: 'Post liked successfully' });
+  } 
+  catch (error) {
+    console.error('Error liking post:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 }

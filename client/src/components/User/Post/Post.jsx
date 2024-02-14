@@ -12,7 +12,7 @@ import Modal from "react-modal";
 
 
 export default function Post({item,user}) {
-    console.log("item from post compo is",item);
+    // console.log("item from post compo is",item);
     // console.log("user from post compo  is",user)
    
 
@@ -41,32 +41,56 @@ export default function Post({item,user}) {
     //         SetLike(Likeicon)
     //     }
     // }
-    const [Like, setLike] = useState(Likeicon);
+    const [Like, setLike] = useState(unlikeicon);
     const [likesCount, setLikesCount] = useState(item.likes.length);
-  useEffect(() => {
+    useEffect(() => {
+      // console.log("Item likes:", item.likes);
+      // console.log("User IDddd:", user._id);
     // Check if the current user has liked the post
     setLike(item.likes.some(like => like.user === user._id));
+    console.log('Like state:', item.likes.some(like => like.user === user._id));
   }, [item.likes, user._id]);
 
   const handleLike = async () => {
     try {
-      const response = await axiosInstance.post(`/posts/likepost/${item._id}`);
+      setLike(Likeicon);
+      // console.log("postid:",item._id);
+      // console.log("type of postid:",typeof(item._id));
+      const userid = user._id
+      // console.log("user id from props",userid)
+      // console.log("type of userid", typeof(userid))
+      const response = await axiosInstance.post(`/post/likepost/${item._id}`,{userid});
+      console.log(response)
       if (response.status === 200) {
-        setLike(Likeicon);
         setLikesCount(likesCount + 1);
+        console.log('Likes Count:', likesCount + 1);
       }
     } catch (error) {
       console.error('Error liking post:', error);
     }
   };
     
+  const handleUnlike = async () => {
+    try {
+     
+      const response = await axiosInstance.post(`/posts/likepost/${item._id}`);
+      setLike(unlikeicon);
+      if (response.status === 200) {
+
+        setLikesCount(likesCount - 1);
+      }
+    } catch (error) {
+      console.error('Error unliking post:', error);
+    }
+  };
+
+
+
 
     const [modalIsOpen ,setmodalIsOpen] = useState(false);
     const handleShowmodal = ()=>{
         setmodalIsOpen(true)
     }
-
-    
     const [comments , SetComments] = useState([]);
     const [commetwriting , setcommentwriting] = useState('');
     // console.log(commetwriting);
@@ -218,12 +242,11 @@ export default function Post({item,user}) {
 
                     
 
-                    <div  onClick={handleLike}>
-                      <img src={Like} className='logoforpost' alt="" />
+                    <div  onClick={Like ? handleUnlike : handleLike}>
+                      <img src={Like ? unlikeicon: Likeicon} className='logoforpost' alt="" />
                     </div>
 
-            
-
+                    
 
                     <div onClick={handleShowmodal} style={{cursor:"pointer"}}>
                      <img src={commneticon} className='logoforpost' alt="" />
@@ -235,7 +258,7 @@ export default function Post({item,user}) {
                 </div>
             </div>
             
-            <p style={{display:"flex" , marginTop:"0px"}}> likes</p>  {/* likes count */} 
+            <p style={{display:"flex" , marginTop:"0px"}}>{likesCount} likes</p>  {/* likes count */} 
             <p style={{textAlign:'start' , }}>{item?.caption}</p> {/* caption */} 
             <div onClick={handleShowmodal} style={{cursor:"pointer"}}>
                 <p style={{textAlign:"start" , color:"#A8A8A8"}}>View all 3,250 comments</p>
