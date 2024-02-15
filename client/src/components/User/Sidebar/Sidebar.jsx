@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Modal from "react-modal";
 import { Link, useNavigate } from "react-router-dom";
 import axiosInstance from "../../../services/axios/axios";
+import moment from 'moment';
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 import "./sidebar.css";
@@ -19,9 +20,9 @@ import InstagramIcon from "../../../Icons/Instagramlogo.png"; //instagram logote
 import { Profiledata } from "../data";
 
 function Sidebar({ user }) {
-  //acces user data
-  const { firstName, lastName, email } = user;
-  // console.log('User in Sidebar:', user);
+  const getRelativeTime = (createdAt) => {
+    return moment(createdAt).fromNow();
+  };
 
 
   //for logout
@@ -383,8 +384,8 @@ function Sidebar({ user }) {
             />
             {ShowSearch && (
               <ui style={{ marginLeft: "20px" }}>
-                <li className="listtext"> {user.firstName}</li>
-                {/* <li className="listtext"> profile</li> */}
+                {/* <li className="listtext"> {user.firstName}</li> */}
+                <li className="listtext"> profile</li>
               </ui>
             )}
           </div>

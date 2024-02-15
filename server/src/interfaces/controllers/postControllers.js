@@ -159,7 +159,7 @@ export const unlikePost = async(req,res) =>{
     // Remove the user's like from the post
     post.likes.splice(likeIndex, 1);
     await post.save();
-        console.log("post data from db",post)
+        // console.log("post data from db",post)
     res.status(200).json({ message: 'Post unliked successfully' });
   } 
   catch (error) {
@@ -168,3 +168,42 @@ export const unlikePost = async(req,res) =>{
   }
 }
 
+export const commentPost = async(req,res) =>{
+  try {
+    const postId = req.params.postid;
+    const { userId, comment } = req.body;
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+    const newComment = {
+      user: userId,
+     text:comment
+    };
+    post.comments.push(newComment);
+    await post.save();
+    res.status(201).json({ message: 'Comment added successfully' });
+  } catch (error) {
+    console.error('Error adding comment:', error);
+    res.status(500).json({ message: 'Internal server error' })
+  }
+}
+
+
+
+//commented name display
+export const getCommentedUser = async(req,res) =>{
+  try {
+    const  postId  = req.params.postId;
+    console.log("postid",postId)
+    const { commentsuserId } = req.query;
+    console.log("userid",commentsuserId)
+    const users = await User.find({ _id: { $in: commentsuserId } }, 'firstName'); 
+    const usernames = users.map(user => user.firstName); 
+    console.log("usernames",usernames)
+    res.json({ usernames });
+  } catch (error) {
+    console.error('Error fetching usernames:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}

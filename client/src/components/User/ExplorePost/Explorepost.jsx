@@ -3,15 +3,16 @@ import love from "../../../Icons/Notifications2.png"
 import comment from "../../../Icons/Comment.png"
 import Likeicon from "../../../Icons/Notifications.png"
 import unlike from "../../../Icons/Unlike.png"
-// import "../../../pages/Explore/explore.css"
 import "./explorepost.css"
 import Moreoptions from '../../../Icons/Moreoptions.png'
 import Shareicon from "../../../Icons/SharePost.png"
 import Saveicon from "../../../Icons/Save.png"
 import Emoji from "../../../Icons/Emoji.png"
 import Modal from 'react-modal';
+
+
 export default function Explorepost(item) {
-  console.log(item)
+  // console.log(item)
   const [modalIsOpen ,setmodalIsOpen] = useState(false);
     const [Like , SetLike] = useState(Likeicon);
     const handleShowmodal = ()=>{

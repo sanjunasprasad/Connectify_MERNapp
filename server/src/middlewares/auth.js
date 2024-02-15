@@ -6,7 +6,7 @@ export const generateUserToken = async(existingUser) => {
         const payload = {
             userId: _id,
         }
-        const token = Jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '1h' });
+        const token = Jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '3h' });
         return token;
     } catch (error) {
         console.error("Error generating user token:", error);

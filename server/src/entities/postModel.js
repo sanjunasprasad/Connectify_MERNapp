@@ -2,45 +2,44 @@ import mongoose from "mongoose";
 const postSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', 
+    ref: "User",
   },
   caption: {
-    type: String, 
-    
+    type: String,
   },
   file: {
     type: String, // Store the public URL of the uploaded file
-    required: true
+    required: true,
   },
-  likes: [{
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User', 
-      unique: true 
-    }
-  }],
-  comments: [{
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User' 
+  likes: [
+    {
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        unique: true,
+      },
     },
-    text: {
-      type: String,
-      required: true
+  ],
+  comments: [
+    {
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+      text: {
+        type: String,
+        required: true,
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now,
+      },
     },
-    createdAt: {
-      type: Date,
-      default: Date.now
-    }
-  }],
+  ],
   createdAt: {
     type: Date,
-    default: Date.now
-  }
-}, { 
-  timestamps: { createdAt: true, updatedAt: false } 
+    default: Date.now,
+  },
 });
 
 export default mongoose.model("Post", postSchema);
-
-

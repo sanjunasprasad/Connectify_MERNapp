@@ -1,5 +1,6 @@
 import React, { useState,useEffect } from 'react'
 import axiosInstance from "../../../services/axios/axios";
+import moment from 'moment';
 import "./post.css"
 import Moreoptions from "../../../Icons/Moreoptions.png"
 import Likeicon from "../../../Icons/Notifications.png"
@@ -7,15 +8,42 @@ import commneticon from "../../../Icons/Comment.png"
 import Shareicon from "../../../Icons/SharePost.png"
 import Saveicon from "../../../Icons/Save.png"
 import unlikeicon from "../../../Icons/Unlike.png"
-import Emoji from "../../../Icons/Emoji.png"
 import Modal from "react-modal";
 
 
 export default function Post({item,user}) {
     // console.log("item from post compo is",item);
-    // console.log("user from post compo  is",user)
-   
+    // console.log("logged in user from post compo  is",user)
+    const getRelativeTime = (createdAt) => {
+      return moment(createdAt).fromNow();
+    };
+    
 
+    //fetch comment username
+    //fetch comment username
+const [commentuser, setCommentUser] = useState([]);
+useEffect(() => {
+  let commentsuserId = [];
+  for (let i = 0; i < item.comments.length; i++) {
+    commentsuserId.push(item.comments[i].user);
+  }
+  console.log("Commented people", commentsuserId);
+
+  // Assuming item.post contains the post ID
+  axiosInstance.get(`/post/getCommentUser/${item._id}`, {
+    params: { commentsuserId: commentsuserId }
+  })
+  .then(response => {
+    const usernames = response.data.usernames;
+    setCommentUser(usernames);
+    console.log("Usernames from backend:", usernames);
+  })
+  .catch(error => {
+    console.error('Error fetching usernames:', error);
+  });
+}, []);
+
+      
 
     //fetch post username
     const [postuser, setPostuser] = useState("");
@@ -36,6 +64,13 @@ export default function Post({item,user}) {
       
 
    //LIKES +DISLIKES
+//    const handleLike = ()=>{
+//     if(Like === Likeicon){
+//         SetLike(unlike)
+//     }else{
+//         SetLike(Likeicon)
+//     }
+// }
     const [Like, setLike] = useState(unlikeicon);
     const [likesCount, setLikesCount] = useState(item.likes.length);
     useEffect(() => {
@@ -44,12 +79,10 @@ export default function Post({item,user}) {
     // Check if the current user has liked the post
     setLike(item.likes.some(like => like.user === user._id));
     // console.log('Like state:', item.likes.some(like => like.user === user._id));
-    console.log(`Post ID: ${item._id}, Like state: ${item.likes.some(like => like.user === user._id)}`);
+    // console.log(`Post ID: ${item._id}, Like state: ${item.likes.some(like => like.user === user._id)}`);
+    // console.log('Component re-rendered');
+
   },[item.likes, user._id]);
-
- 
-
-
   const handleLike = async () => {
     try {
       // console.log("postid:",item._id);
@@ -82,7 +115,7 @@ export default function Post({item,user}) {
       if (response.status === 200) {
         setLike(unlikeicon);
         setLikesCount(likesCount - 1);
-        console.log('unLikes Count:', likesCount - 1);
+        // console.log('unLikes Count:', likesCount - 1);
       }
     } catch (error) {
       console.error('Error unliking post:', error);
@@ -91,28 +124,25 @@ export default function Post({item,user}) {
 
 
 
-
+  // comment section+comment modal
     const [modalIsOpen ,setmodalIsOpen] = useState(false);
     const handleShowmodal = ()=>{
         setmodalIsOpen(true)
     }
-    const [comments , SetComments] = useState([]);
-    const [commetwriting , setcommentwriting] = useState('');
-    // console.log(commetwriting);
-
-    const addComment = async()=>{
-        const comment = {
-            "postid":"7823131",
-            "username":"Suman",
-            "comment":`${commetwriting}`,
-            "profile":"https://images.pexels.com/photos/2646841/pexels-photo-2646841.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-        }
-
-        SetComments(comments.concat(comment))
-    }
-
-    const handlecomment=()=>{
-        addComment();
+    const [comment, setComment] = useState('');
+    const handleCommentChange = (e) => {
+      setComment(e.target.value);
+    };
+    const handlecomment=async ()=>{
+      try {
+        const response = await axiosInstance.post(`/post/commentpost/${item._id}`, {
+          userId: user._id,
+          comment: comment 
+        });
+        console.log('Comment submitted successfully:', response.data);
+      } catch (error) {
+        console.error('Error submitting comment:', error);
+      }
     };
 
     
@@ -122,8 +152,8 @@ export default function Post({item,user}) {
         <div style={{ marginLeft: "120px" , marginTop:20 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: "space-between" ,marginBottom:10}}>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVVIYDt6bSnhK21l1e1eGY0FnEBcTkTYeyEgEL53gv&s" style={{ width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover",}} alt="" />
-                    <p style={{marginLeft:10}}>{postuser}</p> {/* username */}
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVVIYDt6bSnhK21l1e1eGY0FnEBcTkTYeyEgEL53gv&s" style={{ width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover",}} alt="" /> {/* profilepic on post top*/}
+                    <p style={{marginLeft:10}}>{postuser}</p> {/* username  on post top*/}
                 </div>
                 <div>
                     <img src={Moreoptions} alt="" />
@@ -138,125 +168,72 @@ export default function Post({item,user}) {
              onRequestClose={()=>setmodalIsOpen(false)}
              className={"modalclassNameforAPost"}
              >
+                {/* bigimage left side commentsection */}
                 <div style={{display:"flex"}}>
                 <div style={{flex:1.3}} >
-                    <img style={{width:"100%" , height:"90vh" , objectFit:"cover"}} src={item?.item?.file}  alt="" />
+                    <img style={{width:"100%" , height:"85vh" , objectFit:"cover"}} src={item.file}  alt="" />
                 </div>
+
+                   {/* rightside commentsection */}
                 <div style={{flex:1 , height:"90vh"}}>
                     <div >
                         <div style={{display:"flex" , alignItems:"center" , paddingLeft:10 , justifyContent:"space-between"}}>
                             <div style={{display:"flex" , alignItems:"center" , paddingLeft:10}}>
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVVIYDt6bSnhK21l1e1eGY0FnEBcTkTYeyEgEL53gv&s" style={{ width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover" }} alt="" />
-                            <div style={{paddingLeft:10}}>
-                                <p style={{marginBottom:16}}>Suman</p>
-                                <p  style={{marginTop:-17  , fontSize:12}}>Khadka</p>
-                            </div>
+                              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVVIYDt6bSnhK21l1e1eGY0FnEBcTkTYeyEgEL53gv&s" style={{ width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover" }} alt="" />
+                              <div style={{paddingLeft:10}}>
+                                  <p style={{marginBottom:0}}>{postuser}</p> {/* post owner name on top comment section */}
+                              </div>
                             </div>
                             <div>
                                 <img src={Moreoptions} alt="" />
                             </div>
                         </div>
 
+                       {/* dynamic comment display section */}
                         <div className='scrollable-div'>
-                            {comments.map((item)=>(
-                            <div style={{display:'flex'  , marginLeft:30}}>
-                               <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVVIYDt6bSnhK21l1e1eGY0FnEBcTkTYeyEgEL53gv&s" style={{ width: 30, height: 30 , borderRadius: "50%", objectFit: "cover" , marginTop:20 }} alt="" />
-                               <div style={{marginLeft:20}}>
-                                 <p>{item.username}</p>
-                                 <p style={{marginTop:-15}}>{item.comment}</p>
-                                 <p style={{color:"#A8A8A8" ,  marginTop:-10}}>1d</p>
-                               </div>
-                            </div>
-                            ))}
-
+                        {item.comments.map((comment, index) => (
                             <div style={{display:'flex' , marginLeft:30}}>
-                               <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVVIYDt6bSnhK21l1e1eGY0FnEBcTkTYeyEgEL53gv&s" style={{ width: 30, height: 30 , borderRadius: "50%", objectFit: "cover" , marginTop:20 }} alt="" />
+                               {/* <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVVIYDt6bSnhK21l1e1eGY0FnEBcTkTYeyEgEL53gv&s" style={{ width: 30, height: 30 , borderRadius: "50%", objectFit: "cover" , marginTop:35 }} alt="" /> */}
                                <div style={{marginLeft:20}}>
-                                 <p>Suman</p>
-                                 <p style={{marginTop:-15}}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore hic blanditiis asperiores sint, odit odio nemo dolore reiciendis necessitatibus assumenda corporis. Corporis doloribus aspernatur eligendi, praesentium delectus quam reiciendis labore.</p>
-                                 <p style={{color:"#A8A8A8" ,  marginTop:-10}}>1d</p>
+                                 <p style={{  marginTop:30}}>{commentuser[index]}</p>
+                                 <p style={{marginTop: 0}}>{comment.text}</p>
+                                 <p style={{color:"#A8A8A8" , marginTop:-4}}>{getRelativeTime(comment.createdAt)}</p>
                                </div>
                             </div>
-
-                            <div style={{display:'flex'  , marginLeft:30}}>
-                               <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVVIYDt6bSnhK21l1e1eGY0FnEBcTkTYeyEgEL53gv&s" style={{ width: 30, height: 30 , borderRadius: "50%", objectFit: "cover" , marginTop:20 }} alt="" />
-                               <div style={{marginLeft:20}}>
-                                 <p>Suman</p>
-                                 <p style={{marginTop:-15}}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore hic blanditiis asperiores sint, odit odio nemo dolore reiciendis necessitatibus assumenda corporis. Corporis doloribus aspernatur eligendi, praesentium delectus quam reiciendis labore.</p>
-                                 <p style={{color:"#A8A8A8" ,  marginTop:-10}}>1d</p>
-                               </div>
-                            </div>
-
-                            <div style={{display:'flex' , marginLeft:30}}>
-                               <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVVIYDt6bSnhK21l1e1eGY0FnEBcTkTYeyEgEL53gv&s" style={{ width: 30, height: 30 , borderRadius: "50%", objectFit: "cover" , marginTop:20 }} alt="" />
-                               <div style={{marginLeft:20}}>
-                                 <p>Suman</p>
-                                 <p style={{marginTop:-15}}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore hic blanditiis asperiores sint, odit odio nemo dolore reiciendis necessitatibus assumenda corporis. Corporis doloribus aspernatur eligendi, praesentium delectus quam reiciendis labore.</p>
-                                 <p style={{color:"#A8A8A8" ,  marginTop:-10}}>1d</p>
-                               </div>
-                            </div>
-
-                            <div style={{display:'flex' , marginLeft:30}}>
-                               <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVVIYDt6bSnhK21l1e1eGY0FnEBcTkTYeyEgEL53gv&s" style={{ width: 30, height: 30 , borderRadius: "50%", objectFit: "cover" , marginTop:20 }} alt="" />
-                               <div style={{marginLeft:20}}>
-                                 <p>Suman</p>
-                                 <p style={{marginTop:-15}}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore hic blanditiis asperiores sint, odit odio nemo dolore reiciendis necessitatibus assumenda corporis. Corporis doloribus aspernatur eligendi, praesentium delectus quam reiciendis labore.</p>
-                                 <p style={{color:"#A8A8A8" ,  marginTop:-10}}>1d</p>
-                               </div>
-                            </div>
+                        ))}
+                      </div>
+                  </div>
 
 
-                        </div>
-                    </div>
-
-                    <div style={{marginLeft:30 , marginTop:0}}>
-                        <div style={{display:'flex' , justifyContent:"space-between" , alignContent:'center'}}>
-                            <div style={{marginTop:10 , marginLeft:-15}}>
-                                   {/* <img onClick={handleLike} src={Like} style={{marginLeft:13 , cursor:"pointer"}} alt="" /> */}
-                                <img src={commneticon} style={{marginLeft:13 , cursor:"pointer"}} alt="" />
-                                <img src={Shareicon} style={{marginLeft:13 , cursor:"pointer"}} alt="" />
-                            </div>
-                            <div style={{marginTop:10}}>
-                                <img src={Saveicon} style={{ cursor:"pointer"}} alt="" />
-                            </div>
-                        </div>
-                        <p style={{marginTop:0}}>98,429 likes</p>
-                        <p style={{fontSize:11 , color:"#A8A8A8" , marginTop:-10}}>1 DAY AGO</p>
-                    </div>
                     <div style={{display:'flex' , justifyContent:"space-between" , marginLeft:30 , alignContent:'center'}}>
-                        <div style={{flex:0.2}}>
-                         <img src={Emoji} style={{width:24 , height:24 }} alt="" />
-                        </div>
                         <div style={{flex:4 , marginLeft:10}}>
-                            <textarea type="text" style={{width:"100%" , backgroundColor:"black" , border:"none" , color:"white"}} onChange={(e)=>setcommentwriting(e.target.value)
-                            } placeholder='Add a comment'/>
+                            <textarea type="text"  value={comment}style={{width:"100%" , backgroundColor:"black" , border:"none" , color:"white"}} onChange={handleCommentChange} placeholder='Add a comment'/>
                         </div>
-                        <div style={{flex:0.3 , marginTop:-16 , marginLeft:70}} onClick={handlecomment} >
-                           <p style={{cursor:'pointer' , color:"#0095F6" , fontWeight:600}}>Post</p>  
+                        <div style={{flex:0.3 , marginTop:6 , marginLeft:10}}  >
+                           <p style={{cursor:'pointer' , color:"#0095F6" , fontWeight:600}} onClick={handlecomment}>Post</p>  
                         </div>
                     </div>
                 </div>
-                </div>
+              </div>
             </Modal>
 
+
+
+
+
              {/* area for postimage+caption+comment */}
-            <img src={item?.file} style={{ height: "auto", width: "100%", objectFit: "contain" }} alt="" />
+            <img src={item?.file} style={{ height: "auto", width: "100%", objectFit: "contain" }} alt="" />  {/* posted image */} 
             <div style={{display:"flex" , alignItems:"center" , justifyContent:'space-between'}}>  {/* to style icons like,comment,save,share  */}
-                <div style={{display:'flex' , alignItems:"center" , justifyContent:"space-between"}}>
-
-
-                    
+                <div style={{display:'flex' , alignItems:"center"  , justifyContent:"space-between"}}>
 
                     <div  onClick={Like ? handleUnlike : handleLike}>
                       <img src={Like ? unlikeicon: Likeicon} className='logoforpost' alt="" />
                     </div>
 
-                   
-                    
-
                     <div onClick={handleShowmodal} style={{cursor:"pointer"}}>
                      <img src={commneticon} className='logoforpost' alt="" />
                     </div>
+                    
                     <img src={Shareicon} className='logoforpost' alt="" />
                 </div>
                 <div style={{display:'flex' ,alignItems:'center'}}>
@@ -267,9 +244,9 @@ export default function Post({item,user}) {
             <p style={{display:"flex" , marginTop:"0px"}}>{likesCount} likes</p>  {/* likes count */} 
             <p style={{textAlign:'start' , }}>{item?.caption}</p> {/* caption */} 
             <div onClick={handleShowmodal} style={{cursor:"pointer"}}>
-                <p style={{textAlign:"start" , color:"#A8A8A8"}}>View all 3,250 comments</p>
+                <p style={{textAlign:"start" , color:"#A8A8A8"}}>View all comments</p> 
             </div>
-            <p style={{textAlign:"start" , fontSize:"11px" , color:"#A8A8A8"}}>3 DAYS AGO</p>
+            <p style={{textAlign:"start" , fontSize:"11px" , color:"#A8A8A8"}}>{getRelativeTime(item.createdAt)}</p>
         </div>
         
     )
