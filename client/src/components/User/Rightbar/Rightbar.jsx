@@ -2,9 +2,6 @@ import React,{useState,useEffect} from 'react'
 import "./rightbar.css"
 import axiosInstance from "../../../services/axios/axios";
 import Post from '../Post/Post'
-import { PostExplore } from '../data'
-
-
 
 function Rightbar({user}) {
     //acces user data

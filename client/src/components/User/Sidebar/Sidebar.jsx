@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import Modal from "react-modal";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from 'react-redux';
+import { addNewPost } from '../../../services/redux/slices/postSlice';
+import store from '../../../services/redux/store/store';
 import axiosInstance from "../../../services/axios/axios";
 import moment from 'moment';
 import Swal from "sweetalert2";
@@ -20,6 +23,8 @@ import InstagramIcon from "../../../Icons/Instagramlogo.png"; //instagram logote
 import { Profiledata } from "../data";
 
 function Sidebar({ user }) {
+
+  const dispatch = useDispatch();
   const getRelativeTime = (createdAt) => {
     return moment(createdAt).fromNow();
   };
@@ -93,6 +98,7 @@ function Sidebar({ user }) {
         })
         .then((response) => {
           console.log(response);
+          dispatch(addNewPost(formData));
         })
         .catch((error) => {
           console.error(error);

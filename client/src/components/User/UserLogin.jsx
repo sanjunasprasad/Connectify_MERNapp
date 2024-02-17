@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import {GoogleLogin } from "react-google-login"
 import axiosInstance from "../../services/axios/axios";
 import Swal from "sweetalert2"
 import 'sweetalert2/dist/sweetalert2.min.css'
 
 
 function UserLogin() {
+
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   const [emailExist, setEmailExits] = useState("");
@@ -90,6 +92,39 @@ function UserLogin() {
     }
   }, [navigate]);
 
+
+  //google
+  const handleGoogleSignIn = async (googleData) => {
+    try {
+      const { profileObj, tokenId } = googleData;
+      // Show success message
+      const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.onmouseenter = Swal.stopTimer;
+          toast.onmouseleave = Swal.resumeTimer;
+        },
+      });
+      Toast.fire({
+        icon: 'success',
+        title: 'Signed in successfully',
+      });
+      // await signUp({ googleProfile: profileObj, token: tokenId });
+      navigate('/feedhome');
+    } catch (error) {
+      console.error('Error during Google sign-in:', error);
+    }
+  };
+
+  
+  const handleGoogleSignInFailure = (error) => {
+    console.error("Google Sign-In failed:", error);
+  };
+
   return (
     <div>
       <div
@@ -145,21 +180,23 @@ function UserLogin() {
                 <p className="error-message text-red-500">{errors.password}</p>
               )}
             </div>
+
             <div className="flex items-center justify-between">
               <button
                 className="bg-gradient-to-r from-pink-600 via-pink-400 to-pink-500 hover:from-pink-500 hover:via-pink-400 hover:to-pink-600 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline"
                 type="submit"
-                value="Sign Up"
-              >
-                Sign In
-              </button>
-              {/* <a
-                className="inline-block align-baseline font-bold text-sm text-white hover:text-pink-600"
-                href="#"
-              >
-                Forgot Password?
-              </a> */}
+                value="Sign Up">Sign In</button>
+
+              <GoogleLogin
+            clientId="323521014875-0egjb62mbbsa6oegptdp2rtc3m332fv0.apps.googleusercontent.com"
+            onSuccess={handleGoogleSignIn}
+            onFailure={handleGoogleSignInFailure}
+            cookiePolicy="single_host_origin"
+            render={(renderProps) => (
+              // <a className="inline-block align-baseline font-bold text-sm text-white hover:text-pink-600" href="#">Google Signin?</a>  )} />
+              <button class="inline-block align-baseline font-bold text-sm text-white hover:text-pink-600" type="button" onClick={renderProps.onClick}>Google Signin?</button> )} />
             </div>
+
             <p className="text-white text-center mt-3">
               Dont have an account? <Link to="/signup">Sign Up</Link>
             </p>

@@ -24,15 +24,24 @@ const userSchema = new mongoose.Schema({
 
   is_blocked: {
     type: Boolean,
-    default: false ,
+    default: false,
     required: true,
   },
   image: {
     type: String,
+    default: "",
   },
-  date: {
+  bio: {
     type: String,
-    required: true,
+    default: "",
+  },
+  location: {
+    type: String,
+    default: "",
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
   },
 });
 

@@ -8,7 +8,10 @@ export const registerUser = async (
   phoneNo,
   email,
   password,
-  is_blocked
+  is_blocked,
+  image,
+  bio,
+  location,
 
 ) => {
   try {
@@ -21,7 +24,10 @@ export const registerUser = async (
       email,
       hashedPassword,
       is_blocked,
-      date
+      image,
+      bio,
+      location,
+  
     );
   } catch (err) {
     console.error("START_USECASE++++++:", err);
