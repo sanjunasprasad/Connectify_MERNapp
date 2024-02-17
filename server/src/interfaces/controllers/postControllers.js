@@ -195,12 +195,12 @@ export const commentPost = async(req,res) =>{
 export const getCommentedUser = async(req,res) =>{
   try {
     const  postId  = req.params.postId;
-    console.log("postid",postId)
+    // console.log("postid",postId)
     const { commentsuserId } = req.query;
-    console.log("userid",commentsuserId)
+    // console.log("userid",commentsuserId)
     const users = await User.find({ _id: { $in: commentsuserId } }, 'firstName'); 
     const usernames = users.map(user => user.firstName); 
-    console.log("usernames",usernames)
+    // console.log("usernames",usernames)
     res.json({ usernames });
   } catch (error) {
     console.error('Error fetching usernames:', error);

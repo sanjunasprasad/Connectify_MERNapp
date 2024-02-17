@@ -7,12 +7,14 @@ import Sidebar from "../../components/User/Sidebar/Sidebar";
 import SettingIcon from "../../Icons/Settingslogo.png";
 
 export default function Profile() {
-
+// to display image dynamically
 
   const [userId, setUserId] = useState("");
   const [user, setUser] = useState("");
+  const [imageURL, setImageURL] = useState("")
   const [formData, setFormData] = useState({})
   const navigate = useNavigate();
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -27,8 +29,9 @@ export default function Profile() {
         .then((response) => {
           setUser(response.data.firstName);
           setFormData(response.data);
-          // console.log("response from back to userprofilehomepage:",response.data);
+          console.log("response from back to userprofilehomepage:",response.data);
           setUserId(response.data._id)
+          setImageURL(response.data.image)
           // console.log("User IDddd:",response.data._id );
         })
         .catch((err) => {
@@ -59,20 +62,48 @@ const handleImageChange = (e) => {
     setFormData({ ...formData, image: image });
 }
 
-
 //after edit submit post
 const handleSubmit = async (e) => {
   e.preventDefault();
   try {
+    const formData = new FormData();
+    const bio = document.querySelector('textarea[name="bio"]').value;
+    const firstName = document.querySelector('input[name="firstName"]').value;
+    const email = document.querySelector('input[name="email"]').value;
+    const location = document.querySelector('input[name="location"]').value;
+    const fileInput = document.querySelector('input[name="file"]');
+    const file = fileInput.files[0];
+
+    formData.append('firstName', firstName);
+    formData.append('email', email);
+    formData.append('bio', bio);
+    formData.append('location', location);
+    formData.append('file', file); // Append the file directly, without changing the field name
+
     console.log("User ID for test:", userId);
-      const response = await axiosInstance.put(`/updateUser/${userId}`, formData);
-      if (response.status === 200) {
-        console.log("User profile updated successfully:", response.data);
+    console.log("Form data details:");
+    console.log("Bio:", bio);
+    console.log("First Name:", firstName);
+    console.log("Email:", email);
+    console.log("Location:", location);
+    console.log("File Name:", file.name);
+    console.log("File Type:", file.type);
+    console.log("File Size:", file.size);
+
+    const response = await axiosInstance.put(`/updateUser/${userId}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data' // Set content type to multipart/form-data
       }
+    });
+
+    if (response.status === 200) {
+      console.log("User profile updated successfully:", response.data);
+    }
   } catch (err) {
-      console.log(err);
+    console.log(err);
   }
 }
+
   return (
     <div>
       <div>
@@ -86,7 +117,7 @@ const handleSubmit = async (e) => {
             <div className="subProfilerightbar">
               <div>
                 <img
-                  src="https://media.istockphoto.com/id/637696304/photo/patan.jpg?s=612x612&w=0&k=20&c=-53aSTGBGoOOqX5aoC3Hs1jhZ527v3Id_xOawHHVPpg="
+                  src={imageURL}
                   style={{
                     width: "150px",
                     height: "150px",
@@ -190,7 +221,7 @@ const handleSubmit = async (e) => {
                             <input
                               type="file"
                               accept="image/*"
-                              name="image"
+                              name="file"
                               id="fileInput"
                               onChange={handleImageChange}
                               style={{ color: "white" }}

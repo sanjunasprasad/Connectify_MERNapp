@@ -13,7 +13,7 @@ userRoute.post('/userLogin', userLogin);
 userRoute.get('/userProfile', decodeToken, fetchProfile); //get logged user home,profile
 userRoute.post('/createPost',upload.single('file'), createPost);
 userRoute.get('/loadPost', loadPost);
-userRoute.put('/updateUser/:id', updateUser);
+userRoute.put('/updateUser/:id', upload.single('file'),updateUser);
 
 
 

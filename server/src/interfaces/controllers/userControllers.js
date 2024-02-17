@@ -3,6 +3,8 @@ import { findOneUser } from "../../repositories/userRepository.js";
 import {loginUser} from '../../usecases/UserUseCases/loginUser.js';
 import { editUser } from '../../usecases/UserUseCases/editUser.js';
 import { generateOTP, sendOTPByEmail } from '../../services/otpService.js';
+import cloudinary from "../../config/cloudinary.js";
+import path from "path";
 
 let savedOTP,newOTP,userMail
 export const userRegister = async (req, res) => {
@@ -89,15 +91,21 @@ export const userLogin = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const userId = req.params.id;
-    console.log("id is",userId)
-    const { firstName, email,  bio, location } = req.body;
-    console.log("name is",req.body.firstName)
-    console.log("email is",req.body.email)
-    console.log("bio is",req.body.bio)
-    console.log("location is",req.body.location)
-    const image = req.file ? req.file.path : undefined; // Assuming you're using multer for file uploads
-
-    const response = await editUser(userId, { firstName, email, bio,location }, image);
+    const { firstName, email, bio, location } = req.body;
+    const file = req.file
+    console.log("id is", userId);
+    console.log("name is", firstName);
+    console.log("email is", email);
+    console.log("bio is", bio);
+    console.log("location is", location);
+    console.log("file is", file);
+    const folder = "posts_folder";
+    // Assuming 'file' is defined somewhere, otherwise adjust accordingly
+    const cloudinaryResponse = await cloudinary.uploader.upload(req.file.path, {
+      folder: folder,
+    });
+    console.log("url is",cloudinaryResponse)
+    const response = await editUser(userId, { firstName, email, bio, location }, cloudinaryResponse.secure_url);
     return res.status(200).json(response);
   } catch (err) {
     console.log(err);
