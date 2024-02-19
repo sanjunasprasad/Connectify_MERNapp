@@ -1,10 +1,11 @@
 .Profilerightbar{
     flex: 1;
-    background-color: black;
+    background-color: black;/* entire right side */
     padding-left: 40px;
     color:white;
     padding-top: 20px;
     padding-left: 250px;
+    height:900px;
 }
 
 .subProfilerightbar{
@@ -16,9 +17,11 @@
 }
 
 .postContainerForProfile{
+
     display: flex; 
     flex-wrap: wrap;
     margin-top: 100px;
+
 }
 
 
@@ -69,5 +72,4 @@
   
 .inputfields label {
     color: white;
-    /* Add any other styling you want for the labels */
 }

@@ -35,7 +35,7 @@ function Rightbar({user}) {
           <div style={{marginRight:"20px"}}>
             {/* profile switch */}
             <div style={{ display: "flex", alignItems: "center" , marginLeft:20 , marginTop:30 , cursor:"pointer"}}>
-             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVVIYDt6bSnhK21l1e1eGY0FnEBcTkTYeyEgEL53gv&s" style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover" }} alt="" />
+             <img src={user.image} style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover" }} alt="" />
               <div style={{marginLeft:10}}>
                 <p style={{textAlign:'start'}}>{user.firstName}</p>
                 <p style={{marginTop:-4 , textAlign:'start' , color:"#A8A8A8"}}>{user.email}</p>

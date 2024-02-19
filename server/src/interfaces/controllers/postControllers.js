@@ -207,3 +207,23 @@ export const getCommentedUser = async(req,res) =>{
     res.status(500).json({ error: 'Internal server error' });
   }
 }
+
+
+export const deletePost = async(req,res) =>{
+  try {
+    console.log("HAIIIIII")
+    const PostId = req.params.postId;
+   console.log("post id from params",PostId)
+    const post = await Post.findById(PostId);
+    console.log("post details",post)
+    if (!post) {
+      return res.status(404).send({ message: 'Post not found' });
+    }
+    // Delete the post
+    await Post.findByIdAndDelete(PostId);
+    res.status(200).send({ message: 'Post deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting post:', error);
+    res.status(500).send({ message: 'An error occurred while deleting the post' });
+  }
+}

@@ -93,18 +93,18 @@ export const updateUser = async (req, res) => {
     const userId = req.params.id;
     const { firstName, email, bio, location } = req.body;
     const file = req.file
-    console.log("id is", userId);
-    console.log("name is", firstName);
-    console.log("email is", email);
-    console.log("bio is", bio);
-    console.log("location is", location);
-    console.log("file is", file);
+    // console.log("id is", userId);
+    // console.log("name is", firstName);
+    // console.log("email is", email);
+    // console.log("bio is", bio);
+    // console.log("location is", location);
+    // console.log("file is", file);
     const folder = "posts_folder";
     // Assuming 'file' is defined somewhere, otherwise adjust accordingly
     const cloudinaryResponse = await cloudinary.uploader.upload(req.file.path, {
       folder: folder,
     });
-    console.log("url is",cloudinaryResponse)
+    // console.log("url is",cloudinaryResponse)
     const response = await editUser(userId, { firstName, email, bio, location }, cloudinaryResponse.secure_url);
     return res.status(200).json(response);
   } catch (err) {

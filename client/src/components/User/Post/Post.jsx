@@ -1,8 +1,6 @@
 import React, { useState,useEffect } from 'react'
 import axiosInstance from "../../../services/axios/axios";
 import moment from 'moment';
-import Swal from "sweetalert2"
-import 'sweetalert2/dist/sweetalert2.min.css'
 import "./post.css"
 import Moreoptions from "../../../Icons/Moreoptions.png"
 import Likeicon from "../../../Icons/Notifications.png"
@@ -23,46 +21,7 @@ export default function Post({item,user}) {
     };
     
 
-    //delete
-   //to delete user
-const deleteUser = async (id) => {
-  console.log("logged user",id)
-  console.log("post owner id to delete",item.user)
-  try {
-      const result = await Swal.fire({
-          title: "Are you sure?",
-          text: "You won't be able to revert this!",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "#3085d6",
-          cancelButtonColor: "#d33",
-          confirmButtonText: "Yes, delete it!"
-      });
 
-      if (result.isConfirmed && (id=== item.user)) {
-          const response = await axiosInstance.delete(`/${id}`);
-          if (response.data.email) {
-              // setUsers(prevUsers => prevUsers.filter(user => user._id !== id));
-              Swal.fire({
-                  title: "Deleted!",
-                  text: "User has been deleted.",
-                  icon: "success"
-              });
-          } else {
-              alert(response.data.message);
-          }
-      } else {
-          // Handle the cancel action here
-          Swal.fire({
-              title: "Cancelled",
-              text: "The action has been cancelled.",
-              icon: "info"
-          });
-      }
-  } catch (err) {
-      console.log(err);
-  }
-}
 
 //fetch comment username
 const [commentuser, setCommentUser] = useState([]);
@@ -90,6 +49,7 @@ useEffect(() => {
       
 
     //fetch post username
+    const[postUserpic,setpostUserpic]  = useState("");
     const [postuser, setPostuser] = useState("");
     useEffect(() => {
             // console.log("post user id:",item.user);
@@ -98,6 +58,7 @@ useEffect(() => {
           .then(response => {
             // console.log("username from backend respo:", response.data.user.firstName);
             // console.log("type of username from backend respo:",typeof(response.data.user.firstName))
+            setpostUserpic(response.data.user.image)
             setPostuser(response.data.user.firstName);
             // console.log("state change postusername:", postuser);
           })
@@ -198,10 +159,10 @@ useEffect(() => {
         <div style={{ marginLeft: "120px" , marginTop:20 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: "space-between" ,marginBottom:10}}>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVVIYDt6bSnhK21l1e1eGY0FnEBcTkTYeyEgEL53gv&s" style={{ width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover",}} alt="" /> {/* profilepic on post top*/}
+                    <img src={postUserpic} style={{ width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover",}} alt="" /> {/* profilepic on post top*/}
                     <p style={{marginLeft:10}}>{postuser}</p> {/* username  on post top*/}
                 </div>
-                <div onClick={() => deleteUser(user._id)}>
+                <div >
                     <img src={Moreoptions} alt="" />
                 </div>
             </div>

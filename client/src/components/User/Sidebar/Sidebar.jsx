@@ -197,7 +197,7 @@ function Sidebar({ user }) {
                 <div style={{ marginLeft: 20, width: "40%" }}>
                   <div style={{ display: "flex", alignItems: "center" }}>
                     <img
-                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQATOWAXKfh8Bt6g6wp2nobJIWLTX5PQqcp3Q&usqp=CAU"
+                      src={user.image}
                       style={{
                         width: "30px",
                         height: "30px",
@@ -209,7 +209,7 @@ function Sidebar({ user }) {
                     <p
                       style={{ marginLeft: 10, fontWeight: 600, fontSize: 16 }}
                     >
-                      madan khadka
+                      {user.firstNam}
                     </p>
                   </div>
                   <textarea

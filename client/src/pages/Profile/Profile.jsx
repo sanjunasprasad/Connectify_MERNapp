@@ -8,7 +8,7 @@ import SettingIcon from "../../Icons/Settingslogo.png";
 
 export default function Profile() {
 // to display image dynamically
-
+  const [loggedUser,setloggedUser] = useState("");
   const [userId, setUserId] = useState("");
   const [user, setUser] = useState("");
   const [imageURL, setImageURL] = useState("")
@@ -30,6 +30,7 @@ export default function Profile() {
           setUser(response.data.firstName);
           setFormData(response.data);
           console.log("response from back to userprofilehomepage:",response.data);
+          setloggedUser(response.data)
           setUserId(response.data._id)
           setImageURL(response.data.image)
           // console.log("User IDddd:",response.data._id );
@@ -259,14 +260,9 @@ const handleSubmit = async (e) => {
               </div>
             </div>
 
-            {/* <div className='postContainerForProfile'>
-                {PostExplore.map((item)=>(
-                  <Explorepost item={item}/>
-                ))}
-              </div> */}
 
             <div className="postContainerForProfile">
-              <ProductTwo />
+              <ProductTwo loggedUser={loggedUser}/>
             </div>
           </div>
         </div>
