@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import Modal from "react-modal";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch } from 'react-redux';
+// import { useDispatch } from 'react-redux';
 import { addNewPost } from '../../../services/redux/slices/postSlice';
 import store from '../../../services/redux/store/store';
-import axiosInstance from "../../../services/axios/axios";
+import { axiosUserInstance }  from "../../../services/axios/axios";
 import moment from 'moment';
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
@@ -24,7 +24,7 @@ import { Profiledata } from "../data";
 
 function Sidebar({ user }) {
 
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const getRelativeTime = (createdAt) => {
     return moment(createdAt).fromNow();
   };
@@ -90,7 +90,7 @@ function Sidebar({ user }) {
         userData: user,
       });
       console.log("my type:", typeof formData);
-      axiosInstance
+      axiosUserInstance 
         .post("/createPost", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -98,7 +98,7 @@ function Sidebar({ user }) {
         })
         .then((response) => {
           console.log(response);
-          dispatch(addNewPost(formData));
+          // dispatch(addNewPost(formData));
         })
         .catch((error) => {
           console.error(error);
@@ -197,7 +197,7 @@ function Sidebar({ user }) {
                 <div style={{ marginLeft: 20, width: "40%" }}>
                   <div style={{ display: "flex", alignItems: "center" }}>
                     <img
-                      src={user.image}
+                      // src={user.image}
                       style={{
                         width: "30px",
                         height: "30px",
@@ -209,7 +209,7 @@ function Sidebar({ user }) {
                     <p
                       style={{ marginLeft: 10, fontWeight: 600, fontSize: 16 }}
                     >
-                      {user.firstNam}
+                      {user.firstName}
                     </p>
                   </div>
                   <textarea

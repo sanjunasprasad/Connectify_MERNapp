@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2"
 import 'sweetalert2/dist/sweetalert2.min.css'
-import axiosInstance from "../../services/axios/axios";
+import { axiosAdminInstance } from "../../services/axios/axios";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 
@@ -16,7 +16,7 @@ function UserManage() {
     if (!token) {
       navigate("/admin");
     } else {
-      axiosInstance
+      axiosAdminInstance
         .get("/admin/loadDashboard")
         .then((response) => {
           setUsers(response.data);
@@ -46,7 +46,7 @@ function UserManage() {
         });
 
         if (result.isConfirmed) {
-            const response = await axiosInstance.patch(`/admin/blockuser/${id}`, {
+            const response = await  axiosAdminInstance .patch(`/admin/blockuser/${id}`, {
                 is_blocked: newStatus,
             });
             // Update the local state to reflect the change
@@ -88,7 +88,7 @@ const deleteUser = async (id) => {
       });
 
       if (result.isConfirmed) {
-          const response = await axiosInstance.delete(`/admin/adminDeleteUser/${id}`);
+          const response = await axiosAdminInstance.delete(`/admin/adminDeleteUser/${id}`);
           if (response.data.email) {
               setUsers(prevUsers => prevUsers.filter(user => user._id !== id));
               Swal.fire({

@@ -1,17 +1,28 @@
 import React,{useState,useEffect} from 'react'
+import { useSelector,useDispatch } from 'react-redux';
 import "./rightbar.css"
-import axiosInstance from "../../../services/axios/axios";
+import { axiosUserInstance }  from "../../../services/axios/axios";
+import { setPosts } from '../../../services/redux/slices/postSlice';
 import Post from '../Post/Post'
 
-function Rightbar({user}) {
+function Rightbar() {
     //acces user data
-    const { _id, firstName, lastName, email } = user;
+    // const { _id, firstName, lastName, email } = user;
+    const dispatch = useDispatch();
+    const loggeduser = useSelector(state => state.user.user);
+    console.log("user data from store in rightbar",loggeduser)
+    const posts = useSelector(state => state.post.posts) || [];
+    const state = useSelector(state => state); // Get the entire Redux store state
+    console.log("Current Redux Store State:", state);
     
-  const [posts, setPosts] = useState([]);
+  // const [posts, setPosts] = useState([]);
   useEffect(() => {
-    axiosInstance.get('/loadPost')
+     axiosUserInstance.get('/loadPost')
       .then(response => {
-        setPosts(response.data);
+        // setPosts(response.data);
+        console.log("POST RESPONSE##### ",response.data[2])
+        dispatch(setPosts(response.data));
+        
       })
       .catch(error => {
         console.error('Error fetching posts:', error);
@@ -23,27 +34,34 @@ function Rightbar({user}) {
       <div className='submainrightbar'>
         {/* post area */}
         <div style={{flex:1.7 , padding:20}}>
-          {posts.map((item)=>(
-            <Post item={item} user={user}/>
-           
+          {posts.map((item,index)=>(
+            <Post key={index} item={item} />
+             
           ))}
         </div>
+         {/* <div style={{ flex: 1.7, padding: 20 }}>
+                    {posts && posts.length > 0 && posts.map((item, index) => (
+                        <Post key={index} item={item} />
+                    ))}
+                </div> */}
 
 
         {/* suggestion list area */}
         <div style={{flex:2 }}>
           <div style={{marginRight:"20px"}}>
             {/* profile switch */}
+            {loggeduser && (
             <div style={{ display: "flex", alignItems: "center" , marginLeft:20 , marginTop:30 , cursor:"pointer"}}>
-             <img src={user.image} style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover" }} alt="" />
+             <img src={loggeduser.image} style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover" }} alt="" />
               <div style={{marginLeft:10}}>
-                <p style={{textAlign:'start'}}>{user.firstName}</p>
-                <p style={{marginTop:-4 , textAlign:'start' , color:"#A8A8A8"}}>{user.email}</p>
+                <p style={{textAlign:'start'}}>{loggeduser.firstName}</p>
+                <p style={{marginTop:-4 , textAlign:'start' , color:"#A8A8A8"}}>{loggeduser.email}</p>
               </div>
               <div style={{marginLeft:"100px" , cursor:"pointer"}}>
                 <p style={{color:"#0095f6" , fontSize:15 , fontWeight:"500"}}>Switch</p>
               </div>
             </div>
+            )}
  
              {/* suggestion list */}
             <div style={{display:"flex"}}>

@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+
 import {GoogleLogin } from "react-google-login"
-import axiosInstance from "../../services/axios/axios";
+
+import { axiosInstance }  from "../../services/axios/axios";
 import Swal from "sweetalert2"
 import 'sweetalert2/dist/sweetalert2.min.css'
 
 
 function UserLogin() {
+
 
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
@@ -29,11 +32,11 @@ function UserLogin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validateForm(formdata);
-    // console.log("validation error:", Object.keys(validationErrors).length);
+    console.log("validation error:", Object.keys(validationErrors).length);
     if (Object.keys(validationErrors).length === 0) {
       try {
-        const response = await axiosInstance.post("/userLogin", formdata);
-        // console.log("Responseeee:", response);
+        const response = await  axiosInstance.post("/userLogin", formdata);
+        // console.log("Responseeee after login:", response);
 
         if (response.status === 200) {
           const Toast = Swal.mixin({
@@ -51,8 +54,9 @@ function UserLogin() {
             icon: "success",
             title: "Signed in successfully"
           });
+         
           localStorage.setItem("token", response.data);
-          // console.log("token:",response.data)
+          console.log("token:",response.data)
           navigate("/feedhome");
         }
       } catch (err) {
@@ -83,7 +87,7 @@ function UserLogin() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-      // console.log("usertoken",token)
+      console.log("usertoken",token)
     if (!token) {
       navigate("/"); 
     } 

@@ -6,11 +6,11 @@ import { generateUserToken } from '../../middlewares/auth.js';
 export const loginUser = async (email, password) => {
     try {
       const existingUser = await checkUser(email);
+      console.log("emailllll",existingUser)
       //  console.log("user status from usecase:",existingUser.is_blocked)
        if (existingUser.is_blocked) {
         return { blocked: true, message: 'User account is blocked.' };
-    }
-
+       }
       else if (existingUser) 
       {
         const passwordMatch = await bcrypt.compare(password, existingUser.password);

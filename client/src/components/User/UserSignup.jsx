@@ -1,7 +1,7 @@
 import React,{ useState }  from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import axiosInstance from "../../services/axios/axios.js";
+import { axiosUserInstance }  from "../../services/axios/axios.js";
 
 function UserSignup() {
   const navigate = useNavigate();
@@ -61,7 +61,7 @@ function UserSignup() {
     if (Object.keys(validationErrors).length === 0) {
       try {
         console.log(formData);
-        const response = await axiosInstance.post("/userRegister", formData);
+        const response = await axiosUserInstance.post("/userRegister", formData);
         if (response.status === 200) {
           // Reset form after successful submission
           setFormData({

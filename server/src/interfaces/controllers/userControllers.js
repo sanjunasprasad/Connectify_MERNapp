@@ -8,14 +8,12 @@ import path from "path";
 
 let savedOTP,newOTP,userMail
 export const userRegister = async (req, res) => {
-  // console.log("++++++++from register");
     try {
       const { firstName, lastName, phoneNo, email, password, is_blocked} = req.body;
       // console.log('User dataoooo:', { firstName, lastName, phoneNo, email, password ,is_blocked});
        userMail=req.body.email
       savedOTP = generateOTP(); 
       await sendOTPByEmail(email, savedOTP);
-  
       await registerUser(firstName, lastName, phoneNo, email, password,is_blocked);
       return res.status(200).end();
     } catch (err) {
@@ -69,17 +67,17 @@ export const userRegister = async (req, res) => {
  //user login 
 export const userLogin = async (req, res) => {
   try {
+   
     const { email, password } = req.body;
     const response = await loginUser(email,password);
     // console.log("from login controller token",response)
     if (!response) {
-      return res.status(401).end(); // User not found or password incorrect
+      return res.status(401).end(); 
     } else if (response.blocked) {
       return res.status(401).json({ message: response.message }); // User is blocked
     } else {
-      return res.status(200).json(response); // Successful login
+      return res.status(200).json(response); 
     }
- 
     
   } catch (err) {
     console.log(err);
@@ -120,6 +118,7 @@ export const updateUser = async (req, res) => {
 export const fetchProfile = async (req, res) => {
   try{
     const userId = req.token.userId
+    console.log("user id from profile",userId)
     const response = await findOneUser(userId);
     // console.log(" userdata from loadprofile route is:",response)
     return res.status(200).json(response);

@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react'
-import axiosInstance from "../../../services/axios/axios";
+import { axiosUserInstance }  from "../../../services/axios/axios";
 import moment from 'moment';
 import "./post.css"
 import Moreoptions from "../../../Icons/Moreoptions.png"
@@ -33,7 +33,7 @@ useEffect(() => {
   // console.log("Commented people", commentsuserId);
 
   // Assuming item.post contains the post ID
-  axiosInstance.get(`/post/getCommentUser/${item._id}`, {
+  axiosUserInstance.get(`/post/getCommentUser/${item._id}`, {
     params: { commentsuserId: commentsuserId }
   })
   .then(response => {
@@ -54,7 +54,7 @@ useEffect(() => {
     useEffect(() => {
             // console.log("post user id:",item.user);
       // console.log("type of userid from post:",typeof(item.user));
-        axiosInstance.get(`/post/getPostuser/${item.user}`)
+       axiosUserInstance.get(`/post/getPostuser/${item.user}`)
           .then(response => {
             // console.log("username from backend respo:", response.data.user.firstName);
             // console.log("type of username from backend respo:",typeof(response.data.user.firstName))
@@ -95,7 +95,7 @@ useEffect(() => {
       const userid = user._id
       // console.log("user id from props",userid)
       // console.log("type of userid", typeof(userid))
-      const response = await axiosInstance.post(`/post/likepost/${item._id}`,{userid});
+      const response = await axiosUserInstance.post(`/post/likepost/${item._id}`,{userid});
       // console.log(response)
       if (response.status === 200) {
         setLike(Likeicon);
@@ -115,7 +115,7 @@ useEffect(() => {
       const userid = user._id
       // console.log("user id from props unlike",userid)
       // console.log("type of userid unlike", typeof(userid))
-      const response = await axiosInstance.post(`/post/unlikepost/${item._id}`,{userid});
+      const response = await axiosUserInstance.post(`/post/unlikepost/${item._id}`,{userid});
       // console.log("response from unlike",response)
       if (response.status === 200) {
         setLike(unlikeicon);
@@ -140,7 +140,7 @@ useEffect(() => {
     };
     const handlecomment=async ()=>{
       try {
-        const response = await axiosInstance.post(`/post/commentpost/${item._id}`, {
+        const response = await axiosUserInstance.post(`/post/commentpost/${item._id}`, {
           userId: user._id,
           comment: comment 
         });

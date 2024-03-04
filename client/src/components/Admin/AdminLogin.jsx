@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../../services/axios/axios";
+import { axiosAdminInstance } from "../../services/axios/axios";
 
 const AdminLogin = () => {
 
@@ -11,7 +11,7 @@ const AdminLogin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axiosInstance.post("/admin/adminLogin", {
+      const response = await axiosAdminInstance.post("/admin/adminLogin", {
         email,
         password,
       });

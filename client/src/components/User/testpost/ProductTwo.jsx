@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axiosInstance from '../../../services/axios/axios';
+import { axiosUserInstance }  from '../../../services/axios/axios';
 import Swal from "sweetalert2"
 import 'sweetalert2/dist/sweetalert2.min.css'
 import love from '../../../Icons/Notifications2.png';
@@ -11,7 +11,7 @@ function ProductTwo({ loggedUser }) {
   const [showPosts, setShowPosts] = useState([]);
 
   useEffect(() => {
-    axiosInstance
+     axiosUserInstance
       .get('/loadPost')
       .then((response) => {
         // console.log('check post coming:', response.data);
@@ -37,7 +37,7 @@ function ProductTwo({ loggedUser }) {
       confirmButtonText: 'Yes, delete it!'
     }).then((result) => {
       if (result.isConfirmed) {
-        axiosInstance
+          axiosUserInstance 
           .delete(`/post/deletePost/${postId}`)
           .then((response) => {
             console.log('Post deleted:', response.data);

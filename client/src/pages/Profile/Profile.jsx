@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {useNavigate } from "react-router-dom";
-import axiosInstance from "../../services/axios/axios";
+import { axiosUserInstance }  from "../../services/axios/axios";
 import "./profile.css";
 import ProductTwo from "../../components/User/testpost/ProductTwo";
 import Sidebar from "../../components/User/Sidebar/Sidebar";
@@ -20,7 +20,7 @@ export default function Profile() {
     if (!token) {
       navigate("/");
     } else {
-      axiosInstance
+      axiosUserInstance 
         .get("/userProfile", {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -91,7 +91,7 @@ const handleSubmit = async (e) => {
     console.log("File Type:", file.type);
     console.log("File Size:", file.size);
 
-    const response = await axiosInstance.put(`/updateUser/${userId}`, formData, {
+    const response = await axiosUserInstance.put(`/updateUser/${userId}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data' // Set content type to multipart/form-data
       }

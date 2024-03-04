@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../../services/axios/axios.js";
+import { axiosUserInstance }  from "../../services/axios/axios.js";
 import Swal from "sweetalert2"
 import 'sweetalert2/dist/sweetalert2.min.css'
 
@@ -42,7 +42,7 @@ function VerifyOTP() {
 
     try {
       // Make a POST request to your backend API to verify the OTP
-      const response = await axiosInstance.post('/otpVerify', { Otp });
+      const response = await axiosUserInstance.post('/otpVerify', { Otp });
       console.log('Response from backend:', response);
       if (response.status === 200) {
        
@@ -84,7 +84,7 @@ function VerifyOTP() {
       setOtpInputs(prevOtpInputs => (['', '', '', '']));
       const Otp = ['', '', '', ''].join('');
       console.log('user entered OTP:', Otp);
-      const response = await axiosInstance.post('/resendotpVerify', { Otp });
+      const response = await axiosUserInstance.post('/resendotpVerify', { Otp });
       console.log('Response from backend (resend OTP):', response);
       // Reset timer to 60 seconds
       setTimer(60);

@@ -3,6 +3,7 @@ import Jwt from 'jsonwebtoken'
 export const generateUserToken = async(existingUser) => {
     try {
         const {_id } = existingUser;
+        console.log("id on auth",_id)
         const payload = {
             userId: _id,
         }
@@ -41,4 +42,19 @@ export const generateAdminToken = async (email) => {
         console.error("Error generating admin token:", error);
         throw new Error("Failed to generate admin token");
     }
+}
+
+
+
+export const isAuthenticated =(req, res, next) => {
+
+    const { token } = req.cookies;
+
+    if(!token) {
+        return next(new ErrorHandler("Please Login to Access", 401));
+    }
+
+    const decodedData = Jwt.verify(token, process.env.JWT_KEY);
+    req.user = User.findById(decodedData.id);
+    next();
 }
