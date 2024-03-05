@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { useSelector } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-
 import {GoogleLogin } from "react-google-login"
-
 import { axiosInstance }  from "../../services/axios/axios";
 import Swal from "sweetalert2"
 import 'sweetalert2/dist/sweetalert2.min.css'
@@ -11,6 +10,8 @@ import 'sweetalert2/dist/sweetalert2.min.css'
 
 function UserLogin() {
 
+  const state = useSelector(state => state); 
+  console.log("Current Redux Store State:", state);
 
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
@@ -37,7 +38,6 @@ function UserLogin() {
       try {
         const response = await  axiosInstance.post("/userLogin", formdata);
         // console.log("Responseeee after login:", response);
-
         if (response.status === 200) {
           const Toast = Swal.mixin({
             toast: true,
@@ -54,9 +54,8 @@ function UserLogin() {
             icon: "success",
             title: "Signed in successfully"
           });
-         
           localStorage.setItem("token", response.data);
-          console.log("token:",response.data)
+          // console.log("token:",response.data)
           navigate("/feedhome");
         }
       } catch (err) {

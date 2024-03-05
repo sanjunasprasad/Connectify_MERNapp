@@ -107,7 +107,7 @@ export const getPostedUser = async(req,res) =>{
 //like post
 export const likePost = async(req,res) =>{
   const  postId  = req.params.postid;
-  console.log("postid :",postId)
+  console.log("postid of likedddddd:",postId)
   console.log("type of postid:",typeof(postId));
 
   const {userid} = req.body;
@@ -138,8 +138,8 @@ export const likePost = async(req,res) =>{
 //unlike post
 export const unlikePost = async(req,res) =>{
   const  postId  = req.params.postid;
-  // console.log("postid :",postId)
-  // console.log("type of postid:",typeof(postId));
+  console.log("postid from unlikeddddddd:",postId)
+  console.log("type of postid:",typeof(postId));
 
   const {userid} = req.body;
   // console.log("userid",userid)

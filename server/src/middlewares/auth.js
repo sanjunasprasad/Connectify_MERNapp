@@ -3,7 +3,7 @@ import Jwt from 'jsonwebtoken'
 export const generateUserToken = async(existingUser) => {
     try {
         const {_id } = existingUser;
-        console.log("id on auth",_id)
+        // console.log("id on auth",_id)
         const payload = {
             userId: _id,
         }

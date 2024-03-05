@@ -12,11 +12,9 @@ function UserHomePage() {
   const navigate = useNavigate();
   const loggeduser = useSelector(state => state.user.user);
   const token = useSelector(state => state.user.token);
-  // const [user, setUser] = useState("");
-
   useEffect(() => {
     const token = localStorage.getItem("token");
-    console.log("token fom local:",token)
+    // console.log("token fom local:",token)
     if (!token) {
       navigate("/");
     } else {
@@ -30,7 +28,6 @@ function UserHomePage() {
         .then((response) => {
          
           // console.log("response from back to userprofilehomepage:",response)
-          //  setUser(response.data);
           dispatch(setUser(response.data));
         })
         .catch((err) => {
@@ -39,8 +36,8 @@ function UserHomePage() {
     }
   },[]);
 
-  console.log("User from Redux store:", loggeduser);
-  console.log("Token from Redux store:", token);
+  // console.log("User from Redux store:", loggeduser);
+  // console.log("Token from Redux store:", token);
 
   return (
     <div>

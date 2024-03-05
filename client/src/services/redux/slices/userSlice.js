@@ -20,6 +20,7 @@ const userSlice = createSlice({
       state.user = null;
       state.token = null;
     },
+    
   },
 });
 

@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import Modal from "react-modal";
 import { Link, useNavigate } from "react-router-dom";
-// import { useDispatch } from 'react-redux';
-import { addNewPost } from '../../../services/redux/slices/postSlice';
-import store from '../../../services/redux/store/store';
+import { useDispatch } from 'react-redux';
 import { axiosUserInstance }  from "../../../services/axios/axios";
+import {clearUser} from "../../../services/redux/slices/userSlice"
+import Modal from "react-modal";
 import moment from 'moment';
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
@@ -31,8 +30,10 @@ function Sidebar({ user }) {
 
 
   //for logout
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const signOut = () => {
+    dispatch(clearUser());
     localStorage.removeItem("token");
     navigate("/");
     const Toast = Swal.mixin({

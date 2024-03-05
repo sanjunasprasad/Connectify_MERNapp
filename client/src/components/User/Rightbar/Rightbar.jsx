@@ -6,21 +6,18 @@ import { setPosts } from '../../../services/redux/slices/postSlice';
 import Post from '../Post/Post'
 
 function Rightbar() {
-    //acces user data
-    // const { _id, firstName, lastName, email } = user;
+
     const dispatch = useDispatch();
     const loggeduser = useSelector(state => state.user.user);
-    console.log("user data from store in rightbar",loggeduser)
+    // console.log("user data from store in rightbar",loggeduser)
     const posts = useSelector(state => state.post.posts) || [];
-    const state = useSelector(state => state); // Get the entire Redux store state
-    console.log("Current Redux Store State:", state);
-    
-  // const [posts, setPosts] = useState([]);
-  useEffect(() => {
+    // const state = useSelector(state => state); 
+    // console.log("Current Redux Store State:", state);
+
+    useEffect(() => {
      axiosUserInstance.get('/loadPost')
       .then(response => {
-        // setPosts(response.data);
-        console.log("POST RESPONSE##### ",response.data[2])
+        // console.log("POST RESPONSE##### ",response.data[2])
         dispatch(setPosts(response.data));
         
       })
@@ -32,19 +29,13 @@ function Rightbar() {
   return (
     <div className='MainRigntBar'>
       <div className='submainrightbar'>
-        {/* post area */}
-        <div style={{flex:1.7 , padding:20}}>
-          {posts.map((item,index)=>(
-            <Post key={index} item={item} />
-             
+       {/* post area */}
+       <div style={{ flex: 1.7, padding: 20 }}>
+          {posts.map((postlist, index) => (
+            <Post key={index} postlist={postlist} /> 
           ))}
         </div>
-         {/* <div style={{ flex: 1.7, padding: 20 }}>
-                    {posts && posts.length > 0 && posts.map((item, index) => (
-                        <Post key={index} item={item} />
-                    ))}
-                </div> */}
-
+        
 
         {/* suggestion list area */}
         <div style={{flex:2 }}>
