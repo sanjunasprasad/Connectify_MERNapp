@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from 'react'
+import React,{useState, useEffect} from 'react'
 import { useSelector,useDispatch } from 'react-redux';
 import "./rightbar.css"
 import { axiosUserInstance }  from "../../../services/axios/axios";
@@ -9,7 +9,7 @@ function Rightbar() {
 
     const dispatch = useDispatch();
     const loggeduser = useSelector(state => state.user.user);
-    // console.log("user data from store in rightbar",loggeduser)
+    // console.log("user data from store in rightbar switch",loggeduser)
     const posts = useSelector(state => state.post.posts) || [];
     // const state = useSelector(state => state); 
     // console.log("Current Redux Store State:", state);

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useSelector } from 'react-redux';
+import { useSelector,useDispatch } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import {GoogleLogin } from "react-google-login"
+import { setUser, setToken } from "../../services/redux/slices/userSlice";
 import { axiosInstance }  from "../../services/axios/axios";
 import Swal from "sweetalert2"
 import 'sweetalert2/dist/sweetalert2.min.css'
@@ -10,8 +11,9 @@ import 'sweetalert2/dist/sweetalert2.min.css'
 
 function UserLogin() {
 
+  const dispatch = useDispatch();
   const state = useSelector(state => state); 
-  console.log("Current Redux Store State:", state);
+  console.log("Current Redux Store State in login page:", state);
 
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
@@ -37,8 +39,11 @@ function UserLogin() {
     if (Object.keys(validationErrors).length === 0) {
       try {
         const response = await  axiosInstance.post("/userLogin", formdata);
-        // console.log("Responseeee after login:", response);
+        console.log("Responseeee after login:", response);
         if (response.status === 200) {
+          localStorage.setItem("token", response.data);
+          console.log("token  setted to localstorage  after login via loginpage:",response.data)
+          dispatch(setToken(response.data));
           const Toast = Swal.mixin({
             toast: true,
             position: "top-end",
@@ -54,9 +59,7 @@ function UserLogin() {
             icon: "success",
             title: "Signed in successfully"
           });
-          localStorage.setItem("token", response.data);
-          // console.log("token:",response.data)
-          navigate("/feedhome");
+          navigate("/feedhome", { replace: true });
         }
       } catch (err) {
         if (err.response && err.response.data) {
@@ -84,16 +87,16 @@ function UserLogin() {
     return errors;
   };
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-      console.log("usertoken",token)
-    if (!token) {
-      navigate("/"); 
-    } 
-    else {
-      navigate("/feedhome")
-    }
-  }, [navigate]);
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //     // console.log("usertoken from extra useeffect",token)
+  //   if (!token) {
+  //     navigate("/"); 
+  //   } 
+  //   else {
+  //     navigate("/feedhome")
+  //   }
+  // }, [navigate]);
 
 
   //google

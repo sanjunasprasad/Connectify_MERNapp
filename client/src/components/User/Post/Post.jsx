@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector,useDispatch } from 'react-redux';
 import { axiosUserInstance } from "../../../services/axios/axios";
-import { toggleLike } from "../../../services/redux/slices/postSlice"
+// import { toggleLike } from "../../../services/redux/slices/postSlice"
 import moment from 'moment';
 import Modal from "react-modal";
 import "./post.css"
@@ -16,11 +16,10 @@ import Saveicon from "../../../Icons/Save.png"
 
 export default function Post({ postlist }) {
 
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const loggeduser = useSelector(state => state.user.user);
-  const posts = useSelector(state => state.post.posts) || [];
-  const state = useSelector(state => state); 
-  // console.log("Current Redux Store State:", state.post.posts);
+  // const state = useSelector(state => state); 
+  // console.log("Current Redux Store State from postside:", state);
 
 
   const getRelativeTime = (createdAt) => {
@@ -45,16 +44,16 @@ export default function Post({ postlist }) {
   //like 
   const [Like, setLike] = useState(unlikeicon);
     const [likesCount, setLikesCount] = useState(postlist.likes.length);
-    useEffect(() => {
-      // console.log("Item likes:", item.likes);
-      // console.log("User IDddd:", user._id);
-    // Check if the current user has liked the post
-    setLike(postlist.likes.some(like => like.user === loggeduser._id));
-    console.log('Like state:', postlist.likes.some(like => like.user === loggeduser._id));
-    // console.log(`Post ID: ${item._id}, Like state: ${item.likes.some(like => like.user === user._id)}`);
-    // console.log('Component re-rendered');
+  //   useEffect(() => {
+  //     // console.log("Item likes:", item.likes);
+  //     // console.log("User IDddd:", user._id);
+  //   // Check if the current user has liked the post
+  //   setLike(postlist.likes.some(like => like.user === loggeduser._id));
+  //   console.log('Like state:', postlist.likes.some(like => like.user === loggeduser._id));
+  //   // console.log(`Post ID: ${item._id}, Like state: ${item.likes.some(like => like.user === user._id)}`);
+  //   // console.log('Component re-rendered');
 
-  },[postlist.likes,loggeduser._id]);
+  // },[]);
   const handleLike = async () => {
     try {
       // console.log("postid:",item._id);
@@ -121,7 +120,7 @@ export default function Post({ postlist }) {
       <div style={{ display: "flex", alignItems: "center", justifyContent: 'space-between' }}>  {/* to style icons like,comment,save,share  */}
         <div style={{ display: 'flex', alignItems: "center", justifyContent: "space-between" }}>
 
-          {/* Likes */}
+          {/* Likes 
           <div  onClick={Like ? handleUnlike : handleLike}>
             <img src={Like ? unlikeicon: Likeicon} className='logoforpost' alt="" />
           </div>

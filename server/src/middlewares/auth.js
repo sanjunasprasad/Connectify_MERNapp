@@ -3,7 +3,7 @@ import Jwt from 'jsonwebtoken'
 export const generateUserToken = async(existingUser) => {
     try {
         const {_id } = existingUser;
-        // console.log("id on auth",_id)
+        console.log("id on auth",_id)
         const payload = {
             userId: _id,
         }
@@ -19,6 +19,7 @@ export const generateUserToken = async(existingUser) => {
 export const decodeToken = async(req, res, next) => {
     try {
         const token = req.header('Authorization').replace('Bearer ', '');
+        console.log("token from frontend via /homepage ",token)
         Jwt.verify(token, process.env.JWT_KEY, (err, decodedToken) => {
             if (err) {
                 return res.status(401).json({ message: 'Unauthorized' });

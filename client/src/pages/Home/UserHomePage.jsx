@@ -1,33 +1,32 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import "./Home.css";
 import  { axiosUserInstance }   from '../../services/axios/axios';
-import { setUser, setToken } from "../../services/redux/slices/userSlice";
+import { setUser } from "../../services/redux/slices/userSlice";
 import Sidebar from "../../components/User/Sidebar/Sidebar";
 import Rightbar from "../../components/User/Rightbar/Rightbar";
 
 function UserHomePage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const loggeduser = useSelector(state => state.user.user);
-  const token = useSelector(state => state.user.token);
+  const token1 = useSelector(state => state.user.token);
+    console.log("Token from Redux store userhome:", token1);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
-    // console.log("token fom local:",token)
-    if (!token) {
+    console.log("token fom localstorage in userhome after login:",token)
+    if (!token1) {
       navigate("/");
     } else {
-      dispatch(setToken(token));
        axiosUserInstance 
         .get("/userProfile", {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token1}`,
           },
         })
         .then((response) => {
-         
-          // console.log("response from back to userprofilehomepage:",response)
+          console.log("response from fetchprofile in homepage:",response)
           dispatch(setUser(response.data));
         })
         .catch((err) => {
@@ -36,14 +35,11 @@ function UserHomePage() {
     }
   },[]);
 
-  // console.log("User from Redux store:", loggeduser);
-  // console.log("Token from Redux store:", token);
-
   return (
     <div>
       <div className="homesubcontainer">
         <div className="homesidebar">
-          <Sidebar loggeduser={loggeduser}/>
+          <Sidebar />
         </div>
         <div className="homerightbar">
           <Rightbar />
