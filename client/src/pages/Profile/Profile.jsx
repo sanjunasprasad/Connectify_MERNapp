@@ -1,45 +1,25 @@
-import React, { useEffect, useState } from "react";
-import {useNavigate } from "react-router-dom";
+import React, {  useState,useEffect } from "react";
+import { useSelector ,useDispatch} from 'react-redux';
+import { setUser } from "../../services/redux/slices/userSlice";
 import { axiosUserInstance }  from "../../services/axios/axios";
 import "./profile.css";
 import ProductTwo from "../../components/User/testpost/ProductTwo";
 import Sidebar from "../../components/User/Sidebar/Sidebar";
 import SettingIcon from "../../Icons/Settingslogo.png";
+import Swal from "sweetalert2"
+import 'sweetalert2/dist/sweetalert2.min.css'
+
 
 export default function Profile() {
-// to display image dynamically
-  const [loggedUser,setloggedUser] = useState("");
-  const [userId, setUserId] = useState("");
-  const [user, setUser] = useState("");
-  const [imageURL, setImageURL] = useState("")
-  const [formData, setFormData] = useState({})
-  const navigate = useNavigate();
+
+  const nameRegex = /^[A-Za-z]+$/;
+  const dispatch = useDispatch();
+  const loggedUser = useSelector(state => state.user.user);
+  // console.log("userdata from Redux store profile:", loggedUser);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/");
-    } else {
-      axiosUserInstance 
-        .get("/userProfile", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((response) => {
-          setUser(response.data.firstName);
-          setFormData(response.data);
-          console.log("response from back to userprofilehomepage:",response.data);
-          setloggedUser(response.data)
-          setUserId(response.data._id)
-          setImageURL(response.data.image)
-          // console.log("User IDddd:",response.data._id );
-        })
-        .catch((err) => {
-          console.log(err.response);
-        });
-    }
-  }, []);
+    setFormData(loggedUser);
+  }, [loggedUser]);
 
   const [showModal, setShowModal] = useState(false);
   const handleShowModal = () => {
@@ -49,19 +29,52 @@ export default function Profile() {
     setShowModal(false);
   };
 
+  const [formData, setFormData] = useState({})
   const [image, setImage] = useState(null);
+  const [errors, setErrors] = useState({});
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevFormData) => ({
         ...prevFormData,
         [name]: value,
     }));
+    setErrors({ ...errors, [name]: "" }); 
 };
+
 const handleImageChange = (e) => {
     const image = e.target.files[0];
     setImage(image);
     setFormData({ ...formData, image: image });
 }
+
+
+const validateForm = (data) => {
+  const errors = {};
+  if (!data.firstName) {
+    errors.firstName = "First Name cannot be empty";
+  } else if (!nameRegex.test(data.firstName)) {
+    errors.firstName = "First Name must only contain alphabets";
+  }
+
+  if (!data.email) {
+    errors.email = "Please provide an email";
+  }
+
+  if (!data.bio) {
+    errors.bio = "bio";
+  } else if (data.bio.length < 8) {
+    errors.bio = "Bio must have min 8 max 50 characters";
+  }
+
+  if (!data.location) {
+    errors.location = "Please provide a valid location";
+  }
+
+  if (!data.file) {
+    errors.file = "Please provide a image of type jpg/jpeg";
+  }
+  return errors;
+};
 
 //after edit submit post
 const handleSubmit = async (e) => {
@@ -81,7 +94,7 @@ const handleSubmit = async (e) => {
     formData.append('location', location);
     formData.append('file', file); // Append the file directly, without changing the field name
 
-    console.log("User ID for test:", userId);
+    console.log("User ID for test:", loggedUser._id);
     console.log("Form data details:");
     console.log("Bio:", bio);
     console.log("First Name:", firstName);
@@ -91,16 +104,26 @@ const handleSubmit = async (e) => {
     console.log("File Type:", file.type);
     console.log("File Size:", file.size);
 
-    const response = await axiosUserInstance.put(`/updateUser/${userId}`, formData, {
+ 
+    const response = await axiosUserInstance.put(`/updateUser/${loggedUser._id}`, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data' // Set content type to multipart/form-data
+        'Content-Type': 'multipart/form-data' 
       }
     });
 
     if (response.status === 200) {
+      Swal.fire({
+        position: "top-end",
+        icon: "success",
+        title: "Profile updated successfully",
+        showConfirmButton: false,
+        timer: 1500
+      });
       console.log("User profile updated successfully:", response.data);
+      dispatch(setUser(response.data));
     }
-  } catch (err) {
+  
+}catch (err) {
     console.log(err);
   }
 }
@@ -118,7 +141,7 @@ const handleSubmit = async (e) => {
             <div className="subProfilerightbar">
               <div>
                 <img
-                  src={imageURL}
+                  src={loggedUser.image}
                   style={{
                     width: "150px",
                     height: "150px",
@@ -131,23 +154,11 @@ const handleSubmit = async (e) => {
               </div>
               <div>
                 <div style={{ display: "flex", alignItems: "center" }}>
-                  <p style={{ marginLeft: 100, fontWeight: 1000 }}>{user}</p>
-                  <button
-                    style={{
-                      paddingLeft: 10,
-                      marginLeft: 20,
-                      paddingRight: 20,
-                      paddingTop: 8,
-                      paddingBottom: 8,
-                      borderRadius: 10,
-                      border: "none",
-                      cursor: "pointer",
-                    }}
-                    onClick={handleShowModal}
-                  >
-                    Edit profile
-                  </button>
-                  {showModal && (
+                  <p style={{ marginLeft: 100, fontWeight: 1000 }}>{loggedUser.firstName}</p>
+                  <button style={{width:108,height:30,paddingLeft: 10,marginLeft: 20,paddingRight: 20,paddingTop: 4,paddingBottom: 8,borderRadius: 10,border: "none",cursor: "pointer",backgroundColor: "rgb(236, 233 ,233)",color:"black"}}>Following</button>
+                  <button style={{width:108,height:30,paddingLeft: 10,marginLeft: 20,paddingRight: 20,paddingTop: 4,paddingBottom: 8,borderRadius: 10,border: "none",cursor: "pointer",backgroundColor: "rgb(236, 233 ,233)",color:"black"}}>Message</button>
+                  <img src={SettingIcon} style={{ marginLeft: 20, cursor: "pointer" }} alt="" onClick={handleShowModal}/>
+                 {showModal && (
                     <div className="modal-overlay">
                       <div className="modal">
                         <span className="close" onClick={handleCloseModal}>
@@ -171,6 +182,9 @@ const handleSubmit = async (e) => {
                               name="firstName"
                               onChange={handleInputChange}
                             />
+                            {errors.firstName && (
+              <p className="error-message text-red-500">{errors.firstName}</p>
+            )}
                           </div>
                           <div className="inputfields">
                             <label htmlFor="email" style={{ color: "white" }}>
@@ -184,6 +198,9 @@ const handleSubmit = async (e) => {
                               onChange={handleInputChange}
                               
                             />
+                            {errors.email && (
+              <p className="error-message text-red-500">{errors.email}</p>
+            )}
                           </div>
                           <div className="inputfields">
                             <label htmlFor="bio" style={{ color: "white" }}>
@@ -196,6 +213,9 @@ const handleSubmit = async (e) => {
                               name="bio"
                               onChange={handleInputChange}
                             ></textarea>
+                            {errors.bio && (
+              <p className="error-message text-red-500">{errors.bio}</p>
+            )}
                           </div>
                           <div className="inputfields">
                             <label
@@ -211,6 +231,9 @@ const handleSubmit = async (e) => {
                             name="location"
                             onChange={handleInputChange}
                             />
+                            {errors.location && (
+              <p className="error-message text-red-500">{errors.location}</p>
+            )}
                           </div>
                           <div className="inputfields">
                             <label
@@ -230,31 +253,27 @@ const handleSubmit = async (e) => {
                           </div>
                           <div  >
                           Selected File: {formData?.image ? <img src={`http://localhost:5000/${formData?.image}`} alt={formData?.image} style={{ color: "white" }} /> : 'No file selected'}
+                          {errors.file && (
+              <p className="error-message text-red-500">{errors.file}</p>
+            )}
                           </div>
-                          
-
                           <button type="submit">Update</button>
                         </form>
                       </div>
                     </div>
                   )}
                 
-
-                  <img
-                    src={SettingIcon}
-                    style={{ marginLeft: 20, cursor: "pointer" }}
-                    alt=""
-                  />
+                 
                 </div>
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <p style={{ marginLeft: 100 }}>1 Post</p>
+                <div style={{ display: "flex", alignItems: "center" ,paddingTop:10}}>
+                  <p style={{ marginLeft: 100 ,paddingTop:6}}>1 Post</p>
                   <p style={{ marginLeft: 40 }}>200k Followers</p>
-                  <p style={{ marginLeft: 40 }}>10k Following</p>
+                  <p style={{ marginLeft: 40 }}>100k Following</p>
                 </div>
                 <div style={{ alignItems: "center" }}>
-                <p style={{ marginLeft: 100, marginTop: 8 }}>{formData.email}</p>
-                  <p style={{ marginLeft: 100, marginTop: 8 }}>{formData.bio}</p>
-                  <p style={{ marginLeft: 100, marginTop: 8 }}>{formData.location}</p>
+                <p style={{ marginLeft: 100, marginTop: 8 }}>{loggedUser.email}</p>
+                  <p style={{ marginLeft: 100, marginTop: 8 }}>{loggedUser.bio}</p>
+                  <p style={{ marginLeft: 100, marginTop: 8 }}>{loggedUser.location}</p>
                 
                 </div>
               </div>

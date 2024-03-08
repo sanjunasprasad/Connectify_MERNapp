@@ -118,7 +118,7 @@ export const updateUser = async (req, res) => {
 export const fetchProfile = async (req, res) => {
   try{
     const userId = req.token.userId
-    console.log("user id from fetch profile",userId)
+    // console.log("user id from fetch profile",userId)
     const response = await findOneUser(userId);
     // console.log(" userdata from loadprofile route is:",response)
     return res.status(200).json(response);

@@ -12,7 +12,7 @@ function ProductTwo({ loggedUser }) {
 
   useEffect(() => {
      axiosUserInstance
-      .get('/loadPost')
+      .get('/post/loadPost')
       .then((response) => {
         // console.log('check post coming:', response.data);
         setShowPosts(response.data);

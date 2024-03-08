@@ -3,71 +3,47 @@ import User from  '../../entities/userModel.js'
 import cloudinary from "../../config/cloudinary.js";
 import path from "path";
 
-//create post
+
+
+
 export const createPost = async (req, res) => {
-  try {
-    const { caption, user } = req.body;
-    const userData = JSON.parse(user);
-    const file = req.file;
-    // console.log("User Data:", userData);
-    // console.log("caption:", caption);
-    // console.log("file", file);
-    const folder = "posts_folder";
-    const cloudinaryResponse = await cloudinary.uploader.upload(file.path, {
-      folder: folder,
-    });
-    const newPost = new Post({
-      caption,
-      file: cloudinaryResponse.secure_url,
-      user: userData._id,
-    });
-    await newPost.save();
-     return res.status(201).send("Post created successfully");
-  } catch (error) {
-    console.log(10000);
-    console.error("Error creating post:", error);
-   return  res.status(500).json({ message: "Internal server error" });
-  }
+    try {
+        console.log(11111);
+        const { caption ,user} = req.body;
+        const userData = JSON.parse(user);
+        const file = req.file;
+        console.log("User Data:", userData);
+        console.log("caption:", caption);
+        console.log("file", file);
+        console.log("File mimetype:", file.mimetype);
+        const folder = 'posts_folder';
+        let cloudinaryResponse;
+        if (file.mimetype.startsWith('video/mp4')) {
+            cloudinaryResponse = await cloudinary.uploader.upload(file.path, {
+                folder: folder,
+                resource_type: 'video'
+            });
+            console.log("path video",cloudinaryResponse)
+        } else {
+
+            cloudinaryResponse = await cloudinary.uploader.upload(file.path, {
+                folder: folder
+            });
+            console.log("path image",cloudinaryResponse)
+        }
+        const newPost = new Post({
+            caption,
+            file: cloudinaryResponse.secure_url,
+            user: userData._id
+        });
+        const savedPost = await newPost.save();
+       return res.status(201).json(savedPost);
+    } catch (error) {
+        console.log(10000);
+        console.error('Error creating post:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
 };
-
-// import Post from '../../entities/postModel.js';
-// import cloudinary from "../../config/cloudinary.js";
-// import path from 'path';
-// export const createPost = async (req, res) => {
-//     try {
-//         console.log(11111);
-//         const { caption } = req.body;
-//         const file = req.file;
-//         console.log("caption:", caption);
-//         console.log("file", file);
-//         console.log("File mimetype:", file.mimetype);
-//         const folder = 'posts_folder';
-//         let cloudinaryResponse;
-//         if (file.mimetype.startsWith('video')) {
-//             cloudinaryResponse = await cloudinary.uploader.upload(file.path, {
-//                 folder: folder,
-//                 resource_type: 'video'
-//             });
-//             console.log("path video",cloudinaryResponse)
-//         } else {
-
-//             cloudinaryResponse = await cloudinary.uploader.upload(file.path, {
-//                 folder: folder
-//             });
-//             console.log("path image",cloudinaryResponse)
-//         }
-//         const newPost = new Post({
-//             caption,
-//             file: cloudinaryResponse.secure_url
-//         });
-//         await newPost.save();
-//         res.status(201).send('Post created successfully');
-//     } catch (error) {
-//         console.log(10000);
-//         console.error('Error creating post:', error);
-//         res.status(500).json({ message: 'Internal server error' });
-//     }
-// };
 
 //loadpost
 export const loadPost = async (req, res) => {
@@ -191,22 +167,58 @@ export const commentPost = async(req,res) =>{
 
 
 
-//commented name display
-export const getCommentedUser = async(req,res) =>{
+// commented name display
+// export const getCommentedUser = async(req,res) =>{
+//   try {
+//     console.log("+++++++++++++")
+//     const  postId  = req.params.postId;
+//     console.log("postid",postId)
+//     const { commentsuserId } = req.query;
+//     console.log("userid",commentsuserId)
+//     const { commentId } = req.query
+//     console.log("comment id:",commentId)
+//     const users = await User.find({ _id: { $in: commentsuserId } }, 'firstName image'); 
+//     console.log("users getting",users)
+//     const userDetails = users.map(user => ({ firstName: user.firstName, userImage: user.image })); 
+//     res.json({ userDetails });
+
+//   } catch (error) {
+//     console.error('Error fetching usernames:', error);
+//     res.status(500).json({ error: 'Internal server error' });
+//   }
+// }
+
+
+export const getCommentedUser = async (req, res) => {
   try {
-    const  postId  = req.params.postId;
-    // console.log("postid",postId)
-    const { commentsuserId } = req.query;
-    // console.log("userid",commentsuserId)
-    const users = await User.find({ _id: { $in: commentsuserId } }, 'firstName'); 
-    const usernames = users.map(user => user.firstName); 
-    // console.log("usernames",usernames)
-    res.json({ usernames });
+    const postId = req.params.postId;
+    // console.log("postId", postId);
+    const commentsuserId = Array.isArray(req.query.commentsuserId) ? req.query.commentsuserId : [req.query.commentsuserId];
+    // console.log("commentsuserId", commentsuserId);
+    const commentIds = Array.isArray(req.query.commentId) ? req.query.commentId : [req.query.commentId];
+    // console.log("commentIds:", commentIds);
+
+    let userDetails = [];
+    for (let i = 0; i < commentIds.length; i++) {
+      const users = await User.find({ _id: commentsuserId[i] }, 'firstName image');
+      // console.log("users getting", users);
+      if (users.length > 0) {
+        const user = users[0]; // Assuming there is only one user for each comment
+        userDetails.push({ firstName: user.firstName, userImage: user.image });
+      } else {
+        userDetails.push({ firstName: "Unknown", userImage: "" }); // Handle if user not found
+      }
+    }
+    res.json({ userDetails });
+
   } catch (error) {
     console.error('Error fetching usernames:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 }
+
+
+
 
 
 export const deletePost = async(req,res) =>{

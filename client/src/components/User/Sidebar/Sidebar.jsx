@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch } from 'react-redux';
+import { useDispatch ,useSelector} from 'react-redux';
 import { axiosUserInstance }  from "../../../services/axios/axios";
 import {clearUser} from "../../../services/redux/slices/userSlice"
+import { addPost } from "../../../services/redux/slices/postSlice";
 import Modal from "react-modal";
-import moment from 'moment';
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 import "./sidebar.css";
@@ -21,14 +21,11 @@ import Iconsfromcreatemodal from "../../../Icons/Icon to represent media such as
 import InstagramIcon from "../../../Icons/Instagramlogo.png"; //instagram logotext
 import { Profiledata } from "../data";
 
-function Sidebar({ user }) {
+function Sidebar() {
 
-  // const dispatch = useDispatch();
-  const getRelativeTime = (createdAt) => {
-    return moment(createdAt).fromNow();
-  };
-
-
+  
+  const loggedUser = useSelector(state => state.user.user);
+ 
   //for logout
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -74,37 +71,45 @@ function Sidebar({ user }) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+
   // Create post
   const handleCreatePost = async () => {
     try {
-      let response;
       const formData = new FormData();
       const caption = document.querySelector('textarea[name="caption"]').value;
       formData.append("caption", caption);
       formData.append("file", file);
-      formData.append("user", JSON.stringify(user));
+      formData.append("user", JSON.stringify(loggedUser));
       console.log("Post Data:", {
         caption: caption,
         file: file.name,
         fileSize: file.size,
         fileType: file.type,
-        userData: user,
+        userData: loggedUser,
       });
       console.log("my type:", typeof formData);
       axiosUserInstance 
-        .post("/createPost", formData, {
+        .post("/post/createPost", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         })
         .then((response) => {
-          console.log(response);
-          // dispatch(addNewPost(formData));
+          console.log("created succesffully",response.data);
+          dispatch(addPost(response.data));
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Post created successfully",
+            showConfirmButton: false,
+            timer: 1500
+          });
+           
+          
         })
         .catch((error) => {
           console.error(error);
         });
-      console.log("Post posted successfully:", response.data);
       setFormData({ caption: "", file: "" });
       setmodalIsOpen(false);
     } catch (error) {
@@ -198,7 +203,7 @@ function Sidebar({ user }) {
                 <div style={{ marginLeft: 20, width: "40%" }}>
                   <div style={{ display: "flex", alignItems: "center" }}>
                     <img
-                      // src={user.image}
+                      src={loggedUser.image}
                       style={{
                         width: "30px",
                         height: "30px",
@@ -210,7 +215,7 @@ function Sidebar({ user }) {
                     <p
                       style={{ marginLeft: 10, fontWeight: 600, fontSize: 16 }}
                     >
-                      {user.firstName}
+                      {loggedUser.firstName}
                     </p>
                   </div>
                   <textarea

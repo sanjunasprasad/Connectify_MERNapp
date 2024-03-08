@@ -11,11 +11,9 @@ function Rightbar() {
     const loggeduser = useSelector(state => state.user.user);
     // console.log("user data from store in rightbar switch",loggeduser)
     const posts = useSelector(state => state.post.posts) || [];
-    // const state = useSelector(state => state); 
-    // console.log("Current Redux Store State:", state);
 
     useEffect(() => {
-     axiosUserInstance.get('/loadPost')
+     axiosUserInstance.get('/post/loadPost')
       .then(response => {
         // console.log("POST RESPONSE##### ",response.data[2])
         dispatch(setPosts(response.data));

@@ -39,10 +39,10 @@ function UserLogin() {
     if (Object.keys(validationErrors).length === 0) {
       try {
         const response = await  axiosInstance.post("/userLogin", formdata);
-        console.log("Responseeee after login:", response);
+        // console.log("Responseeee after login:", response);
         if (response.status === 200) {
           localStorage.setItem("token", response.data);
-          console.log("token  setted to localstorage  after login via loginpage:",response.data)
+          // console.log("token  setted to localstorage  after login via loginpage:",response.data)
           dispatch(setToken(response.data));
           const Toast = Swal.mixin({
             toast: true,
@@ -59,7 +59,7 @@ function UserLogin() {
             icon: "success",
             title: "Signed in successfully"
           });
-          navigate("/feedhome", { replace: true });
+          navigate("/feedhome");
         }
       } catch (err) {
         if (err.response && err.response.data) {
@@ -87,16 +87,16 @@ function UserLogin() {
     return errors;
   };
 
-  // useEffect(() => {
-  //   const token = localStorage.getItem("token");
-  //     // console.log("usertoken from extra useeffect",token)
-  //   if (!token) {
-  //     navigate("/"); 
-  //   } 
-  //   else {
-  //     navigate("/feedhome")
-  //   }
-  // }, [navigate]);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+      // console.log("usertoken from extra useeffect",token)
+    if (!token) {
+      navigate("/"); 
+    } 
+    else {
+      navigate("/feedhome")
+    }
+  }, [navigate]);
 
 
   //google

@@ -11,11 +11,11 @@ function UserHomePage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const token1 = useSelector(state => state.user.token);
-    console.log("Token from Redux store userhome:", token1);
+    // console.log("Token from Redux store userhome:", token1);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    console.log("token fom localstorage in userhome after login:",token)
+    // console.log("token fom localstorage in userhome after login:",token)
     if (!token1) {
       navigate("/");
     } else {
@@ -26,7 +26,7 @@ function UserHomePage() {
           },
         })
         .then((response) => {
-          console.log("response from fetchprofile in homepage:",response)
+          // console.log("response from fetchprofile in homepage:",response)
           dispatch(setUser(response.data));
         })
         .catch((err) => {

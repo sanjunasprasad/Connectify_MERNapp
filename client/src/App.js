@@ -8,6 +8,7 @@ import UserHomePage from "./pages/Home/UserHomePage";
 import Profile from "./pages/Profile/Profile";
 import Explore from "./pages/Explore/Explore"
 import AdminPage from "./pages/AdminPage";
+import Chat from "./pages/Chat/Chat"
 import UserLogin from "./components/User/UserLogin";
 import UserSignup from "./components/User/UserSignup";
 import VerifyOtp from './components/User/VerifyOtp';
@@ -40,6 +41,8 @@ function App() {
             <Route element={<AdminPage />} path="/dashboard" /> 
             <Route element={<UserManage />} path="/users" /> 
 
+
+            <Route element={<Chat />} path="/chat" /> 
        </Routes>
       
     </>
