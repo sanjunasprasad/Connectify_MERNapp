@@ -14,6 +14,7 @@ import UserSignup from "./components/User/UserSignup";
 import VerifyOtp from './components/User/VerifyOtp';
 import AdminLogin from './components/Admin/AdminLogin'
 import UserManage from './components/Admin/UserManage'
+import FriendProfile from './components/User/Friend/FriendProfile';
 
 
 function App() {
@@ -34,7 +35,9 @@ function App() {
             <Route element={<VerifyOtp />} path="/otp" />
             <Route element={<UserHomePage />} path="/feedhome" />
             <Route element={<Profile />} path="/username" />
+            <Route element={<FriendProfile/>} path="/username/:userid" />
             <Route element={<Explore />} path="/Explore" />
+     
 
 
             <Route element={<AdminLogin />} path="/admin" />
@@ -42,6 +45,7 @@ function App() {
             <Route element={<UserManage />} path="/users" /> 
 
 
+              
             <Route element={<Chat />} path="/chat" /> 
        </Routes>
       

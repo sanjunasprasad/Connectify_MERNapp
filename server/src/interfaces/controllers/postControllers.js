@@ -158,35 +158,19 @@ export const commentPost = async(req,res) =>{
     };
     post.comments.push(newComment);
     await post.save();
-    res.status(201).json({ message: 'Comment added successfully' });
+    // res.status(201).json({ message: 'Comment added successfully' });
+    res.status(200).json({
+      postId: postId,
+      userId: userId,
+      commentId: newComment._id,
+      comment: comment,
+      message: 'Comment added successfully'
+    });
   } catch (error) {
     console.error('Error adding comment:', error);
     res.status(500).json({ message: 'Internal server error' })
   }
 }
-
-
-
-// commented name display
-// export const getCommentedUser = async(req,res) =>{
-//   try {
-//     console.log("+++++++++++++")
-//     const  postId  = req.params.postId;
-//     console.log("postid",postId)
-//     const { commentsuserId } = req.query;
-//     console.log("userid",commentsuserId)
-//     const { commentId } = req.query
-//     console.log("comment id:",commentId)
-//     const users = await User.find({ _id: { $in: commentsuserId } }, 'firstName image'); 
-//     console.log("users getting",users)
-//     const userDetails = users.map(user => ({ firstName: user.firstName, userImage: user.image })); 
-//     res.json({ userDetails });
-
-//   } catch (error) {
-//     console.error('Error fetching usernames:', error);
-//     res.status(500).json({ error: 'Internal server error' });
-//   }
-// }
 
 
 export const getCommentedUser = async (req, res) => {
@@ -204,9 +188,9 @@ export const getCommentedUser = async (req, res) => {
       // console.log("users getting", users);
       if (users.length > 0) {
         const user = users[0]; // Assuming there is only one user for each comment
-        userDetails.push({ firstName: user.firstName, userImage: user.image });
+        userDetails.push({ firstName: user.firstName, userImage: user.image ,userId:user._id});
       } else {
-        userDetails.push({ firstName: "Unknown", userImage: "" }); // Handle if user not found
+        userDetails.push({ firstName: "Unknown", userImage: "" }); 
       }
     }
     res.json({ userDetails });

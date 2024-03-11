@@ -3,9 +3,6 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   posts: [],
-  comments: [],
-  usernames: [],
-  userpic: [],
 };
 const postSlice = createSlice({
   name: 'post',
@@ -18,22 +15,25 @@ const postSlice = createSlice({
       state.posts.push(action.payload);
     },
     toggleLike: (state, action) => {
-      const { postId, isLiked } = action.payload;
-      const post = state.posts.find(post => post._id === postId);
-      if (post) {
-        post.isLiked = isLiked;
-        post.likesCount += isLiked ? 1 : -1; // Increment or decrement likes count
+      const { postId, userId, comment } = action.payload;
+      const postIndex = state.posts.findIndex(post => post._id === postId);
+      if (postIndex !== -1) {
+        state.posts[postIndex].comments.push({ user: userId, text: comment });
       }
     },
-    updateCommentsAndUsers: (state, action) => {
-      const { comments, usernames, userpic } = action.payload;
-      state.comments = comments;
-      state.usernames = usernames;
-      state.userpic = userpic;
+
+    addComment: (state, action) => {
+      const { postId, userId, comment } = action.payload;
+      const post = state.posts.find(post => post._id === postId);
+      if (post) {
+        post.comments.push({ userId, comment });
+      }
     },
+   
+    
   },
 });
 
-export const { setPosts , addPost ,toggleLike,updateCommentsAndUsers } = postSlice.actions; // action created and reducer fn
+export const { setPosts , addPost ,toggleLike, addComment} = postSlice.actions; // action created and reducer fn
 export default postSlice.reducer;   //reducer fn generated used to update the state of the posts slice in the Redux store.
 

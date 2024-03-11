@@ -2,7 +2,7 @@ import {Router} from 'express'
 const userRoute = Router();
 import { upload } from '../../middlewares/multer.js';
 import { decodeToken } from '../../middlewares/auth.js';
-import {userRegister,fetchProfile,userLogin,otpVerify,resendotpVerify,updateUser } from '../controllers/userControllers.js';
+import { userRegister,fetchProfile,userLogin,otpVerify,resendotpVerify,updateUser} from '../controllers/userControllers.js';
 
 
 

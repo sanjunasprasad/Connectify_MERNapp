@@ -6,6 +6,7 @@ import { generateOTP, sendOTPByEmail } from '../../services/otpService.js';
 import cloudinary from "../../config/cloudinary.js";
 import path from "path";
 
+
 let savedOTP,newOTP,userMail
 export const userRegister = async (req, res) => {
     try {
@@ -126,4 +127,5 @@ export const fetchProfile = async (req, res) => {
     console.log(err);
   }
 }
+
 

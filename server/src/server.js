@@ -4,6 +4,7 @@ import cors from 'cors'
 import userRoute from './interfaces/routes/userRoutes.js';
 import adminRoute from './interfaces/routes/adminRoutes.js';
 import postRoute from './interfaces/routes/postRoutes.js';
+import friendRoute from './interfaces/routes/friendRoutes.js'
 import {configDotenv} from "dotenv"
 
 
@@ -38,6 +39,7 @@ connectDB();
 app.use('/', userRoute);
 app.use('/admin', adminRoute);
 app.use('/post', postRoute);
+app.use('/friend',friendRoute)
 
 
 

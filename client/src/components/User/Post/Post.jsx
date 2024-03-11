@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector,useDispatch } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { axiosUserInstance } from "../../../services/axios/axios";
-// import { toggleLike } from "../../../services/redux/slices/postSlice"
+import { addComment } from "../../../services/redux/slices/postSlice"
 import moment from 'moment';
 import Modal from "react-modal";
+import Swal from "sweetalert2";
+import "sweetalert2/dist/sweetalert2.min.css";
 import "./post.css"
 import Moreoptions from "../../../Icons/Moreoptions.png"
 import  greyicon from "../../../Icons/Notifications.png" 
@@ -16,13 +19,10 @@ import Saveicon from "../../../Icons/Save.png"
 
 export default function Post({ postlist }) {
 
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
+  const { user} = postlist; 
   const loggeduser = useSelector(state => state.user.user);
-
-  // console.log("postlist length is",postlist.length)
   
-  
-
 
   const getRelativeTime = (createdAt) => {
     return moment(createdAt).fromNow();
@@ -60,9 +60,17 @@ export default function Post({ postlist }) {
         userId: loggeduser._id,
         comment: comment 
       });
-      console.log('Comment submitted successfully:', response.data);
+      console.log('response for comment posting:', response.data);
       setComment('');
       setmodalIsOpen(false);
+      dispatch(addComment(response.data));
+      Swal.fire({
+        position: "top-end",
+        icon: "success",
+        title: "Comment added successfully",
+        showConfirmButton: false,
+        timer: 1500
+      });
     } catch (error) {
       console.error('Error submitting comment:', error);
     }
@@ -81,28 +89,25 @@ useEffect(() => {
   }
   // console.log("comment id",commentId)
   // console.log(("commented people....",commentsuserId))
-
- 
   axiosUserInstance.get(`/post/getCommentUser/${postlist._id}`, {
     params: { commentsuserId: commentsuserId ,commentId: commentId}
   })
   .then(response => {
-    console.log("response in commnenttttt:", response.data.userDetails);
+    // console.log("response in commnenttttt:", response.data.userDetails);
     const userpic = response.data.userDetails.map(user => user.userImage);
     const usernames = response.data.userDetails.map(user => user.firstName);
     setCommentUser(usernames);
     SetcommentUserPic(userpic)
-    
   })
   .catch(error => {
     console.error('Error fetching usernames:', error);
   });
 }, []);
 
-useEffect(() => {
-  console.log("state user name", commentuser);
-  console.log("state user pic", commentUserPic);
-}, [commentuser, commentUserPic]);
+// useEffect(() => {
+//   console.log("state user name", commentuser);
+//   console.log("state user pic", commentUserPic);
+// }, [commentuser, commentUserPic]);
 
  
 
@@ -113,7 +118,9 @@ useEffect(() => {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: "space-between", marginBottom: 10 }}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <img src={postUserpic} style={{ width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover", }} alt="" /> {/* profilepic on post top*/}
-          <p style={{ marginLeft: 10 }}>{postUser}</p> {/* username  on post top*/}
+          <p style={{ marginLeft: 10 }}>  {/* username  on post top*/}
+            { loggeduser && loggeduser._id === user ? (<Link to={`/username`} >{postUser}</Link>) : (<Link to={`/username/${postlist.user}`} >{postUser}</Link> )}
+           </p>
         </div>
         <div >
           <img src={Moreoptions} alt="" />
@@ -161,8 +168,8 @@ useEffect(() => {
                                   </div>
                                 </div>
                               ))}
-                            </div>
-                  </div>
+                        </div>
+                    </div>
 
 
                     <div style={{display:'flex' , justifyContent:"space-between" , marginLeft:30 , alignContent:'center'}}>
@@ -205,7 +212,7 @@ useEffect(() => {
 
      <p style={{display:"flex" , marginTop:"0px"}}> likes</p>    {/* likes count  */}
       <p style={{ textAlign: 'start', }}>{postlist.caption}</p> {/* caption */}
-      <div style={{ cursor: "pointer" }}>
+      <div style={{ cursor: "pointer" }}onClick={handleShowmodal}>
         <p style={{ textAlign: "start", color: "#A8A8A8" }}>View all comments</p>
       </div>
       <p style={{ textAlign: "start", fontSize: "11px", color: "#A8A8A8" }}>{getRelativeTime(postlist.createdAt)}</p>

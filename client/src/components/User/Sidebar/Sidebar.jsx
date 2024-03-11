@@ -388,16 +388,14 @@ function Sidebar() {
             }}
           >
             <img
-              src={
-                "https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aHVtYW58ZW58MHx8MHx8fDA%3D&w=1000&q=80"
-              }
+              // src={loggedUser.image}
               alt=""
               className="profileicon"
             />
             {ShowSearch && (
               <ui style={{ marginLeft: "20px" }}>
-                {/* <li className="listtext"> {user.firstName}</li> */}
-                <li className="listtext"> profile</li>
+                {/* <li className="listtext"> {loggedUser.firstName}</li> */}
+                <li className="listtext"> Profile</li>
               </ui>
             )}
           </div>
