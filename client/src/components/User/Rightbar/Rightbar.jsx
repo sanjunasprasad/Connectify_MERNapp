@@ -1,5 +1,6 @@
-import React,{useState, useEffect} from 'react'
+import React,{useEffect,useState} from 'react'
 import { useSelector,useDispatch } from 'react-redux';
+import { Link } from 'react-router-dom';
 import "./rightbar.css"
 import { axiosUserInstance }  from "../../../services/axios/axios";
 import { setPosts } from '../../../services/redux/slices/postSlice';
@@ -10,19 +11,51 @@ function Rightbar() {
     const dispatch = useDispatch();
     const loggeduser = useSelector(state => state.user.user);
     // console.log("user data from store in rightbar switch",loggeduser)
-    const posts = useSelector(state => state.post.posts) || [];
+    const {_id,following} = loggeduser || { _id: null, following: [] };
+    // console.log("logged id is",_id)
+    // console.log("i am following is:",following)
 
-    useEffect(() => {
-     axiosUserInstance.get('/post/loadPost')
+
+
+  //suggestion list
+  const [responseData, setResponseData] = useState([]);
+  useEffect (()=>{
+   const response = axiosUserInstance.get(`/friend/suggestionlist/${_id}`)
+    .then(response => {
+      setResponseData(response.data);
+      // console.log("POST RESPONSE##### ",response.data) 
+      
+      })
+      .catch(error => {
+        console.error('Error fetching user:', error);
+      });
+  },[_id])
+
+
+
+
+
+
+
+
+  //restricted post display
+  useEffect(() => {
+    if (_id) {
+      axiosUserInstance.get(`/post/loadPost/${_id.toString()}`, {
+        params: { following: JSON.stringify(following) }
+      })
       .then(response => {
-        // console.log("POST RESPONSE##### ",response.data[2])
+      // console.log("POST RESPONSE##### ",response.data) //full populated data
         dispatch(setPosts(response.data));
-        
       })
       .catch(error => {
         console.error('Error fetching posts:', error);
       });
-  }, []); 
+    }
+  }, [_id,following,dispatch]);
+
+  const posts = useSelector(state => state.post.posts) || []; //mapping for post component,useselector needed
+  // console.log("postlist from rightbar selector",posts)
 
   return (
     <div className='MainRigntBar'>
@@ -43,7 +76,7 @@ function Rightbar() {
             <div style={{ display: "flex", alignItems: "center" , marginLeft:20 , marginTop:30 , cursor:"pointer"}}>
              <img src={loggeduser.image} style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover" }} alt="" />
               <div style={{marginLeft:10}}>
-                <p style={{textAlign:'start'}}>{loggeduser.firstName}</p>
+                <p style={{textAlign:'start'}}><Link to={`/username`} >{loggeduser.firstName}</Link></p>
                 <p style={{marginTop:-4 , textAlign:'start' , color:"#A8A8A8"}}>{loggeduser.email}</p>
               </div>
               <div style={{marginLeft:"100px" , cursor:"pointer"}}>
@@ -55,64 +88,22 @@ function Rightbar() {
              {/* suggestion list */}
             <div style={{display:"flex"}}>
               <div>
-              <p style={{color:"#A8A8A8" , textAlign:'start',marginLeft:'45',marginTop:30 }}>Sugggested for you</p>
+              <p style={{color:"#A8A8A8" , textAlign:'start',marginLeft:'30',marginTop:50 }}>People you may know</p>
               {/* list */}
-              <div style={{display:"flex" , alignItems:"center" , marginLeft:20 , marginTop:10}}>
-              <img src="https://cdn.britannica.com/45/223045-050-A6453D5D/Telsa-CEO-Elon-Musk-2014.jpg" style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover" }} alt="" />
-                <div>
-                  <p style={{marginLeft:10 , textAlign:"start"}}>Elon</p>
-                  <p style={{marginTop:-5 , color:"#A8A8A8" , marginLeft:10}}>Follow you</p>
-                </div>
-                <div style={{marginLeft:"130px" , cursor:"pointer"}}>
-                  <p style={{color:"#0095f6"}}>Follow</p>
-                </div>
+              {responseData.map(user => (
+              <div  style={{display:"flex" , alignItems:"center" , marginLeft:20 , marginTop:10}}>
+                  <img src={user.image}style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover" }} alt="" />
+                    <div>
+                      <p style={{ marginLeft: 10 , textAlign:"start"  }}>  
+                      { loggeduser && loggeduser._id === user._id ? (<Link to={`/username`} >{user.firstName}</Link>) : (<Link to={`/username/${user._id}`} >{user.firstName}</Link> )}
+                     </p>
+                      <p style={{marginTop:-5 , color:"#A8A8A8" , marginLeft:10}}>Sugggested for you</p>
+                    </div>
+                    <div style={{marginLeft:"130px" , cursor:"pointer"}}>
+                      <p style={{color:"#0095f6"}}>Follow</p>
+                    </div>
               </div>
-
-              <div style={{display:"flex" , alignItems:"center" , marginLeft:20 , marginTop:10}}>
-              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmw7aR4yLNQc85YL1r5VptLhSr-fx-gsMgVjyLrtUTYV9AxkfF-__pzCNu50pWZ8-m2dw&usqp=CAU" style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover" }} alt="" />
-                <div>
-                  <p style={{marginLeft:10 , textAlign:"start"}}>Bil G</p>
-                  <p style={{marginTop:-5 , color:"#A8A8A8" , marginLeft:10}}>Follow you</p>
-                </div>
-                <div style={{marginLeft:"130px" , cursor:"pointer"}}>
-                  <p style={{color:"#0095f6"}}>Follow</p>
-                </div>
-              </div>
-
-              <div style={{display:"flex" , alignItems:"center" , marginLeft:20 , marginTop:10}}>
-              <img src="https://cdn.geekwire.com/wp-content/uploads/2023/05/bigstock-Jeff-Bezos-and-Lauren-Sanchez-438960968.jpeg" style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover" }} alt="" />
-                <div>
-                  <p style={{marginLeft:10 , textAlign:"start"}}>Jeff</p>
-                  <p style={{marginTop:-5 , color:"#A8A8A8" , marginLeft:10}}>Follow you</p>
-                </div>
-                <div style={{marginLeft:"130px" , cursor:"pointer"}}>
-                  <p style={{color:"#0095f6"}}>Follow</p>
-                </div>
-              </div>
-
-              <div style={{display:"flex" , alignItems:"center" , marginLeft:20 , marginTop:10}}>
-              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVVIYDt6bSnhK21l1e1eGY0FnEBcTkTYeyEgEL53gv&s" style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover" }} alt="" />
-                <div>
-                  <p style={{marginLeft:10 , textAlign:"start"}}>everyone</p>
-                  <p style={{marginTop:-5 , color:"#A8A8A8" , marginLeft:10}}>Follow you</p>
-                </div>
-                <div style={{marginLeft:"130px" , cursor:"pointer"}}>
-                  <p style={{color:"#0095f6"}}>Follow</p>
-                </div>
-              </div>
-
-              <div style={{display:"flex" , alignItems:"center" , marginLeft:20 , marginTop:10}}>
-              <img src="https://images.gamewatcherstatic.com/image/file/1/82/120641/Stray-Doc_s-Lab-Weapon-Location-2.jpg" style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover" }} alt="" />
-                <div>
-                  <p style={{marginLeft:10 , textAlign:"start"}}>Lilmiquela</p>
-                  <p style={{marginTop:-5 , color:"#A8A8A8" , marginLeft:10}}>Follow you</p>
-                </div>
-                <div style={{marginLeft:"130px" , cursor:"pointer"}}>
-                  <p style={{color:"#0095f6"}}>Follow</p>
-                </div>
-              </div>
-              {/* end of list */}
-
+                ))} 
             </div>  
           </div>
 

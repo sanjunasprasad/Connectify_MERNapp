@@ -5,7 +5,7 @@ import path from "path";
 
 
 
-
+//createpost
 export const createPost = async (req, res) => {
     try {
         console.log(11111);
@@ -45,8 +45,8 @@ export const createPost = async (req, res) => {
     }
 };
 
-//loadpost
-export const loadPost = async (req, res) => {
+//load our post
+export const loadownPost = async (req, res) => {
   try {
     const posts = await Post.find();
     // console.log("list ofposts:",posts)
@@ -58,26 +58,24 @@ export const loadPost = async (req, res) => {
 };
 
 
-
-//postuser name display
-export const getPostedUser = async(req,res) =>{
+//load restricted post
+export const loadPost = async (req, res) => {
   try {
-    const userId = req.params.user;
-    // console.log("user id  :",userId)
-    // console.log("type of userid:",typeof(userId));
-    const user = await User.findById(userId);
-    // console.log("user from mongo:",user)
-    // console.log("type of user from mongo:",typeof(user))
-    //  console.log("user id",userId + "name:",user.firstName)
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    res.status(200).json({ user });
+    const userId = req.params.userId;
+    // console.log("my id",userId)
+    const following = JSON.parse(req.query.following);
+    // console.log("i am following them",following)
+    const posts = await Post.find({
+      $or: [{ user: userId }, { user: { $in: following } }]
+    }).populate('user'); 
+    // console.log("selected posts:",posts)
+    res.json(posts);
   } catch (error) {
-    console.error('Error fetching user:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error('Error fetching posts:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
-}
+};
+
 
 
 //like post
@@ -144,6 +142,7 @@ export const unlikePost = async(req,res) =>{
   }
 }
 
+//comment post
 export const commentPost = async(req,res) =>{
   try {
     const postId = req.params.postid;
@@ -173,6 +172,7 @@ export const commentPost = async(req,res) =>{
 }
 
 
+//commented user name
 export const getCommentedUser = async (req, res) => {
   try {
     const postId = req.params.postId;
@@ -201,10 +201,7 @@ export const getCommentedUser = async (req, res) => {
   }
 }
 
-
-
-
-
+//delete our post
 export const deletePost = async(req,res) =>{
   try {
     console.log("HAIIIIII")

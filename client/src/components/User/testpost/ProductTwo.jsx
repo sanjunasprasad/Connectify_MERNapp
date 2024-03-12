@@ -9,12 +9,10 @@ import deleteicon from "../../../Icons/delete.png"
 function ProductTwo({ loggedUser }) {
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [showPosts, setShowPosts] = useState([]);
-
   useEffect(() => {
      axiosUserInstance
       .get('/post/loadPost')
       .then((response) => {
-        // console.log('check post coming:', response.data);
         setShowPosts(response.data);
       })
       .catch((error) => {

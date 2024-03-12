@@ -22,11 +22,11 @@ export const getUserAccount = async (req, res) => {
 };
 
 export const followUser = async (req, res) => {
-  const  userId  = req.params.id;
-  console.log("friend id",userId)
+  const userId = req.params.id;
+  // console.log("friend id",userId)
   const { loggeduser } = req.body;
-  console.log("loggeduser id",loggeduser)
-  console.log
+  // console.log("loggeduser id",loggeduser)
+  console.log;
   try {
     const user = await User.findById(userId); //friend
     if (user.followers.includes(loggeduser)) {
@@ -46,10 +46,10 @@ export const followUser = async (req, res) => {
 };
 
 export const unfollowUser = async (req, res) => {
-  const  userId  = req.params.id;
-  console.log("friend id",userId)
+  const userId = req.params.id;
+  // console.log("friend id",userId)
   const { loggeduser } = req.body;
-  console.log("loggeduser id",loggeduser)
+  // console.log("loggeduser id",loggeduser)
 
   try {
     const user = await User.findById(userId);
@@ -66,5 +66,26 @@ export const unfollowUser = async (req, res) => {
     }
   } catch (error) {
     res.status(500).send("Internal server error");
+  }
+};
+
+export const suggetionList = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    console.log("my id",userId)
+    const user = await User.findById(userId);
+    const followingList = user.following;
+    console.log("iam following them:",followingList)
+    const suggestionUsers = await User.find({
+      $and: [
+        { _id: { $ne: userId } }, // Exclude the current user
+        { _id: { $nin: followingList } } // Exclude users in the following list
+      ]
+    });
+    console.log("suggestion users is+++++++++++",suggestionUsers)
+    res.json(suggestionUsers);
+  } catch (error) {
+    console.error('Error fetching suggestion list:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };

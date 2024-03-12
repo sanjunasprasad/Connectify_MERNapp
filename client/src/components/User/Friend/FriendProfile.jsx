@@ -11,9 +11,9 @@ import Sidebar from "../Sidebar/Sidebar"
 
 const loggeduser = useSelector(state => state.user.user);
 const { _id } = loggeduser;
-console.log("Logged user ID:", _id);
+// console.log("Logged user ID:", _id);
 const {userid} = useParams()
-console.log("friend userid",userid)
+// console.log("friend userid",userid)
 const [userName,SetName] = useState("")
 const [userMail,SetMail]=useState("")
 const [userBio,SetBio] =useState("")
@@ -21,6 +21,9 @@ const  [userPlace,SetPlace] =useState("")
 const [userImage,SetImage] =useState("")
 const [postLength,SetLength] =useState(0)
 const [posts,SetPosts] = useState([])
+const [follower,Setfollower]=useState([])
+const [following,SetFollowing] =useState([])
+const [isFollowing, setIsFollowing] = useState(false);
 useEffect(() => {
     axiosUserInstance.get(`/friend/userAccount/${userid}`)
       .then(response => {
@@ -32,6 +35,9 @@ useEffect(() => {
         SetImage(response.data.user.image)
         SetLength(response.data.posts.length)
         SetPosts(response.data.posts);
+        Setfollower(response.data.user.followers.length)
+        SetFollowing(response.data.user.following.length)
+        setIsFollowing(response.data.user.followers.includes(_id));
       })
       .catch(error => {
         console.error('Error fetching username:', error);
@@ -40,10 +46,10 @@ useEffect(() => {
 
 
   //FOLLOW + UNFOLLOW
-  const [isFollowing, setIsFollowing] = useState(false);
   const handleFollow = async () => {
     try {
-      await axiosUserInstance.post(`/friend/follow/${userid}`,{ loggeduser: _id });
+      const response = await axiosUserInstance.post(`/friend/follow/${userid}`,{ loggeduser: _id });
+      console.log("response for follow:",response)
       setIsFollowing(true);
     } catch (error) {
       console.error('Error following user:', error);
@@ -52,12 +58,17 @@ useEffect(() => {
 
   const handleUnfollow = async () => {
     try {
-      await axiosUserInstance.post(`/friend/unfollow/${userid}`,{loggeduser:_id});
+      const response = await axiosUserInstance.post(`/friend/unfollow/${userid}`,{loggeduser:_id});
+      console.log("response for unfollow:",response)
       setIsFollowing(false);
     } catch (error) {
       console.error('Error unfollowing user:', error);
     }
   };
+
+  // useEffect(()=>{
+  //   console.log("current status for relationship:",isFollowing)
+  // },[isFollowing])
 
   return (
     <div>
@@ -101,8 +112,8 @@ useEffect(() => {
                 </div>
                 <div style={{ display: "flex", alignItems: "center" ,paddingTop:10}}>
                   <p style={{ marginLeft: 100 ,paddingTop:6}}>{postLength} Post</p>
-                  <p style={{ marginLeft: 40 }}>200k Followers</p>
-                  <p style={{ marginLeft: 40 }}>100k Following</p>
+                  <p style={{ marginLeft: 40 }}>{follower} Followers</p>
+                  <p style={{ marginLeft: 40 }}>{following} Following</p>
                 </div>
                 <div style={{ alignItems: "center" }}>
                   <p style={{ marginLeft: 100, marginTop: 8 }}>{userMail}</p>

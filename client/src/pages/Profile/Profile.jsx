@@ -16,10 +16,29 @@ export default function Profile() {
   const dispatch = useDispatch();
   const loggedUser = useSelector(state => state.user.user);
   // console.log("userdata from Redux store profile:", loggedUser);
+  const {_id } = loggedUser
+  // console.log("id is",_id)
 
   useEffect(() => {
     setFormData(loggedUser);
   }, [loggedUser]);
+
+
+  // to get post length
+  const [postLength, setLength] = useState(0);
+  useEffect(() => {
+    axiosUserInstance
+     .get('/post/loadPost')
+     .then((response) => {
+      // console.log("post length response",response.data)
+      const filteredPosts = response.data.filter(post => post.user === _id);
+      console.log("Filtered posts:", filteredPosts);
+      setLength(filteredPosts.length);
+     })
+     .catch((error) => {
+       console.error('Error fetching posts:', error);
+     });
+ }, []);
 
   const [showModal, setShowModal] = useState(false);
   const handleShowModal = () => {
@@ -266,9 +285,9 @@ const handleSubmit = async (e) => {
                  
                 </div>
                 <div style={{ display: "flex", alignItems: "center" ,paddingTop:10}}>
-                  <p style={{ marginLeft: 100 ,paddingTop:6}}>1 Post</p>
-                  <p style={{ marginLeft: 40 }}>200k Followers</p>
-                  <p style={{ marginLeft: 40 }}>100k Following</p>
+                  <p style={{ marginLeft: 100 ,paddingTop:6}}>{postLength} Post</p>
+                  <p style={{ marginLeft: 40 }}>{loggedUser.followers.length} Followers</p>
+                  <p style={{ marginLeft: 40 }}>{loggedUser.following.length} Following</p>
                 </div>
                 <div style={{ alignItems: "center" }}>
                 <p style={{ marginLeft: 100, marginTop: 8 }}>{loggedUser.email}</p>

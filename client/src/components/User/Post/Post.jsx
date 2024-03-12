@@ -18,31 +18,12 @@ import Saveicon from "../../../Icons/Save.png"
 
 
 export default function Post({ postlist }) {
-
   const dispatch = useDispatch();
-  const { user} = postlist; 
   const loggeduser = useSelector(state => state.user.user);
   
-
   const getRelativeTime = (createdAt) => {
     return moment(createdAt).fromNow();
   };
-
-  //fetch post username
-  const [postUserpic, setPostUserpic] = useState("");
-  const [postUser, setPostUser] = useState("");
-  useEffect(() => {
-    axiosUserInstance.get(`/post/getPostuser/${postlist.user}`)
-      .then(response => {
-        setPostUserpic(response.data.user.image)
-        setPostUser(response.data.user.firstName);
-      })
-      .catch(error => {
-        console.error('Error fetching username:', error);
-      });
-  }, []);
-
-
 
 
   // comment section+comment modal
@@ -117,9 +98,9 @@ useEffect(() => {
     <div style={{ marginLeft: "120px", marginTop: 20 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: "space-between", marginBottom: 10 }}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <img src={postUserpic} style={{ width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover", }} alt="" /> {/* profilepic on post top*/}
+          <img src={postlist.user.image} style={{ width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover", }} alt="" /> {/* profilepic on post top*/}
           <p style={{ marginLeft: 10 }}>  {/* username  on post top*/}
-            { loggeduser && loggeduser._id === user ? (<Link to={`/username`} >{postUser}</Link>) : (<Link to={`/username/${postlist.user}`} >{postUser}</Link> )}
+            { loggeduser && loggeduser._id === postlist.user._id ? (<Link to={`/username`} >{postlist.user.firstName}</Link>) : (<Link to={`/username/${postlist.user._id}`} >{postlist.user.firstName}</Link> )}
            </p>
         </div>
         <div >
@@ -146,9 +127,9 @@ useEffect(() => {
                     <div >
                         <div style={{display:"flex" , alignItems:"center" , paddingLeft:10 , justifyContent:"space-between"}}>
                             <div style={{display:"flex" , alignItems:"center" , paddingLeft:10}}>
-                              <img src={postUserpic} style={{ width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover" }} alt="" />
+                              <img src={postlist.user.image} style={{ width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover" }} alt="" />
                               <div style={{paddingLeft:10}}>
-                                  <p style={{marginBottom:0}}>{postUser}</p> {/* post owner name on top comment section */}
+                                  <p style={{marginBottom:0}}>{postlist.user.firstName}</p> {/* post owner name on top comment section */}
                               </div>
                             </div>
                             <div>
