@@ -8,7 +8,7 @@ const postSchema = new mongoose.Schema({
     type: String,
   },
   file: {
-    type: String, // Store the public URL of the uploaded file
+    type: String, 
     required: true,
   },
   likes: [

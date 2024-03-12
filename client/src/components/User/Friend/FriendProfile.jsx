@@ -1,15 +1,19 @@
 import React,{useEffect,useState} from "react";
 import { useParams } from "react-router-dom";
+import { useSelector} from 'react-redux';
 import "./FriendProfile.css";
-import { axiosUserInstance }  from "../../../services/axios/axios";
+import { axiosUserInstance } from "../../../services/axios/axios";
 import FriendPost from "../testpost/FriendPost";
 import Sidebar from "../Sidebar/Sidebar"
 
 
  function FriendProfile() {
 
+const loggeduser = useSelector(state => state.user.user);
+const { _id } = loggeduser;
+console.log("Logged user ID:", _id);
 const {userid} = useParams()
-console.log("params userid",userid)
+console.log("friend userid",userid)
 const [userName,SetName] = useState("")
 const [userMail,SetMail]=useState("")
 const [userBio,SetBio] =useState("")
@@ -20,7 +24,7 @@ const [posts,SetPosts] = useState([])
 useEffect(() => {
     axiosUserInstance.get(`/friend/userAccount/${userid}`)
       .then(response => {
-        console.log("response from backend",response)
+        // console.log("response from backend",response)
         SetName(response.data.user.firstName);
         SetMail(response.data.user.email)
         SetBio(response.data.user.bio)
@@ -33,6 +37,28 @@ useEffect(() => {
         console.error('Error fetching username:', error);
       });
   }, []);
+
+
+  //FOLLOW + UNFOLLOW
+  const [isFollowing, setIsFollowing] = useState(false);
+  const handleFollow = async () => {
+    try {
+      await axiosUserInstance.post(`/friend/follow/${userid}`,{ loggeduser: _id });
+      setIsFollowing(true);
+    } catch (error) {
+      console.error('Error following user:', error);
+    }
+  };
+
+  const handleUnfollow = async () => {
+    try {
+      await axiosUserInstance.post(`/friend/unfollow/${userid}`,{loggeduser:_id});
+      setIsFollowing(false);
+    } catch (error) {
+      console.error('Error unfollowing user:', error);
+    }
+  };
+
   return (
     <div>
       <div>
@@ -60,7 +86,14 @@ useEffect(() => {
               <div>
                 <div style={{ display: "flex", alignItems: "center" }}>
                   <p style={{ marginLeft: 100, fontWeight: 1000 }}>{userName}</p>
-                  <button style={{width:108,height:30,paddingLeft: 10,marginLeft: 20,paddingRight: 20,paddingTop: 4,paddingBottom: 8,borderRadius: 10,border: "none",cursor: "pointer",backgroundColor: "rgb(236, 233 ,233)",color:"black"}}>Following</button>
+                  { isFollowing ? (
+                  <button style={{width:108,height:30,paddingLeft: 10,marginLeft: 20,paddingRight: 20,paddingTop: 4,paddingBottom: 8,borderRadius: 10,border: "none",cursor: "pointer",backgroundColor: "rgb(236, 233 ,233)",color:"black"}} onClick={handleUnfollow}>Unfollow</button>
+                  ): (
+                    <button style={{width:108,height:30,paddingLeft: 10,marginLeft: 20,paddingRight: 20,paddingTop: 4,paddingBottom: 8,borderRadius: 10,border: "none",cursor: "pointer",backgroundColor: "rgb(236, 233 ,233)",color:"black"}} onClick={handleFollow}>Follow</button>
+                  )
+
+                  }
+
                   <button style={{width:108,height:30,paddingLeft: 10,marginLeft: 20,paddingRight: 20,paddingTop: 4,paddingBottom: 8,borderRadius: 10,border: "none",cursor: "pointer",backgroundColor: "rgb(236, 233 ,233)",color:"black"}}>Message</button>
 
                 

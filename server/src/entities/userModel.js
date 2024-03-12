@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-
+const { ObjectId } = mongoose.Schema.Types
 const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
@@ -39,6 +39,22 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
+  followers:[{
+    type: ObjectId,
+    ref :"User",
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+  }],
+  following:[{
+    type: ObjectId,
+    ref :"User",
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+  }],
   createdAt: {
     type: Date,
     default: Date.now,
