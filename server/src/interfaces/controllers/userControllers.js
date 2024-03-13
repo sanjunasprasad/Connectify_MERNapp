@@ -71,7 +71,7 @@ export const userLogin = async (req, res) => {
    
     const { email, password } = req.body;
     const response = await loginUser(email,password);
-    // console.log("from login controller token",response)
+    console.log("from login controller token",response)
     if (!response) {
       return res.status(401).end(); 
     } else if (response.blocked) {

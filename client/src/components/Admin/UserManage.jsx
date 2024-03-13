@@ -17,7 +17,11 @@ function UserManage() {
       navigate("/admin");
     } else {
       axiosAdminInstance
-        .get("/admin/loadDashboard")
+        .get("/admin/loadUsers",{
+          headers: {
+          Authorization: `Bearer ${token}`,
+          role : 'admin'
+        },})
         .then((response) => {
           setUsers(response.data);
         })
@@ -32,6 +36,7 @@ function UserManage() {
 
   // to block/unblock
   const toggleUserStatus = async (id) => {
+    const token = localStorage.getItem("adminToken");
     const userToUpdate = users.find((user) => user._id === id);
     console.log("usertoupdate:", userToUpdate);
     const newStatus = !userToUpdate.is_blocked;
@@ -46,8 +51,11 @@ function UserManage() {
         });
 
         if (result.isConfirmed) {
-            const response = await  axiosAdminInstance .patch(`/admin/blockuser/${id}`, {
-                is_blocked: newStatus,
+            const response = await  axiosAdminInstance .patch(`/admin/blockuser/${id}`, 
+            {is_blocked: newStatus,},
+            {headers: {
+                Authorization: `Bearer ${token}`,
+                role : 'admin'},
             });
             // Update the local state to reflect the change
             setUsers(
@@ -76,6 +84,7 @@ function UserManage() {
 
   //to delete user
 const deleteUser = async (id) => {
+  const token = localStorage.getItem("adminToken");
   try {
       const result = await Swal.fire({
           title: "Are you sure?",
@@ -88,7 +97,11 @@ const deleteUser = async (id) => {
       });
 
       if (result.isConfirmed) {
-          const response = await axiosAdminInstance.delete(`/admin/adminDeleteUser/${id}`);
+          const response = await axiosAdminInstance.delete(`/admin/adminDeleteUser/${id}`,{
+            headers: {
+              Authorization: `Bearer ${token}`,
+              role : 'admin'},
+          });
           if (response.data.email) {
               setUsers(prevUsers => prevUsers.filter(user => user._id !== id));
               Swal.fire({

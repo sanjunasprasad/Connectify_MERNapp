@@ -10,8 +10,14 @@ function ProductTwo({ loggedUser }) {
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [showPosts, setShowPosts] = useState([]);
   useEffect(() => {
+    const token = localStorage.getItem("token");
      axiosUserInstance
-      .get('/post/loadPost')
+      .get('/post/loadPost',{
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'role': 'user'
+      }
+      })
       .then((response) => {
         setShowPosts(response.data);
       })
@@ -24,6 +30,7 @@ function ProductTwo({ loggedUser }) {
 
    //to delete user
    const deletePost = (postId) => {
+    const token = localStorage.getItem("token");
     console.log("post to be deleted:",postId)
     Swal.fire({
       title: 'Are you sure?',
@@ -36,7 +43,12 @@ function ProductTwo({ loggedUser }) {
     }).then((result) => {
       if (result.isConfirmed) {
           axiosUserInstance 
-          .delete(`/post/deletePost/${postId}`)
+          .delete(`/post/deletePost/${postId}`,{
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'role': 'user'
+          }
+          })
           .then((response) => {
             console.log('Post deleted:', response.data);
             // Remove the deleted post from showPosts state

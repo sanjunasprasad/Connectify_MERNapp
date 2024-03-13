@@ -39,7 +39,7 @@ function UserLogin() {
     if (Object.keys(validationErrors).length === 0) {
       try {
         const response = await  axiosInstance.post("/userLogin", formdata);
-        // console.log("Responseeee after login:", response);
+        console.log("Responseeee after login:", response);
         if (response.status === 200) {
           localStorage.setItem("token", response.data);
           // console.log("token  setted to localstorage  after login via loginpage:",response.data)

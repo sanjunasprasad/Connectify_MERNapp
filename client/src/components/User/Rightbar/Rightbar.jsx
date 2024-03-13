@@ -20,8 +20,12 @@ function Rightbar() {
   //suggestion list
   const [responseData, setResponseData] = useState([]);
   useEffect (()=>{
-   const response = axiosUserInstance.get(`/friend/suggestionlist/${_id}`)
-    .then(response => {
+    const token = localStorage.getItem("token");
+   const response = axiosUserInstance.get(`/friend/suggestionlist/${_id}`,{
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'role': 'user'}
+   }).then(response => {
       setResponseData(response.data);
       // console.log("POST RESPONSE##### ",response.data) 
       
@@ -40,9 +44,14 @@ function Rightbar() {
 
   //restricted post display
   useEffect(() => {
+    const token = localStorage.getItem("token");
     if (_id) {
       axiosUserInstance.get(`/post/loadPost/${_id.toString()}`, {
-        params: { following: JSON.stringify(following) }
+        params: { following: JSON.stringify(following) },
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'role': 'user'
+      }
       })
       .then(response => {
       // console.log("POST RESPONSE##### ",response.data) //full populated data

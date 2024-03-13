@@ -24,8 +24,7 @@ import { BarChart, Wallet, User, BellRing, Paperclip, Brush, Wrench } from 'luci
           <div className="space-y-3 ">
             <label className="px-3 text-xs font-semibold uppercase text-gray-900">analytics</label>
             <Link to="/dashboard" className="flex transform items-center rounded-lg px-3 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700">
-            <BarChart className="h-5 w-5" aria-hidden="true" />
-            <span className="mx-2 text-sm font-medium">Dashboard</span>
+            <BarChart className="h-5 w-5" aria-hidden="true" /><span className="mx-2 text-sm font-medium">Dashboard</span>
             </Link>
          
             <a
@@ -43,13 +42,10 @@ import { BarChart, Wallet, User, BellRing, Paperclip, Brush, Wrench } from 'luci
              <User className="h-5 w-5" aria-hidden="true" /><span className="mx-2 text-sm font-medium">Users</span>
              </Link>
 
-            <a
-              className="flex transform items-center rounded-lg px-3 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700"
-              href="#"
-            >
-              <BellRing className="h-5 w-5" aria-hidden="true" />
-              <span className="mx-2 text-sm font-medium">Notifications</span>
-            </a>
+             <Link to="/notifications" className="flex transform items-center rounded-lg px-3 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700">
+              <BellRing className="h-5 w-5" aria-hidden="true" /><span className="mx-2 text-sm font-medium">Notifications</span>
+            </Link>
+
             <a
               className="flex transform items-center rounded-lg px-3 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-100 hover:text-gray-700"
               href="#"

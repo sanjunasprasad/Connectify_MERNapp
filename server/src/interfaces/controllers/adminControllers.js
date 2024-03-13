@@ -3,10 +3,10 @@ import { getUsers  } from '../../usecases/AdminUseCases/getUsers.js';
 import {blockUsers} from '../../usecases/AdminUseCases/blockUsers.js'
 import { deleteUser } from '../../usecases/AdminUseCases/deleteUser.js';
 
-export const adminLogin =  (req, res) => {
+export const adminLogin = async(req, res) => {
     try{
         const {email, password} = req.body;
-        const adminData = checkLogin(email, password);
+        const adminData = await checkLogin(email, password);
         return res.json(adminData);
     }catch(err){
         console.log(err)

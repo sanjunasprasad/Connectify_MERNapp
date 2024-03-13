@@ -3,11 +3,15 @@ import { useParams } from "react-router-dom";
 import { useSelector} from 'react-redux';
 import "./FriendProfile.css";
 import { axiosUserInstance } from "../../../services/axios/axios";
+import Swal from "sweetalert2";
+import "sweetalert2/dist/sweetalert2.min.css";
 import FriendPost from "../testpost/FriendPost";
 import Sidebar from "../Sidebar/Sidebar"
+import SettingIcon from "../../../Icons/Settingslogo.png"
 
 
- function FriendProfile() {
+
+function FriendProfile() {
 
 const loggeduser = useSelector(state => state.user.user);
 const { _id } = loggeduser;
@@ -25,7 +29,12 @@ const [follower,Setfollower]=useState([])
 const [following,SetFollowing] =useState([])
 const [isFollowing, setIsFollowing] = useState(false);
 useEffect(() => {
-    axiosUserInstance.get(`/friend/userAccount/${userid}`)
+  const token = localStorage.getItem("token");
+    axiosUserInstance.get(`/friend/userAccount/${userid}`,{
+      headers: {
+      'Authorization': `Bearer ${token}`,
+      'role': 'user'}
+  })
       .then(response => {
         // console.log("response from backend",response)
         SetName(response.data.user.firstName);
@@ -48,8 +57,13 @@ useEffect(() => {
   //FOLLOW + UNFOLLOW
   const handleFollow = async () => {
     try {
-      const response = await axiosUserInstance.post(`/friend/follow/${userid}`,{ loggeduser: _id });
-      console.log("response for follow:",response)
+      const token = localStorage.getItem("token");
+      const response = await axiosUserInstance.post(`/friend/follow/${userid}`,{ loggeduser: _id },{
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'role': 'user'}
+      });
+      // console.log("response for follow:",response)
       setIsFollowing(true);
     } catch (error) {
       console.error('Error following user:', error);
@@ -58,8 +72,13 @@ useEffect(() => {
 
   const handleUnfollow = async () => {
     try {
-      const response = await axiosUserInstance.post(`/friend/unfollow/${userid}`,{loggeduser:_id});
-      console.log("response for unfollow:",response)
+      const token = localStorage.getItem("token");
+      const response = await axiosUserInstance.post(`/friend/unfollow/${userid}`,{loggeduser:_id},{
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'role': 'user'}
+      });
+      // console.log("response for unfollow:",response)
       setIsFollowing(false);
     } catch (error) {
       console.error('Error unfollowing user:', error);
@@ -69,6 +88,23 @@ useEffect(() => {
   // useEffect(()=>{
   //   console.log("current status for relationship:",isFollowing)
   // },[isFollowing])
+
+
+  const handleReportProfile = async() =>{
+    const { value: fruit } = await Swal.fire({
+      title: "Report profile?",
+      input: "select",
+      inputOptions: {
+        1: "It's spam",
+        2:"Hate speech or symbols",
+        3:"False information",
+        4:"Supports violence"
+      },
+      inputPlaceholder: "Select reason",
+      showCancelButton: true,
+    });
+
+  }
 
   return (
     <div>
@@ -101,15 +137,11 @@ useEffect(() => {
                   <button style={{width:108,height:30,paddingLeft: 10,marginLeft: 20,paddingRight: 20,paddingTop: 4,paddingBottom: 8,borderRadius: 10,border: "none",cursor: "pointer",backgroundColor: "rgb(236, 233 ,233)",color:"black"}} onClick={handleUnfollow}>Unfollow</button>
                   ): (
                     <button style={{width:108,height:30,paddingLeft: 10,marginLeft: 20,paddingRight: 20,paddingTop: 4,paddingBottom: 8,borderRadius: 10,border: "none",cursor: "pointer",backgroundColor: "rgb(236, 233 ,233)",color:"black"}} onClick={handleFollow}>Follow</button>
-                  )
-
-                  }
-
+                  )}
                   <button style={{width:108,height:30,paddingLeft: 10,marginLeft: 20,paddingRight: 20,paddingTop: 4,paddingBottom: 8,borderRadius: 10,border: "none",cursor: "pointer",backgroundColor: "rgb(236, 233 ,233)",color:"black"}}>Message</button>
-
-                
-                 
+                  <img src={SettingIcon} style={{ marginLeft: 20, cursor: "pointer" }} alt=""  onClick={handleReportProfile}/>
                 </div>
+
                 <div style={{ display: "flex", alignItems: "center" ,paddingTop:10}}>
                   <p style={{ marginLeft: 100 ,paddingTop:6}}>{postLength} Post</p>
                   <p style={{ marginLeft: 40 }}>{follower} Followers</p>

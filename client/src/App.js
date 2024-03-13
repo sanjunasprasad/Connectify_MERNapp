@@ -12,9 +12,12 @@ import Chat from "./pages/Chat/Chat"
 import UserLogin from "./components/User/UserLogin";
 import UserSignup from "./components/User/UserSignup";
 import VerifyOtp from './components/User/VerifyOtp';
+import FriendProfile from './components/User/Friend/FriendProfile';
 import AdminLogin from './components/Admin/AdminLogin'
 import UserManage from './components/Admin/UserManage'
-import FriendProfile from './components/User/Friend/FriendProfile';
+import Notifications from './components/Admin/Notifications';
+
+
 
 
 function App() {
@@ -43,8 +46,9 @@ function App() {
             <Route element={<AdminLogin />} path="/admin" />
             <Route element={<AdminPage />} path="/dashboard" /> 
             <Route element={<UserManage />} path="/users" /> 
+            <Route element={<Notifications/>} path="/notifications" />
 
-
+ 
               
             <Route element={<Chat />} path="/chat" /> 
        </Routes>

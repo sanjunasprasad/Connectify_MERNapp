@@ -15,7 +15,7 @@ const AdminLogin = () => {
         email,
         password,
       });
-      console.log(response.data);
+
       if (response.data && response.data.adminData) {
         localStorage.setItem("adminToken", response.data.adminToken);
         navigate("/dashboard");

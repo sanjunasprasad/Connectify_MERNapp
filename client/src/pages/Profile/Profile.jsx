@@ -12,8 +12,8 @@ import 'sweetalert2/dist/sweetalert2.min.css'
 
 export default function Profile() {
 
-  const nameRegex = /^[A-Za-z]+$/;
   const dispatch = useDispatch();
+  const token = useSelector(state => state.user.token);
   const loggedUser = useSelector(state => state.user.user);
   // console.log("userdata from Redux store profile:", loggedUser);
   const {_id } = loggedUser
@@ -28,7 +28,12 @@ export default function Profile() {
   const [postLength, setLength] = useState(0);
   useEffect(() => {
     axiosUserInstance
-     .get('/post/loadPost')
+     .get('/post/loadPost',{
+      headers: {
+          'Authorization': `Bearer ${token}`,
+          role : 'user'
+      }
+  })
      .then((response) => {
       // console.log("post length response",response.data)
       const filteredPosts = response.data.filter(post => post.user === _id);
@@ -67,34 +72,6 @@ const handleImageChange = (e) => {
 }
 
 
-const validateForm = (data) => {
-  const errors = {};
-  if (!data.firstName) {
-    errors.firstName = "First Name cannot be empty";
-  } else if (!nameRegex.test(data.firstName)) {
-    errors.firstName = "First Name must only contain alphabets";
-  }
-
-  if (!data.email) {
-    errors.email = "Please provide an email";
-  }
-
-  if (!data.bio) {
-    errors.bio = "bio";
-  } else if (data.bio.length < 8) {
-    errors.bio = "Bio must have min 8 max 50 characters";
-  }
-
-  if (!data.location) {
-    errors.location = "Please provide a valid location";
-  }
-
-  if (!data.file) {
-    errors.file = "Please provide a image of type jpg/jpeg";
-  }
-  return errors;
-};
-
 //after edit submit post
 const handleSubmit = async (e) => {
   e.preventDefault();
@@ -126,7 +103,9 @@ const handleSubmit = async (e) => {
  
     const response = await axiosUserInstance.put(`/updateUser/${loggedUser._id}`, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data' 
+        'Content-Type': 'multipart/form-data' ,
+        Authorization: `Bearer ${token}`,
+            role : 'user'
       }
     });
 
@@ -145,6 +124,26 @@ const handleSubmit = async (e) => {
 }catch (err) {
     console.log(err);
   }
+}
+
+const handleImageClick = ()=>{
+  Swal.fire({
+    title: "Are you sure to delete profile?",
+    text: "You won't be able to revert this!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, delete it!"
+  }).then((result) => {
+    if (result.isConfirmed) {
+      Swal.fire({
+        title: "Deleted!",
+        text: "Your profile has been deleted.",
+        icon: "success"
+      });
+    }
+  });
 }
 
   return (
@@ -174,17 +173,14 @@ const handleSubmit = async (e) => {
               <div>
                 <div style={{ display: "flex", alignItems: "center" }}>
                   <p style={{ marginLeft: 100, fontWeight: 1000 }}>{loggedUser.firstName}</p>
-                  {/* <button style={{width:108,height:30,paddingLeft: 10,marginLeft: 20,paddingRight: 20,paddingTop: 4,paddingBottom: 8,borderRadius: 10,border: "none",cursor: "pointer",backgroundColor: "rgb(236, 233 ,233)",color:"black"}}>Following</button> */}
-                  {/* <button style={{width:108,height:30,paddingLeft: 10,marginLeft: 20,paddingRight: 20,paddingTop: 4,paddingBottom: 8,borderRadius: 10,border: "none",cursor: "pointer",backgroundColor: "rgb(236, 233 ,233)",color:"black"}}>Message</button> */}
-                  <img src={SettingIcon} style={{ marginLeft: 20, cursor: "pointer" }} alt="" onClick={handleShowModal}/>
-                 {showModal && (
+                  <button style={{width:109,height:30,paddingLeft: 10,marginLeft: 20,paddingRight: 20,paddingTop: 4,paddingBottom: 8,borderRadius: 10,border: "none",cursor: "pointer",backgroundColor: "rgb(236, 233 ,233)",color:"black"}} onClick={handleShowModal}>Edit Profile</button>
+                  {showModal && (
                     <div className="modal-overlay">
                       <div className="modal">
                         <span className="close" onClick={handleCloseModal}>
                           &times;
                         </span>
                         <h2>Edit Profile</h2>
-
                         <form onSubmit={handleSubmit}>
                           {/* Form fields */}
                           <div className="inputfields">
@@ -281,8 +277,10 @@ const handleSubmit = async (e) => {
                       </div>
                     </div>
                   )}
-                
-                 
+
+
+
+                  <img src={SettingIcon} style={{ marginLeft: 20, cursor: "pointer" }} alt="" onClick={handleImageClick} />
                 </div>
                 <div style={{ display: "flex", alignItems: "center" ,paddingTop:10}}>
                   <p style={{ marginLeft: 100 ,paddingTop:6}}>{postLength} Post</p>

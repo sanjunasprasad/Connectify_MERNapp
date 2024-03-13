@@ -8,6 +8,8 @@ export const generateUserToken = async(existingUser) => {
             userId: _id,
         }
         const token = Jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '3h' });
+        // console.log('userToken:', JSON.stringify(token));
+        // console.log("type of user token",typeof(token))
         return token;
     } catch (error) {
         console.error("Error generating user token:", error);
@@ -19,12 +21,17 @@ export const generateUserToken = async(existingUser) => {
 export const decodeToken = async(req, res, next) => {
     try {
         const token = req.header('Authorization').replace('Bearer ', '');
-        // console.log("token from frontend via /homepage ",token)
+        // console.log("token from frontend axios header ",token)
         Jwt.verify(token, process.env.JWT_KEY, (err, decodedToken) => {
             if (err) {
-                return res.status(401).json({ message: 'Unauthorized' });
+                return res.status(401).json({ message: 'Unauthorized Access' });
             }
             req.token = decodedToken;
+            const Role = req.headers.role;
+            // console.log("role is",Role)
+            if(Role !== 'user'){
+                return res.status(403).json({ message: 'Forbidden. Insufficient role.' });
+            }
             next();
         });
     } catch (error) {
@@ -38,6 +45,7 @@ export const generateAdminToken = async (email) => {
     try {
         const token = Jwt.sign(email, process.env.JWT_KEY);
         console.log('adminToken:', JSON.stringify(token));
+        console.log("type of admin token",typeof(token))
         return token;
     } catch (error) {
         console.error("Error generating admin token:", error);
@@ -46,16 +54,25 @@ export const generateAdminToken = async (email) => {
 }
 
 
-
-export const isAuthenticated =(req, res, next) => {
-
-    const { token } = req.cookies;
-
-    if(!token) {
-        return next(new ErrorHandler("Please Login to Access", 401));
+export const decodeAdminToken = async(req, res, next) => {
+    try {
+        console.log("########")
+        const token = req.header('Authorization').replace('Bearer ', '');
+        console.log("token from frontend axios header :",token)
+        Jwt.verify(token, process.env.JWT_KEY, (err, decodedToken) => {
+            if (err) {
+                return res.status(401).json({ message: 'Unauthorized Access' });
+            }
+            req.token = decodedToken;
+            const Role = req.headers.role;
+            console.log("role is",Role)
+            if(Role !== 'admin'){
+                return res.status(403).json({ message: 'Forbidden, Insufficient role.' });
+            }
+            next();
+        });
+    } catch (error) {
+        console.error("Error decoding token:", error);
+        return res.status(500).json({ message: 'Internal Server Error' });
     }
-
-    const decodedData = Jwt.verify(token, process.env.JWT_KEY);
-    req.user = User.findById(decodedData.id);
-    next();
 }

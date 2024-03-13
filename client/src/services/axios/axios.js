@@ -1,17 +1,3 @@
-// import axios from 'axios';
-// import { apiURl } from '../../utils/constants';
-
-// const axiosInstance = axios.create({
-//     baseURL: apiURl,
-//     headers: {
-//         'Content-Type': 'application/json',
-//     },
-// });
-
-// export default axiosInstance;
-
-
-
 import axios from 'axios';
 import { apiURl } from '../../utils/constants';
 function createAxiosInstance(token ,role ) { //fn creates & configures Axios instances with optional authentication headers.
@@ -23,7 +9,6 @@ function createAxiosInstance(token ,role ) { //fn creates & configures Axios ins
         (config) => {
             config.headers.Authorization = `Bearer ${token}`; // configures an interceptor to add an Authorization header with token value prefixed by Bearer 
             config.headers.role = role;// adds a custom header named 'role' with the specified role 
-
             return config;
         },
         (error) => {

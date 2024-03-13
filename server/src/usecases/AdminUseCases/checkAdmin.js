@@ -5,17 +5,18 @@ const adminCredential = {
   password: "admin",
 };
 
-export const checkLogin = (email, password) => {
+export const checkLogin = async(email, password) => {
   if (
     adminCredential.email === email &&
     adminCredential.password === password
   ) {
-    const adminToken = generateAdminToken(email)
+    const adminToken = await generateAdminToken(email)
     const adminData = {
       email,
       password,
+      
     };
-    return { adminData, adminToken };
+    return { adminData ,adminToken};
   } else {
     return { message: "email or password error" };
   }

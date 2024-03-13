@@ -72,17 +72,17 @@ export const unfollowUser = async (req, res) => {
 export const suggetionList = async (req, res) => {
   try {
     const userId = req.params.id;
-    console.log("my id",userId)
+    // console.log("my id",userId)
     const user = await User.findById(userId);
     const followingList = user.following;
-    console.log("iam following them:",followingList)
+    // console.log("iam following them:",followingList)
     const suggestionUsers = await User.find({
       $and: [
         { _id: { $ne: userId } }, // Exclude the current user
         { _id: { $nin: followingList } } // Exclude users in the following list
       ]
     });
-    console.log("suggestion users is+++++++++++",suggestionUsers)
+    // console.log("suggestion users is+++++++++++",suggestionUsers)
     res.json(suggestionUsers);
   } catch (error) {
     console.error('Error fetching suggestion list:', error);

@@ -9,8 +9,8 @@ import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 import "./post.css"
 import Moreoptions from "../../../Icons/Moreoptions.png"
-import  greyicon from "../../../Icons/Notifications.png" 
-import  redicon from "../../../Icons/Unlike.png" 
+// import  greyicon from "../../../Icons/Notifications.png" 
+// import  redicon from "../../../Icons/Unlike.png" 
 import commneticon from "../../../Icons/Comment.png"
 import Shareicon from "../../../Icons/SharePost.png"
 import Saveicon from "../../../Icons/Save.png"
@@ -37,10 +37,15 @@ export default function Post({ postlist }) {
   };
   const handlecomment=async ()=>{
     try {
+      const token = localStorage.getItem("token");
       const response = await axiosUserInstance.post(`/post/commentpost/${postlist._id}`, {
         userId: loggeduser._id,
         comment: comment 
-      });
+      },{
+          headers: {
+              'Authorization': `Bearer ${token}`,
+              'role': 'user'}
+          });
       console.log('response for comment posting:', response.data);
       setComment('');
       setmodalIsOpen(false);
@@ -61,6 +66,7 @@ export default function Post({ postlist }) {
 const [commentuser, setCommentUser] = useState([]);
 const [commentUserPic,SetcommentUserPic] =useState([])
 useEffect(() => {
+  const token = localStorage.getItem("token");
   let commentsuserId = [];
   let commentId = []
   for (let i = 0; i < postlist.comments.length; i++) {
@@ -71,7 +77,12 @@ useEffect(() => {
   // console.log("comment id",commentId)
   // console.log(("commented people....",commentsuserId))
   axiosUserInstance.get(`/post/getCommentUser/${postlist._id}`, {
-    params: { commentsuserId: commentsuserId ,commentId: commentId}
+    params: { commentsuserId: commentsuserId ,commentId: commentId},
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'role': 'user'
+  }
+    
   })
   .then(response => {
     // console.log("response in commnenttttt:", response.data.userDetails);

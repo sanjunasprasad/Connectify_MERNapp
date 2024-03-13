@@ -14,7 +14,7 @@ function UserHomePage() {
     // console.log("Token from Redux store userhome:", token1);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    // const token = localStorage.getItem("token");
     // console.log("token fom localstorage in userhome after login:",token)
     if (!token1) {
       navigate("/");
@@ -23,6 +23,7 @@ function UserHomePage() {
         .get("/userProfile", {
           headers: {
             Authorization: `Bearer ${token1}`,
+            role : 'user'
           },
         })
         .then((response) => {

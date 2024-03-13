@@ -75,6 +75,7 @@ function Sidebar() {
   // Create post
   const handleCreatePost = async () => {
     try {
+      const token = localStorage.getItem("token");
       const formData = new FormData();
       const caption = document.querySelector('textarea[name="caption"]').value;
       formData.append("caption", caption);
@@ -92,6 +93,8 @@ function Sidebar() {
         .post("/post/createPost", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+            role : 'user'
           },
         })
         .then((response) => {

@@ -11,7 +11,7 @@ userRoute.post('/otpVerify',  otpVerify);
 userRoute.post('/resendotpVerify',  resendotpVerify);
 userRoute.post('/userLogin', userLogin);
 userRoute.get('/userProfile', decodeToken, fetchProfile); //get logged user home,profile
-userRoute.put('/updateUser/:id', upload.single('file'),updateUser);
+userRoute.put('/updateUser/:id', decodeToken,upload.single('file'),updateUser);
 
 
 
