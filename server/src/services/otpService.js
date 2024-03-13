@@ -5,7 +5,8 @@ export const generateOTP = () => {
 };
 
 export const sendOTPByEmail = async (email, otp) => {
-    console.log("generated otp isssssssss:",otp);
+    console.log("generated otp from fn:",otp);
+    console.log("sented mail from fn:",email)
   try {
     const transporter = nodemailer.createTransport({
       // Configure Nodemailer to use your email service provider
@@ -22,7 +23,6 @@ export const sendOTPByEmail = async (email, otp) => {
       subject: 'Verification OTP',
       text: `Your OTP for email verification is: ${otp}`
     };
-
     await transporter.sendMail(mailOptions);
   } catch (error) {
     console.error('Error sending OTP:', error);

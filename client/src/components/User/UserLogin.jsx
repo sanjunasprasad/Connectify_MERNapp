@@ -103,22 +103,6 @@ function UserLogin() {
   const handleGoogleSignIn = async (googleData) => {
     try {
       const { profileObj, tokenId } = googleData;
-      // Show success message
-      const Toast = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-          toast.onmouseenter = Swal.stopTimer;
-          toast.onmouseleave = Swal.resumeTimer;
-        },
-      });
-      Toast.fire({
-        icon: 'success',
-        title: 'Signed in successfully',
-      });
       // await signUp({ googleProfile: profileObj, token: tokenId });
       navigate('/feedhome');
     } catch (error) {

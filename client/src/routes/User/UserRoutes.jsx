@@ -1,13 +1,13 @@
-import React from 'react'
-import { Routes, Route } from "react-router-dom"; 
+// import React from 'react'
+// import { Routes, Route } from "react-router-dom"; 
 
-function UserRoutes() {
-  return (
-    <Routes>
-      <Route path="/signup" element={<UserPublicRoutes component={SignUp} />} />
+// function UserRoutes() {
+//   return (
+//     <Routes>
+//       <Route path="/signup" element={<UserPublicRoutes component={SignUp} />} />
       
-    </Routes>
-  )
-}
+//     </Routes>
+//   )
+// }
 
-export default UserRoutes
+// export default UserRoutes

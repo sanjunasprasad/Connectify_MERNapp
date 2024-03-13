@@ -9,29 +9,26 @@ function VerifyOTP() {
   const navigate = useNavigate();
   const [timer, setTimer] = useState(60);
   const [otpInputs, setOtpInputs] = useState(['', '', '', '']);
-
+  const [isResendClicked, setIsResendClicked] = useState(false); 
+  const [successMessage, setSuccessMessage] = useState('');
   useEffect(() => {
     const intervalId = setInterval(() => {
       setTimer(prevTimer => {
         if (prevTimer === 0) {
           clearInterval(intervalId);
-          // Handle timeout here (e.g., show resend button)
         }
         return prevTimer === 0 ? 0 : prevTimer - 1;
       });
     }, 1000);
-
     return () => clearInterval(intervalId);
   }, []);
 
   const handleOtpInput = (index, value) => {
     const newOtpInputs = [...otpInputs];
     newOtpInputs[index] = value;
-
     if (value && index < 3) {
       document.getElementsByName(`txt${index + 2}`)[0].focus();
     }
-
     setOtpInputs(newOtpInputs);
   };
 
@@ -39,13 +36,10 @@ function VerifyOTP() {
     event.preventDefault();
     const Otp = otpInputs.join('');
     console.log('user entered OTP:', Otp);
-
     try {
-      // Make a POST request to your backend API to verify the OTP
       const response = await axiosUserInstance.post('/otpVerify', { Otp });
       console.log('Response from backend:', response);
       if (response.status === 200) {
-       
         navigate("/");
       } else {
         alert('Invalid OTP. Please enter the correct OTP.');
@@ -61,33 +55,17 @@ function VerifyOTP() {
     }
   };
 
-  // const handleResendOTP = async (event) => {
-  //   event.preventDefault();
-  //   try {
-  //     setOtpInputs(['', '', '', '']);
-  //     const Otp = otpInputs.join('');
-  //     console.log('user entered OTP:', Otp);
-  //     const response = await axiosInstance.post('/resendotpVerify',{Otp});
-  //     console.log('Response from backend (resend OTP):', response);
-  //     // Reset timer to 60 seconds
-  //     setTimer(60);
-      
-  //   } catch (error) {
-  //     console.error('Axios error (resend OTP):', error);
-  //     alert('An error occurred while resending OTP. Please try again later.');
-  //   }
-  // };
 
   const handleResendOTP = async (event) => {
-    event.preventDefault();
+    event.preventDefault(); 
     try {
-      setOtpInputs(prevOtpInputs => (['', '', '', '']));
-      const Otp = ['', '', '', ''].join('');
-      console.log('user entered OTP:', Otp);
-      const response = await axiosUserInstance.post('/resendotpVerify', { Otp });
-      console.log('Response from backend (resend OTP):', response);
-      // Reset timer to 60 seconds
       setTimer(60);
+      const response = await axiosUserInstance.get('/resendotp');
+      console.log('Response from backend (resend OTP):', response);
+      if (response.data && response.data.success) {
+        setSuccessMessage(response.data.message);
+      }
+      setIsResendClicked(true); 
     } catch (error) {
       console.error('Axios error (resend OTP):', error);
       alert('An error occurred while resending OTP. Please try again later');
@@ -102,8 +80,9 @@ function VerifyOTP() {
           "linear-gradient(to bottom right, #E86D9C, #FAAFCE, #FEADB9)",
       }}>
       <form  id="otpform" className="bg-white bg-opacity-25 backdrop-blur-lg p-10 rounded-lg shadow-lg w-96" onSubmit={handleSubmit}>
-        <h1 className="text-3xl font-semibold text-white text-center mb-5">Verify OTP</h1>
-        <p className="text-center text-white">OTP sent to your Email,<br />Please enter the OTP to verify.</p><br />
+        <h1 className="text-3xl font-semibold text-white text-center mb-5">Verify OTP </h1>
+        {!successMessage && ( <p className="text-center text-white">OTP sent to your Email,<br />Please enter here to verify.</p>)}
+        {successMessage && (<p className="error-message text-center text-red-500">{successMessage}</p> )}<br />
         <div className="flex justify-center mb-4">
           {otpInputs.map((value, index) => (
             <input
@@ -120,11 +99,10 @@ function VerifyOTP() {
         </div>
         <div id="otp-timer" className="text-center mb-4 text-white">{timer > 0 ? `Time Remaining: ${Math.floor(timer / 60)}:${timer % 60}` : 'Timeout'}</div>
         <div className="flex justify-center mb-4">
-          {/* <a href="#" className="text-white text-center mt-3" onClick={handleResendOTP}>Resend OTP</a> */}
           <button className="text-white text-center mt-3" onClick={handleResendOTP}>Resend OTP</button>
         </div>
         <div className="flex justify-center">
-          <button type="submit"  className="bg-gradient-to-r from-pink-600 via-pink-400 to-pink-500 hover:from-pink-500 hover:via-pink-400 hover:to-pink-600 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline">Verify</button>
+        <button type="submit" className="bg-gradient-to-r from-pink-600 via-pink-400 to-pink-500 hover:from-pink-500 hover:via-pink-400 hover:to-pink-600 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline">{isResendClicked ? 'Verify Again' : 'Verify'}</button>
         </div>
       </form>
     </div>

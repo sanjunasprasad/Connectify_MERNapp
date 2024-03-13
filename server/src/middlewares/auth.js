@@ -56,16 +56,16 @@ export const generateAdminToken = async (email) => {
 
 export const decodeAdminToken = async(req, res, next) => {
     try {
-        console.log("########")
+        
         const token = req.header('Authorization').replace('Bearer ', '');
-        console.log("token from frontend axios header :",token)
+        // console.log("token from frontend axios header :",token)
         Jwt.verify(token, process.env.JWT_KEY, (err, decodedToken) => {
             if (err) {
                 return res.status(401).json({ message: 'Unauthorized Access' });
             }
             req.token = decodedToken;
             const Role = req.headers.role;
-            console.log("role is",Role)
+            // console.log("role is",Role)
             if(Role !== 'admin'){
                 return res.status(403).json({ message: 'Forbidden, Insufficient role.' });
             }

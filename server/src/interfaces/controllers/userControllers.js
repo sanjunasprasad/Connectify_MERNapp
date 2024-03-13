@@ -7,7 +7,7 @@ import cloudinary from "../../config/cloudinary.js";
 import path from "path";
 
 
-let savedOTP,newOTP,userMail
+let savedOTP,userMail
 export const userRegister = async (req, res) => {
     try {
       const { firstName, lastName, phoneNo, email, password, is_blocked} = req.body;
@@ -25,14 +25,15 @@ export const userRegister = async (req, res) => {
 
   export const otpVerify = async(req,res) =>{
     try{
-
+      console.log("verify calleddddd")
       const { Otp } = req.body;
+      console.log("from frontend",Otp)
+      console.log("from backend savedotp",savedOTP)
       const OTP = parseInt(Otp, 10);
       if( OTP === savedOTP){
         res.status(200).json({ success: true, message: "OTP matched successfully." });
       }
       else {
-
         res.status(400).json({ success: false, message: "Invalid OTP. Please enter the correct OTP." });
       }
 
@@ -42,26 +43,16 @@ export const userRegister = async (req, res) => {
     }
   }
 
-  export const resendotpVerify = async(req,res) =>{
-    try{
-      const { Otp  } = req.body;
-      const OTP = parseInt(Otp, 10);
-      newOTP = generateOTP(); 
-      console.log("maillllll",userMail)
-      await sendOTPByEmail(userMail, newOTP);
-      console.log("otp backend",newOTP)
-      console.log("frontend user entered otp",OTP)
-      if( OTP === newOTP){
-        res.status(200).json({ success: true, message: "OTP matched successfully." });
-      }
-      else {
-
-        res.status(400).json({ success: false, message: "Invalid OTP. Please enter the correct OTP." });
-      }
-
-    }catch(err){
-      console.error('Error verifying OTP:', err);
-      res.status(500).json({ success: false, message: "An error occurred during OTP verification." });
+  export const resendotp = async (req, res) => {
+    try {
+      console.log("resend otp calleddddddddddd");
+       savedOTP = generateOTP(); 
+      await sendOTPByEmail(userMail, savedOTP);
+      console.log("New OTP generated and sent:", savedOTP);
+      res.status(200).json({ success: true, message: "OTP successfully resent to your email." });
+    } catch (err) {
+      console.error('Error resending OTP:', err);
+      res.status(500).json({ success: false, message: "An error occurred while resending OTP." });
     }
   }
   
