@@ -15,9 +15,9 @@ function FriendProfile() {
 
 const loggeduser = useSelector(state => state.user.user);
 const { _id } = loggeduser;
-// console.log("Logged user ID:", _id);
+console.log("Logged user ID:", _id);
 const {userid} = useParams()
-// console.log("friend userid",userid)
+console.log("friend userid",userid)
 const [userName,SetName] = useState("")
 const [userMail,SetMail]=useState("")
 const [userBio,SetBio] =useState("")
@@ -51,8 +51,7 @@ useEffect(() => {
       .catch(error => {
         console.error('Error fetching username:', error);
       });
-  }, []);
-
+  }, [userid]);
 
   //FOLLOW + UNFOLLOW
   const handleFollow = async () => {
@@ -90,20 +89,54 @@ useEffect(() => {
   // },[isFollowing])
 
 
-  const handleReportProfile = async() =>{
-    const { value: fruit } = await Swal.fire({
-      title: "Report profile?",
-      input: "select",
-      inputOptions: {
-        1: "It's spam",
-        2:"Hate speech or symbols",
-        3:"False information",
-        4:"Supports violence"
-      },
-      inputPlaceholder: "Select reason",
-      showCancelButton: true,
-    });
+  const handleReportProfile = async () => {
+    try {
+      const { value: reason } = await Swal.fire({
+        title: "Report profile?",
+        input: "select",
+        inputOptions: {
+          "Its spam": "It's spam",
+        "Hate speech or symbols": "Hate speech or symbols",
+        "False information": "False information",
+        "Supports violence": "Supports violence"
+        },
+        inputPlaceholder: "Select reason",
+        showCancelButton: true,
+      });
+      console.log("reason",reason)
+      if (reason) {
+        const token = localStorage.getItem("token");
+        const response = await axiosUserInstance.post(`/friend/reportProfile/${userid}`, { loggeduser: _id, reason }, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'role': 'user'
+          }
+        });
+        console.log("response for report:", response);
+        if(response.status === 200){
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Profile reported successfully",
+            showConfirmButton: false,
+            timer: 1500
+          });
+        }
 
+      }
+    } catch (error) {
+      console.error('Error reporting profile:', error);
+      if (error.response && error.response.status === 400) {
+        Swal.fire({
+          position: "top-end",
+          icon: "error",
+          title: "Profile already reported",
+          showConfirmButton: false,
+          timer: 1500
+        });
+    }
+  };
+  
   }
 
   return (

@@ -34,7 +34,7 @@ const AdminLogin = () => {
     } else {
       navigate("/admin");
     }
-  }, []);
+  }, [navigate]);
 
   return (
     <div className="flex flex-col h-screen bg-gradient-to-b from-[#063970] to-blue-200">

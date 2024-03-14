@@ -1,7 +1,7 @@
 import React from 'react'
 import { Route, Routes } from "react-router-dom";
-import UserRoutes from './routes/User/UserRoutes'
-import AdminRoutes from './routes/Admin/AdminRoutes'
+// import UserRoutes from './routes/User/UserRoutes'
+// import AdminRoutes from './routes/Admin/AdminRoutes'
 
 
 import UserHomePage from "./pages/Home/UserHomePage";

@@ -1,24 +1,38 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import 'sweetalert2/dist/sweetalert2.min.css'
+import moment from 'moment';
 import { axiosAdminInstance } from "../../services/axios/axios";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 
 function Notifications() {
-  
 
-  const [users, setUsers] = useState([]);
   const navigate = useNavigate();
+  const [users, setUsers] = useState([]);
+  const [usersForRemoval, setUsersForRemoval] = useState([]);
+  // const [deactivated, setDeactivated] = useState(false);
+
   useEffect(() => {
     const token = localStorage.getItem("adminToken");
     if (!token) {
       navigate("/admin");
     } else {
       axiosAdminInstance
-        .get("/admin/loadDashboard")
+        .get("/admin/listReportuser", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            role: 'admin'
+          },
+        })
         .then((response) => {
+          console.log("response all reported user", response.data)
           setUsers(response.data);
+          const allUsers = response.data;
+          const filtereduser = allUsers.filter(user =>
+            user.reports.length >= 3
+          );
+          setUsersForRemoval(filtereduser);
         })
         .catch((err) => {
           console.log(err);
@@ -26,194 +40,204 @@ function Notifications() {
     }
   }, [navigate]);
 
+  const handleDeactivate = async (id) => {
+    try {
+      console.log("id is",id)
+      const token = localStorage.getItem("adminToken");
+      const response = await axiosAdminInstance.patch(`/admin/deactivateUser/${id}`, { status: false },{
+        headers: {
+          Authorization: `Bearer ${token}`,
+          role: 'admin'
+        },
+      });
+      console.log("response all deactivate:",response)
+      // setDeactivated(true);
+     
+    } catch (error) {
+      console.error("error is",error);
+     
+    }
+  };
 
- 
 
-  
+
+
 
   return (
     <div className="flex">
-    <Sidebar />
-    <div className="flex flex-col w-full">
-      <Navbar />
+      <Sidebar />
+      <div className="flex flex-col w-full">
+        <Navbar />
 
-      <section className="mx-auto w-full max-w-7xl px-4 py-4">
-        <div className="flex flex-col space-y-4  md:flex-row md:items-center md:justify-between md:space-y-0">
-          <div>
-            <h2 className="text-lg font-semibold">Users</h2>
-            <p className="mt-1 text-sm text-gray-700">
-              This is a list of all reported Users.
-            </p>
+        <section className="mx-auto w-full max-w-7xl px-4 py-4">
+          <div className="flex flex-col space-y-4  md:flex-row md:items-center md:justify-between md:space-y-0">
+            <div>
+              <h2 className="text-lg font-semibold">Users</h2>
+              <p className="mt-1 text-sm text-gray-700">
+                This is a list of all reported Users.
+              </p>
+            </div>
+
           </div>
-           <div>
-          {/* <button
-            type="button"
-            className="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
-          >
-            Add new employee
-          </button> */}
-        </div> 
-        </div>
-        <div className="mt-6 flex flex-col">
-          <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-              <div className="overflow-hidden border border-gray-200 md:rounded-lg">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                    <th
-                        scope="col"
-                        className="px-4 py-3.5 text-left text-sm font-normal text-gray-700"
-                      >
-                        No.
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-4 py-3.5 text-left text-sm font-normal text-gray-700"
-                      >
-                        <span>User Name</span>
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-12 py-3.5 text-left text-sm font-normal text-gray-700"
-                      >
-                        Contact Number
-                      </th>
+          <div className="mt-6 flex flex-col">
+            <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+              <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+                <div className="overflow-hidden border border-gray-200 md:rounded-lg">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th
+                          scope="col"
+                          className="px-4 py-3.5 text-left text-sm font-normal text-gray-700"
+                        >
+                          <span>User Name</span>
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-12 py-3.5 text-left text-sm font-normal text-gray-700"
+                        >
+                          Reported By
+                        </th>
 
-                      <th
-                        scope="col"
-                        className="px-4 py-3.5 text-left text-sm font-normal text-gray-700"
-                      >
-                        Joined Date
-                      </th>
+                        <th
+                          scope="col"
+                          className="px-4 py-3.5 text-left text-sm font-normal text-gray-700"
+                        >
+                          Reported Date
+                        </th>
 
-                      <th
-                        scope="col"
-                        className="px-4 py-3.5 text-left text-sm font-normal text-gray-700"
-                      >
-                        Status
-                      </th>
-
-                      <th
-                        scope="col"
-                        className="px-4 py-3.5 text-left text-sm font-normal text-gray-700"
-                      >
-                        <span>Action</span>
-                      </th>
-                    </tr>
-                  </thead>
-
-                  <tbody className="divide-y divide-gray-200 bg-white">
-                    {users.map((user,index) => (
-                      <tr key={user._id}>
-                        <td className="whitespace-nowrap text-sm px-4 py-4">
-                          {index+1}
-                        </td>
-
-                        <td className="whitespace-nowrap px-4 py-4">
-                          <div className="flex items-center">
-                            <div className="h-10 w-10 flex-shrink-0">
-                              <img
-                                className="h-10 w-10 rounded-full object-cover"
-                                src={user.image}
-                                alt=""
-                              />
-                            </div>
-                            <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900">
-                                {user.firstName} {user.lastName}
-                              </div>
-                              <div className="text-sm text-gray-700">
-                                {user.email}
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-
-                        <td className="whitespace-nowrap px-12 py-4">
-                          <div className="text-sm text-gray-900 ">
-                            {user.phoneNo}
-                          </div>
-                          <div className="text-sm text-gray-700"></div>
-                        </td>
-
-                        <td className="whitespace-nowrap px-4 py-4">
-                          {user.date}
-                        </td>
-
-                        <td className="whitespace-nowrap px-4 py-4 text-sm text-gray-700">
-                          <span className="inline-flex rounded-full bg-green-100 px-2 text-xs font-semibold leading-5 text-green-800">
-                            {user.is_blocked ? "Blocked" : "Active"}
-                          </span>
-                        </td>
-
-                        <td className="whitespace-nowrap px-4 py-4 text-right text-sm font-medium">
-                          <div className="flex flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
-                            {/* <button  type="button" onClick={() => toggleUserStatus(user._id)}
-                              className="rounded-md bg-blue-600 px-2 py-1 text-xs font-semibold 
-                              text-white shadow-sm  focus-visible:outline 
-                              focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
-                              {user.is_blocked ? "Unblock" : "Block"}
-                            </button>
-                            <button type="button" onClick={() => deleteUser(user._id)}
-                              className="rounded-md bg-red-600 px-2 py-1 text-xs font-semibold text-white
-                               shadow-sm hover:bg-red-600/80 focus-visible:outline focus-visible:outline-2 
-                               focus-visible:outline-offset-2 focus-visible:outline-red-600">
-                              Delete 
-                            </button> */}
-                          </div>
-                        </td>
+                        <th
+                          scope="col"
+                          className="px-4 py-3.5 text-left text-sm font-normal text-gray-700"
+                        >
+                          Reported Issue
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+
+
+                    <tbody className="divide-y divide-gray-200 bg-white">
+                      {users.map((user, userIndex) => (
+                        user.reports.map((report, reportIndex) => (
+                          <tr key={`${user._id}-${reportIndex}`}>
+                            <td className="whitespace-nowrap px-4 py-4">
+                              <div className="flex items-center">
+                                <div className="h-10 w-10 flex-shrink-0">
+                                  <img
+                                    className="h-10 w-10 rounded-full object-cover"
+                                    src={user.image}
+                                    alt=""
+                                  />
+                                </div>
+                                <div className="ml-4">
+                                  <div className="text-sm font-medium text-gray-900">
+                                    {user.firstName} {user.lastName}
+                                  </div>
+                                  <div className="text-sm text-gray-700">
+                                    {user.email}
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+
+                            {/* Display report data */}
+                            <td className="whitespace-nowrap px-12 py-4">
+                              <div className="text-sm text-gray-900">
+                                {report.reportedBy.firstName}  {report.reportedBy.lastName}
+                              </div>
+                              <div className="text-sm text-gray-700"></div>
+                            </td>
+
+                            <td className="whitespace-nowrap px-4 py-4">
+                              {new Date(report.createdAt).toISOString().split('T')[0]}
+                            </td>
+
+                            <td className="whitespace-nowrap px-4 py-4 text-sm text-gray-700">
+                              <span className="inline-flex rounded-full bg-green-100 px-2 text-xs font-semibold leading-5 text-green-800">
+                                {report.reason}
+                              </span>
+                            </td>
+                          </tr>
+                        ))
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        {/* Pagination */}
-        <div className="flex items-center justify-center pt-6">
-          <a
-            href="#"
-            className="mx-1 cursor-not-allowed text-sm font-semibold text-gray-900"
-          >
-            <span className="hidden lg:block">&larr; Previous</span>
-            <span className="block lg:hidden">&larr;</span>
-          </a>
-          <a
-            href="#"
-            className="mx-1 flex items-center rounded-md border border-gray-400 px-3 py-1 text-gray-900 hover:scale-105"
-          >
-            1
-          </a>
-          <a
-            href="#"
-            className="mx-1 flex items-center rounded-md border border-gray-400 px-3 py-1 text-gray-900 hover:scale-105"
-          >
-            2
-          </a>
-          <a
-            href="#"
-            className="mx-1 flex items-center rounded-md border border-gray-400 px-3 py-1 text-gray-900 hover:scale-105"
-          >
-            3
-          </a>
-          <a
-            href="#"
-            className="mx-1 flex items-center rounded-md border border-gray-400 px-3 py-1 text-gray-900 hover:scale-105"
-          >
-            4
-          </a>
-          <a href="#" className="mx-2 text-sm font-semibold text-gray-900">
-            <span className="hidden lg:block">Next &rarr;</span>
-            <span className="block lg:hidden">&rarr;</span>
-          </a>
-        </div>
-        
-      </section>
+
+
+
+          {/* Second Table */}
+          <div className="py-5">
+            <h2 className="text-lg font-semibold">Users Listed for Deactivate</h2>
+          </div>
+          <div className="mt-6 flex flex-col">
+            <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+              <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+                <div className="overflow-hidden border border-gray-200 md:rounded-lg">
+                  <table className="min-w-full divide-y divide-gray-200" >
+                    {/* Table Headers */}
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th
+                          scope="col"
+                          className="px-4 py-3.5 text-left text-sm font-normal text-gray-700"
+                        >
+                          Name
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-4 py-3.5 text-left text-sm font-normal text-gray-700"
+                        >
+                          Action
+                        </th>
+                      </tr>
+                    </thead>
+
+                    {/* Table Body */}
+                    <tbody className="divide-y divide-gray-200 bg-white">
+                    {usersForRemoval.map((user, userIndex) => (
+                       
+                        <tr key={user._id}>
+                          <td className="whitespace-nowrap px-4 py-4">
+                            <div className="flex items-center">
+                              <div className="h-10 w-10 flex-shrink-0">
+                                <img
+                                  className="h-10 w-10 rounded-full object-cover"
+                                  src={user.image}
+                                  alt=""
+                                />
+                              </div>
+                              <div className="ml-4">
+                                <div className="text-sm font-medium text-gray-900">
+                                  {user.firstName} {user.lastName}
+                                </div>
+                                <div className="text-sm text-gray-700">
+                                  {user.email}
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap">
+                            <button className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded" onClick={()=>handleDeactivate(user._id)}>
+                            {user.status ? 'Deactivated' : 'Deactivate User'}
+                            </button>
+                          </td>
+                        </tr>
+                     
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
-  </div>
-  
+
   );
 }
 

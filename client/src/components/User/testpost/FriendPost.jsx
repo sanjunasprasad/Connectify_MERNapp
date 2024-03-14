@@ -24,7 +24,7 @@ function FriendPost({ post }) {
         src={post.file}
         className="z-0 h-full w-full rounded-md object-cover"
         style={{ maxHeight: '250px' }}
-        alt="Post Image"
+        alt=""
       />
       {isHovered && (
         <div className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center">

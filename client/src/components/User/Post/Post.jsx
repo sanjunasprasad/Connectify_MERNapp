@@ -71,7 +71,7 @@ useEffect(() => {
   let commentId = []
   for (let i = 0; i < postlist.comments.length; i++) {
     commentsuserId.push(postlist.comments[i].user);
-    commentId .push(postlist.comments[i]._id);
+    commentId.push(postlist.comments[i]._id);
      
   }
   // console.log("comment id",commentId)
@@ -109,10 +109,12 @@ useEffect(() => {
     <div style={{ marginLeft: "120px", marginTop: 20 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: "space-between", marginBottom: 10 }}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <img src={postlist.user.image} style={{ width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover", }} alt="" /> {/* profilepic on post top*/}
-          <p style={{ marginLeft: 10 }}>  {/* username  on post top*/}
+          {/* profilepic on post top*/}
+          {/* <img src={postlist.user.image} style={{ width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover", }} alt="" />  */}
+          {/* username  on post top*/}
+          {/* <p style={{ marginLeft: 10 }}>  
             { loggeduser && loggeduser._id === postlist.user._id ? (<Link to={`/username`} >{postlist.user.firstName}</Link>) : (<Link to={`/username/${postlist.user._id}`} >{postlist.user.firstName}</Link> )}
-           </p>
+           </p> */}
         </div>
         <div >
           <img src={Moreoptions} alt="" />
@@ -138,9 +140,10 @@ useEffect(() => {
                     <div >
                         <div style={{display:"flex" , alignItems:"center" , paddingLeft:10 , justifyContent:"space-between"}}>
                             <div style={{display:"flex" , alignItems:"center" , paddingLeft:10}}>
-                              <img src={postlist.user.image} style={{ width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover" }} alt="" />
+                              {/* <img src={postlist.user.image} style={{ width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover" }} alt="" /> */}
                               <div style={{paddingLeft:10}}>
-                                  <p style={{marginBottom:0}}>{postlist.user.firstName}</p> {/* post owner name on top comment section */}
+                                {/* post owner name on top comment section */}
+                                  {/* <p style={{marginBottom:0}}>{postlist.user.firstName}</p>  */}
                               </div>
                             </div>
                             <div>

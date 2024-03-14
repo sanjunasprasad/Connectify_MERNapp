@@ -89,3 +89,34 @@ export const suggetionList = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+
+export const reportProfile = async(req,res) =>{
+  const userId = req.params.id;
+  // console.log("friend id",userId)
+  const { loggeduser } = req.body;
+  // console.log("loggeduser id",loggeduser)
+  const {reason} = req.body
+  // console.log("reason",reason)
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    // Check if the loggeduser has already reported this user
+    const existingReport = user.reports.find(report => report.reportedBy.equals(loggeduser));
+    if (existingReport) {
+      return res.status(400).json({ message: "You have already reported this profile" });
+    }
+
+    // Update the user's reports array
+    user.reports.push({ reportedBy: loggeduser, reason });
+    await user.save();
+
+    res.status(200).json({ message: "Profile reported successfully" });
+  } catch (error) {
+    res.status(500).send("Internal server error");
+  }
+
+}

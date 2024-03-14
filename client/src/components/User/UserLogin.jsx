@@ -3,7 +3,7 @@ import { useSelector,useDispatch } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import {GoogleLogin } from "react-google-login"
-import { setUser, setToken } from "../../services/redux/slices/userSlice";
+import {  setToken } from "../../services/redux/slices/userSlice";
 import { axiosInstance }  from "../../services/axios/axios";
 import Swal from "sweetalert2"
 import 'sweetalert2/dist/sweetalert2.min.css'
@@ -39,7 +39,7 @@ function UserLogin() {
     if (Object.keys(validationErrors).length === 0) {
       try {
         const response = await  axiosInstance.post("/userLogin", formdata);
-        console.log("Responseeee after login:", response);
+        // console.log("Responseeee after login:", response);
         if (response.status === 200) {
           localStorage.setItem("token", response.data);
           // console.log("token  setted to localstorage  after login via loginpage:",response.data)
@@ -62,11 +62,18 @@ function UserLogin() {
           navigate("/feedhome");
         }
       } catch (err) {
-        if (err.response && err.response.data) {
-          if (err.response.data.message === "User account is blocked.") {
+        if (err.response && err.response.data) 
+        {
+          if (err.response.data.message === "User account is blocked.") 
+          {
             setEmailExits("Your account is blocked!!!");
           }
-        } else if (err.response && err.response.status === 401) {
+          if (err.response.data.message === "User account is deactivated.") 
+          {
+            setEmailExits("Your account is deactivated!!!");
+          }
+        } 
+        else if (err.response && err.response.status === 401) {
           setEmailExits("Incorrect email or password");
         }
       }

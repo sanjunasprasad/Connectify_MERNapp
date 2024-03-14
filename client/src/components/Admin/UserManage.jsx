@@ -51,12 +51,13 @@ function UserManage() {
         });
 
         if (result.isConfirmed) {
-            const response = await  axiosAdminInstance .patch(`/admin/blockuser/${id}`, 
+            const response = await  axiosAdminInstance.patch(`/admin/blockuser/${id}`, 
             {is_blocked: newStatus,},
             {headers: {
                 Authorization: `Bearer ${token}`,
                 role : 'admin'},
             });
+            console.log("response is",response)
             // Update the local state to reflect the change
             setUsers(
                 users.map((user) =>

@@ -44,8 +44,8 @@ export const decodeToken = async(req, res, next) => {
 export const generateAdminToken = async (email) => {
     try {
         const token = Jwt.sign(email, process.env.JWT_KEY);
-        console.log('adminToken:', JSON.stringify(token));
-        console.log("type of admin token",typeof(token))
+        // console.log('adminToken:', JSON.stringify(token));
+        // console.log("type of admin token",typeof(token))
         return token;
     } catch (error) {
         console.error("Error generating admin token:", error);

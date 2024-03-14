@@ -11,6 +11,9 @@ export const loginUser = async (email, password) => {
        if (existingUser.is_blocked) {
         return { blocked: true, message: 'User account is blocked.' };
        }
+       else if(existingUser.status){
+        return { status: true, message: 'User account is deactivated.' };
+       }
       else if (existingUser) 
       {
         const passwordMatch = await bcrypt.compare(password, existingUser.password);

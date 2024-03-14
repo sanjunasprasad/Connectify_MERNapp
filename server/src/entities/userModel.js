@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-const { ObjectId } = mongoose.Schema.Types
+const { ObjectId } = mongoose.Schema.Types;
 const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
@@ -21,7 +21,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-
+  status: {
+    type: Boolean,
+    default: false,
+    required: true,
+  },
   is_blocked: {
     type: Boolean,
     default: false,
@@ -39,22 +43,44 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
-  followers:[{
-    type: ObjectId,
-    ref :"User",
-    createdAt: {
-      type: Date,
-      default: Date.now,
+  followers: [
+    {
+      type: ObjectId,
+      ref: "User",
+      createdAt: {
+        type: Date,
+        default: Date.now,
+      },
     },
-  }],
-  following:[{
-    type: ObjectId,
-    ref :"User",
-    createdAt: {
-      type: Date,
-      default: Date.now,
+  ],
+  following: [
+    {
+      type: ObjectId,
+      ref: "User",
+      createdAt: {
+        type: Date,
+        default: Date.now,
+      },
     },
-  }],
+  ],
+  reports: [
+    {
+      reportedBy: {
+        type: ObjectId,
+        ref: "User",
+        required: true,
+      },
+      reason: {
+        type: String,
+        required: true,
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  ],
+
   createdAt: {
     type: Date,
     default: Date.now,
