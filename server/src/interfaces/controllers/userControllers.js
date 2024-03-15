@@ -2,6 +2,7 @@ import { registerUser } from "../../usecases/UserUseCases/registerUser.js";
 import { findOneUser } from "../../repositories/userRepository.js";
 import {loginUser} from '../../usecases/UserUseCases/loginUser.js';
 import { editUser } from '../../usecases/UserUseCases/editUser.js';
+import { deleteUser } from '../../usecases/UserUseCases/deleteUser.js';
 import { generateOTP, sendOTPByEmail } from '../../services/otpService.js';
 import cloudinary from "../../config/cloudinary.js";
 import path from "path";
@@ -48,7 +49,7 @@ export const userRegister = async (req, res) => {
       console.log("resend otp calleddddddddddd");
        savedOTP = generateOTP(); 
       await sendOTPByEmail(userMail, savedOTP);
-      console.log("New OTP generated and sent:", savedOTP);
+      console.log("New OTP generated iam resend controller", savedOTP);
       res.status(200).json({ success: true, message: "OTP successfully resent to your email." });
     } catch (err) {
       console.error('Error resending OTP:', err);
@@ -121,4 +122,15 @@ export const fetchProfile = async (req, res) => {
   }
 }
 
-
+export const deleteuser = async (req,res) =>{
+  try{
+      const userId = req.params.id;
+      console.log("id is to delete",userId)
+      const response = await deleteUser(userId);
+      // console.log("response delete",response)
+      res.status(200).json(response);
+  }catch(err){
+      console.log(err);
+      res.json({message:"Couldnt delete the user"})
+  }
+}

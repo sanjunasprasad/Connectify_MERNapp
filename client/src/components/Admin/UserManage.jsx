@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+// import { useSelector,useDispatch} from 'react-redux';
+// import { setUser,clearUser} from "../../services/redux/slices/userSlice";
+import { axiosAdminInstance } from "../../services/axios/axios";
 import Swal from "sweetalert2"
 import 'sweetalert2/dist/sweetalert2.min.css'
-import { axiosAdminInstance } from "../../services/axios/axios";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 
 function UserManage() {
-  
 
   const [users, setUsers] = useState([]);
   const navigate = useNavigate();
+  // const dispatch = useDispatch();
+  // const state = useSelector(state => state); 
+  // console.log("Current Redux Store State in admin page:", state);
   useEffect(() => {
     const token = localStorage.getItem("adminToken");
     if (!token) {
@@ -37,6 +41,9 @@ function UserManage() {
   // to block/unblock
   const toggleUserStatus = async (id) => {
     const token = localStorage.getItem("adminToken");
+    console.log("admin token",token)
+   const  usertoken=localStorage.getItem("token")
+    console.log("user token",usertoken)
     const userToUpdate = users.find((user) => user._id === id);
     console.log("usertoupdate:", userToUpdate);
     const newStatus = !userToUpdate.is_blocked;
@@ -57,7 +64,8 @@ function UserManage() {
                 Authorization: `Bearer ${token}`,
                 role : 'admin'},
             });
-            console.log("response is",response)
+            console.log("response of blocked user:",response)
+
             // Update the local state to reflect the change
             setUsers(
                 users.map((user) =>
@@ -68,7 +76,7 @@ function UserManage() {
                 title: "Success!",
                 text: `User has been ${newStatus ? 'blocked' : 'unblocked'} successfully.`,
                 icon: "success"
-            });
+            })
         } else {
             // Handle the cancel action here
             Swal.fire({

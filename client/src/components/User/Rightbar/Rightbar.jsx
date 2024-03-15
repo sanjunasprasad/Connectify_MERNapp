@@ -15,33 +15,6 @@ function Rightbar() {
     // console.log("logged id is",_id)
     // console.log("i am following is:",following)
 
-
-
-  //suggestion list
-  const [responseData, setResponseData] = useState([]);
-  useEffect (()=>{
-    const token = localStorage.getItem("token");
-   const response = axiosUserInstance.get(`/friend/suggestionlist/${_id}`,{
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'role': 'user'}
-   }).then(response => {
-      setResponseData(response.data);
-      // console.log("POST RESPONSE##### ",response.data) 
-      
-      })
-      .catch(error => {
-        console.error('Error fetching user:', error);
-      });
-  },[_id])
-
-
-
-
-
-
-
-
   //restricted post display
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -63,8 +36,33 @@ function Rightbar() {
     }
   }, [_id,following,dispatch]);
 
+
+
+  //suggestion list
+  const [responseData, setResponseData] = useState([]);
+  useEffect (()=>{
+    const token = localStorage.getItem("token");
+    if (_id) {
+      const response = axiosUserInstance.get(`/friend/suggestionlist/${_id}`,{
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'role': 'user'}
+       }).then(response => {
+          setResponseData(response.data);
+          // console.log("POST RESPONSE##### ",response.data) 
+          
+          })
+          .catch(error => {
+            console.error('Error fetching user:', error);
+          });
+    }
+ 
+  },[_id])
+
+
+
   const posts = useSelector(state => state.post.posts) || []; //mapping for post component,useselector needed
-  // console.log("postlist from rightbar selector",posts)
+  // console.log("post from rightbar selector through redux",posts)
 
   return (
     <div className='MainRigntBar'>

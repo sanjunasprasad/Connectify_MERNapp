@@ -2,8 +2,8 @@ import User from  '../entities/userModel.js'
 
 
 //user registration
-export const saveUser = async (firstName, lastName, phoneNo, email, password, is_blocked, date) => {
-    const user = new User({ firstName, lastName, phoneNo, email, password,is_blocked, date});
+export const saveUser = async (firstName, lastName, phoneNo, email, password, is_blocked,status, date) => {
+    const user = new User({ firstName, lastName, phoneNo, email, password,is_blocked, status,date});
     return  user.save();
     
 }
@@ -32,7 +32,7 @@ export const getAllUsers = async () => {
 
 
 
-  //from user+admin  to edit
+  //from user to edit
   export const updateUser = async (id, userData, image) => {
     try {
       const { firstName, lastName, phoneNo, email, password, bio, location } = userData;
@@ -47,3 +47,16 @@ export const getAllUsers = async () => {
     }
   };
   
+
+
+
+
+  // to delete user
+export const deleteOneUser = async (id) => {
+  const response = await User.findByIdAndDelete(id);
+  if (response) {
+    return response;
+  } else {
+    return { message: "User not found" };
+  }
+};

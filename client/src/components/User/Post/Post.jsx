@@ -20,6 +20,7 @@ import Saveicon from "../../../Icons/Save.png"
 export default function Post({ postlist }) {
   const dispatch = useDispatch();
   const loggeduser = useSelector(state => state.user.user);
+  // console.log("postlist props contains:",postlist)
   
   const getRelativeTime = (createdAt) => {
     return moment(createdAt).fromNow();
@@ -110,11 +111,12 @@ useEffect(() => {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: "space-between", marginBottom: 10 }}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           {/* profilepic on post top*/}
-          {/* <img src={postlist.user.image} style={{ width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover", }} alt="" />  */}
+          {postlist && postlist.user && postlist.user.image && (
+          <img src={postlist.user.image} style={{ width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover", }} alt="" />  )}
           {/* username  on post top*/}
-          {/* <p style={{ marginLeft: 10 }}>  
-            { loggeduser && loggeduser._id === postlist.user._id ? (<Link to={`/username`} >{postlist.user.firstName}</Link>) : (<Link to={`/username/${postlist.user._id}`} >{postlist.user.firstName}</Link> )}
-           </p> */}
+          <p style={{ marginLeft: 10 }}>  
+            { postlist && postlist.user && postlist.user._id && loggeduser && loggeduser._id === postlist.user._id ? (<Link to={`/username`} >{postlist.user.firstName}</Link>) : (<Link to={`/username/${postlist.user._id}`} >{postlist.user.firstName}</Link> )}
+           </p>
         </div>
         <div >
           <img src={Moreoptions} alt="" />
@@ -140,10 +142,10 @@ useEffect(() => {
                     <div >
                         <div style={{display:"flex" , alignItems:"center" , paddingLeft:10 , justifyContent:"space-between"}}>
                             <div style={{display:"flex" , alignItems:"center" , paddingLeft:10}}>
-                              {/* <img src={postlist.user.image} style={{ width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover" }} alt="" /> */}
+                              <img src={postlist.user.image} style={{ width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover" }} alt="" />
                               <div style={{paddingLeft:10}}>
                                 {/* post owner name on top comment section */}
-                                  {/* <p style={{marginBottom:0}}>{postlist.user.firstName}</p>  */}
+                                  <p style={{marginBottom:0}}>{postlist.user.firstName}</p> 
                               </div>
                             </div>
                             <div>

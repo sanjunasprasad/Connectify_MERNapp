@@ -35,7 +35,7 @@ function UserLogin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validateForm(formdata);
-    console.log("validation error:", Object.keys(validationErrors).length);
+    // console.log("validation error:", Object.keys(validationErrors).length);
     if (Object.keys(validationErrors).length === 0) {
       try {
         const response = await  axiosInstance.post("/userLogin", formdata);

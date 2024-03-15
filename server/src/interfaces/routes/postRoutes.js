@@ -8,8 +8,8 @@ import {createPost,loadPost,loadownPost,likePost,unlikePost,commentPost,getComme
 
 
 postRoute.post('/createPost',decodeToken,upload.single('file'), createPost);
-postRoute.get('/loadPost',decodeToken, loadownPost);
-postRoute.get('/loadPost/:userId', decodeToken,loadPost);
+postRoute.get('/loadPost',decodeToken, loadownPost); //own post load
+postRoute.get('/loadPost/:userId', decodeToken,loadPost);//restricted post load
 postRoute.post('/likepost/:postid',decodeToken, likePost);
 postRoute.post('/unlikepost/:postid', decodeToken,unlikePost);
 postRoute.post('/commentpost/:postid',decodeToken, commentPost); 

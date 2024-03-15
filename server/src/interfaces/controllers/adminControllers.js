@@ -32,7 +32,7 @@ export const userBlock = async (req,res) =>{
         const { id } = req.params;
         const { is_blocked } = req.body;
         const response = await blockUsers(id, is_blocked)
-        // console.log("response from controller",response)
+        // console.log("response from  for block",response)
         if(!id){
             return res.status(400).json("id not found")
         }

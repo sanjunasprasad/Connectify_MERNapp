@@ -12,12 +12,13 @@ export const registerUser = async (
   image,
   bio,
   location,
+  status
 
 ) => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const date = await formatDate(Date.now());
-    return await saveUser(
+    return await saveUser( 
       firstName,
       lastName,
       phoneNo,
@@ -27,7 +28,8 @@ export const registerUser = async (
       image,
       bio,
       location,
-  
+      status,
+       date
     );
   } catch (err) {
     console.error("START_USECASE++++++:", err);

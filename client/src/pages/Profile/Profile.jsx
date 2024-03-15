@@ -1,6 +1,7 @@
 import React, {  useState,useEffect } from "react";
 import { useSelector ,useDispatch} from 'react-redux';
-import { setUser } from "../../services/redux/slices/userSlice";
+import { useNavigate } from "react-router-dom";
+import { setUser ,clearUser} from "../../services/redux/slices/userSlice";
 import { axiosUserInstance }  from "../../services/axios/axios";
 import "./profile.css";
 import ProductTwo from "../../components/User/testpost/ProductTwo";
@@ -13,11 +14,12 @@ import 'sweetalert2/dist/sweetalert2.min.css'
 export default function Profile() {
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const token = useSelector(state => state.user.token);
   const loggedUser = useSelector(state => state.user.user);
-  // console.log("userdata from Redux store profile:", loggedUser);
+  console.log("userdata from Redux store profile:", loggedUser);
   const {_id } = loggedUser
-  // console.log("id is",_id)
+  console.log("id is",_id)
 
   useEffect(() => {
     setFormData(loggedUser);
@@ -126,24 +128,56 @@ const handleSubmit = async (e) => {
   }
 }
 
-const handleImageClick = ()=>{
-  Swal.fire({
-    title: "Are you sure to delete profile?",
-    text: "You won't be able to revert this!",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#3085d6",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Yes, delete it!"
-  }).then((result) => {
-    if (result.isConfirmed) {
-      Swal.fire({
-        title: "Deleted!",
-        text: "Your profile has been deleted.",
-        icon: "success"
+//to delete user
+const deleteUser = async () => {
+  console.log("deleteUser function called");
+  console.log("kiran id is",_id)
+  try {
+   
+      const result = await Swal.fire({
+          title: "Are you sure?",
+          text: "You won't be able to revert this!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, delete it!"
       });
-    }
-  });
+
+      if (result.isConfirmed) {
+        console.log("kiran id is",_id)
+          const response = await axiosUserInstance.delete(`/DeleteUser/${_id}`,{
+            headers: {
+              Authorization: `Bearer ${token}`,
+              role : 'user'},
+          });
+          console.log("delete response",response)
+          if (response.status === 200) {
+              Swal.fire({
+                  title: "Deleted!",
+                  text: "User has been deleted.",
+                  icon: "success"
+              }).then(()=>{
+                dispatch(clearUser());
+                localStorage.removeItem("token");
+                navigate("/");
+              })
+          } 
+          else {
+              alert(response.data.message);
+          }
+      } 
+      else {
+          // Handle the cancel action here
+          Swal.fire({
+              title: "Cancelled",
+              text: "The action has been cancelled.",
+              icon: "info"
+          });
+      }
+  } catch (err) {
+      console.log(err);
+  }
 }
 
   return (
@@ -280,7 +314,9 @@ const handleImageClick = ()=>{
 
 
 
-                  <img src={SettingIcon} style={{ marginLeft: 20, cursor: "pointer" }} alt="" onClick={handleImageClick} />
+                  {/* <img src={SettingIcon} style={{ marginLeft: 20, cursor: "pointer" }} alt="" onClick={() =>{console.log('Delete button clicked');  deleteUser(_id)}} /> */}
+
+                  <img src={SettingIcon} style={{ marginLeft: 20, cursor: "pointer" }} alt="" onClick={deleteUser} />
                 </div>
                 <div style={{ display: "flex", alignItems: "center" ,paddingTop:10}}>
                   <p style={{ marginLeft: 100 ,paddingTop:6}}>{postLength} Post</p>
