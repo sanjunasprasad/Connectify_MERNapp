@@ -4,8 +4,9 @@
     /* overflow:auto; */
     display: grid;
     grid-template-columns: 22% 1px auto;
-    /* gap: 1rem; */
+    gap: 1rem;
     color: white;
+    
 }
 
 

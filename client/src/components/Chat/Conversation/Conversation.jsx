@@ -6,12 +6,12 @@ import "./Conversation.css"
 
 
 
-const Conversation = ({ data, currentUserId }) => {
+const Conversation = ({ data, currentUserId , online}) => {
 
   const [userData, setUserData] = useState(null)
   useEffect(() => {
     const userId = data.members.find((id) => id !== currentUserId)
-    console.log("4)userid to chat in convo", userId)
+    // console.log("4)userid to chat in convo", userId)
     const getUserData = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -22,7 +22,7 @@ const Conversation = ({ data, currentUserId }) => {
           }
         })
         setUserData(data)
-        console.log("5)userdetails to chat profile in convo ", data)
+        // console.log("5)userdetails to chat profile in convo ", data)
       }
       catch (error) {
         console.log(error)
@@ -36,7 +36,7 @@ const Conversation = ({ data, currentUserId }) => {
     <>
       <div className="follower conversation">
         <div>
-          <div className="online-dot"></div>
+        {online && <div className="online-dot"></div>}
           <img
             src={userData?.user?.image
               ? userData.user.image
@@ -47,7 +47,7 @@ const Conversation = ({ data, currentUserId }) => {
           />
           <div className="name" style={{ fontSize: '0.8rem', marginLeft: '4rem', marginTop: '-3rem' }}>
             <span>{userData?.user?.firstName} {userData?.user?.lastName}</span>
-            <span >Online</span>
+            <span >{online? "Online" : "Offline"}</span>
           </div>
         </div>
       </div>

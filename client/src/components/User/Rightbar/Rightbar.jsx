@@ -98,7 +98,7 @@ function Rightbar() {
               <p style={{color:"#A8A8A8" , textAlign:'start',marginLeft:'30',marginTop:50 }}>People you may know</p>
               {/* list */}
               {responseData.map(user => (
-              <div  style={{display:"flex" , alignItems:"center" , marginLeft:20 , marginTop:10}}>
+              <div key={user._id} style={{display:"flex" , alignItems:"center" , marginLeft:20 , marginTop:10}}>
                   <img src={user.image}style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover" }} alt="" />
                     <div>
                       <p style={{ marginLeft: 10 , textAlign:"start"  }}>  

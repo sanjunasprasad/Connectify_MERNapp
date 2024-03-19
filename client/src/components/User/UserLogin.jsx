@@ -11,7 +11,7 @@ import 'sweetalert2/dist/sweetalert2.min.css'
 function UserLogin() {
 
   const dispatch = useDispatch();
-  const loggeduserid = useSelector(state => state.user._id); 
+  const loggeduserid = useSelector(state => state.user.user); 
   console.log("Current Redux Store State in login page:", loggeduserid);
 
   const navigate = useNavigate();

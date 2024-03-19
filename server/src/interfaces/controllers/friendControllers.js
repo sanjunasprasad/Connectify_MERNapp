@@ -13,13 +13,35 @@ export const getUserAccount = async (req, res) => {
       user: user,
       posts: posts,
     };
-
     res.status(200).json(userDataWithPosts);
   } catch (error) {
     console.error("Error fetching user details and posts:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+export const getFollowers = async(req,res)=>{
+  try {
+    const  userId  = req.params.id;
+    // console.log("logged user id",userId)
+    const user = await User.findById(userId).populate('followers', 'firstName lastName image');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    const followers = user.followers.map(follower => ({
+      _id: follower._id,
+      firstName: follower.firstName,
+      lastName: follower.lastName,
+      image: follower.image
+    }));
+    res.json(followers);
+    // console.log("res is:",followers)
+  }
+    catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Internal Server Error' });
+    }
+}
 
 export const followUser = async (req, res) => {
   const userId = req.params.id;

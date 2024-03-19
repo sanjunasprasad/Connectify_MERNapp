@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useSelector } from "react-redux";
 import { io } from "socket.io-client";
 import "./ChatRightbar.css"
@@ -18,8 +18,8 @@ function ChatRightbar() {
   const [receivedMessage, setReceivedMessage] = useState(null);
   const user = useSelector(state => state.user.user);
   // console.log("loged user is",user)
-  const { _id, image } = user
-  console.log("1)loggeduser id in chatttttt:", _id)
+  const { _id, } = user
+  console.log("1)loggeduser id in chatrightbar:", _id)
 
 
   //get chats 
@@ -44,12 +44,6 @@ function ChatRightbar() {
     }
   }, [user._id]);
 
-  useEffect(()=>{
-    console.log("3)test chat in rightbar",chats)
-  })
-
-
-    
 
 
 
@@ -59,15 +53,16 @@ function ChatRightbar() {
     socket.current.emit("new-user-add", user._id);
     socket.current.on("get-users", (users) => {
       setOnlineUsers(users);
-      console.log("online users is",onlineUsers)
+      console.log("online users is", onlineUsers)
     });
   }, [user]);
 
 
   // Send Message to socket server
   useEffect(() => {
-    if (sendMessage!==null) {
-      socket.current.emit("send-message", sendMessage);}
+    if (sendMessage !== null) {
+      socket.current.emit("send-message", sendMessage);
+    }
   }, [sendMessage]);
 
 
@@ -83,6 +78,13 @@ function ChatRightbar() {
   }, []);
 
 
+  //check online status
+  const checkOnlineStatus = (chat) => {
+    const chatMember = chat.members.find((member) => member !== user._id);
+    const online = onlineUsers.find((user) => user.userId === chatMember);
+    return online ? true : false;
+  };
+
 
 
   return (
@@ -94,15 +96,15 @@ function ChatRightbar() {
         <h1 style={{ marginLeft: '95px', fontWeight: 'bold', marginTop: '42px', fontSize: '20px' }}>Messages</h1>
         <div className="Chat-list">
           {chats.map((chat) => (
-            <div  onClick={() => {setCurrentChat(chat)}}>
-              <Conversation data={chat} currentUserId={user._id} />
+            <div onClick={() => { setCurrentChat(chat) }}>
+              <Conversation data={chat} currentUserId={user._id} online={checkOnlineStatus(chat)} />
             </div>
           ))}
         </div>
         {/* </div> */}
       </div>
 
-      
+
 
       <div className="vertical-line"></div>
 
@@ -111,15 +113,7 @@ function ChatRightbar() {
 
       {/* rightside */}
       <div className="Right-side-chat">
-        {/* <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", width: "20rem", marginLeft: "47px", marginTop: "35px" }}>
-          <img src={user.image} style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", marginTop: "30" }} alt="" />
-          <h1 style={{ marginLeft: "-135px", marginRight: "210px" }}> {user.firstName}</h1>
-        </div> */}
-        {/* <div style={{ marginLeft: "743px", }}>
-          <img src={Saveicon} style={{ marginLeft: "196px",marginTop:"-45px" }} alt="" />
-          <img src={Saveicon} style={{ marginLeft: "225px", marginTop: "-24px" }} alt="" />
-        </div> 
-         */}
+
         <ChatBox
           chat={currentChat}
           currentUser={user._id}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect,useRef } from 'react'
 import { axiosUserInstance } from "../../../services/axios/axios";
 import moment from 'moment';
 import InputEmoji from 'react-input-emoji'
@@ -8,6 +8,8 @@ const ChatBox = ({ chat, currentUser,setSendMessage,receivedMessage }) => {
   const [userData, setUserData] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
+  const scroll = useRef();
+  const imageRef = useRef();
   // console.log(" 6)chat props is:", chat)
   // const { _id } = chat
   // console.log("7)chat id is",chat._id)
@@ -21,14 +23,10 @@ const ChatBox = ({ chat, currentUser,setSendMessage,receivedMessage }) => {
   }
 
   
-
-  
-
-
   // fetching data on  heading name
   useEffect(() => {
     const userId = chat?.members?.find((id) => id !== currentUser);
-    console.log("5)chat box userid", userId)
+    // console.log("5)chat box userid", userId)
 
     const getUserData = async () => {
       try {
@@ -40,7 +38,7 @@ const ChatBox = ({ chat, currentUser,setSendMessage,receivedMessage }) => {
           }
         })
         setUserData(data);
-        console.log(" 9)chatbox userdata response", data)
+        // console.log(" 9)chatbox userdata response", data)
       } catch (error) {
         console.log(error);
       }
@@ -64,7 +62,7 @@ const ChatBox = ({ chat, currentUser,setSendMessage,receivedMessage }) => {
           }
         })
         setMessages(data);
-        console.log("8)backend response chatbox messages ", data)
+        // console.log("8)backend response chatbox messages ", data)
       } catch (error) {
         console.log(error);
       }
@@ -96,8 +94,6 @@ const ChatBox = ({ chat, currentUser,setSendMessage,receivedMessage }) => {
   }
 }
 
-
-
 // Receive Message from parent component
 useEffect(()=> {
   console.log("Message Arrived: ", receivedMessage)
@@ -107,13 +103,20 @@ useEffect(()=> {
 },[receivedMessage])
 
 
+  // Always scroll to last Message
+  useEffect(()=> {
+    scroll.current?.scrollIntoView({ behavior: "smooth" });
+  },[messages])
+
+
   return (
-    <>
+
       <div className='ChatBox-container'>
         {chat ? (
           <>
+              {/* chat-header */}
             <div className='chat-header'>
-              <div className="follower">
+              <div >
                 <div>
                   <img
                     src={userData?.user?.image
@@ -123,20 +126,20 @@ useEffect(()=> {
                     className="followerImage"
                     style={{ width: "45px", height: "45px", marginTop: '2rem', marginLeft: '4rem' }}
                   />
-                  <div className="name" style={{ fontSize: '0.8rem', marginLeft: '8rem', marginTop: '-2rem' }}>
+                  <div  style={{ fontSize: '0.8rem', marginLeft: '8rem', marginTop: '-2rem' }}>
                     <span>{userData?.user?.firstName} {userData?.user?.lastName}</span>
                   </div>
                 </div>
               </div>
               < hr style={{ width: "95%", border: "0.1px solid #ececec", marginTop: "20px", }} />
 
-
+              </div>
 
               {/* chat messages */}
               <div className="chat-body" >
-                {messages.map((message) => (
+                {messages.map((message,index) => (
                   <>
-                    <div
+                    <div key={index} ref={scroll}
                       className={
                         message.senderId === currentUser
                           ? "message own"
@@ -153,15 +156,21 @@ useEffect(()=> {
 
               {/* chat-sender */}
               <div className="chat-sender">
-                <div>+</div>
+               
+                <div onClick={() => imageRef.current.click()}>+</div>
                 <InputEmoji
                   value={newMessage}
                   onChange={handleChange}
                 />
                 <div className="send-button button" onClick = {handleSend}>Send</div>
-              </div>
-
-            </div>
+                <input
+                type="file"
+                name=""
+                id=""
+                style={{ display: "none" }}
+                ref={imageRef}
+              />
+            </div>{" "}
           </>
         ) : (
           <span className="chatbox-empty-message">
@@ -169,7 +178,7 @@ useEffect(()=> {
           </span>
         )}
       </div>
-    </>
+  
   )
 }
 

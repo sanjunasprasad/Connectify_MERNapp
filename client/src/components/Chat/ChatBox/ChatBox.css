@@ -1,34 +1,32 @@
 .ChatBox-container {
-    /* background: rgba(255, 255, 255, 0.64); */
-    /* border-radius: 1rem; */
+    background: rgb(50, 50, 50);
+    border-radius: 1rem;
     display: grid;
     grid-template-rows: 14vh 60vh 13vh;
 }
 
 .chat-header {
-    /* padding: 1rem 1rem 0rem 1rem;  */
+    padding: 1rem 1rem 0rem 1rem; 
     /* create a gap all around for chatbox*/
     display: flex;
     flex-direction: column;
     position: relative;
+     overflow: hidden;
 }
 
 .chat-body {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    padding: 1.5rem; /* message neengi vannu*/
-    /* overflow: scroll; */
-    background-color: #24e4f0;
-    max-height: 160vh; 
-    overflow-y: auto;
+    padding: 1.5rem; 
+    overflow: scroll;
+    background-color: rgb(60, 64, 67);
 }
 .chat-body::-webkit-scrollbar {
     display: none;
 }
 
 .message {
-
   background: linear-gradient(98.63deg, #f9a225 0%, #f95f35 100%);
   color: white;
   padding: 0.7rem;
@@ -53,13 +51,9 @@
 }
 
 
-
 .chat-sender {
-    position: absolute; /* Change position to absolute */
-    bottom: 0; /* Align to the bottom */
-    left: 0; /* Align to the left */
-    right: 0;
-    margin-bottom: -665px;
+    position: relative; 
+    margin-top: 7rem; 
     background: white;
     display: flex;
     justify-content: space-between;
@@ -68,8 +62,8 @@
     gap: 1rem;
     padding: 0.8rem;
     border-radius: 1rem;
-    align-self: end;
 }
+
 .chat-sender>input{
     height: 70%;
     background-color: rgb(236, 236, 236);
@@ -96,8 +90,8 @@
 }
 
 .send-button{
-    background-color: blue;
-    color:red;
+    background-color:  rgb(50, 50, 50);
+    color: white;
     border-radius: 5px;
     width: 80px;
 }
