@@ -1,14 +1,15 @@
-import React, {  useState,useEffect } from "react";
-import { useSelector ,useDispatch} from 'react-redux';
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from "react-router-dom";
-import { setUser ,clearUser} from "../../services/redux/slices/userSlice";
-import { axiosUserInstance }  from "../../services/axios/axios";
+import { setUser, clearUser } from "../../services/redux/slices/userSlice";
+import { axiosUserInstance } from "../../services/axios/axios";
 import "./profile.css";
-import ProductTwo from "../../components/User/testpost/ProductTwo";
+import OwnPost from "../../components/User/UserProfile/OwnPost"
 import Sidebar from "../../components/User/Sidebar/Sidebar";
 import SettingIcon from "../../Icons/Settingslogo.png";
 import Swal from "sweetalert2"
 import 'sweetalert2/dist/sweetalert2.min.css'
+
 
 
 export default function Profile() {
@@ -17,35 +18,33 @@ export default function Profile() {
   const navigate = useNavigate();
   const token = useSelector(state => state.user.token);
   const loggedUser = useSelector(state => state.user.user);
-  console.log("userdata from Redux store profile:", loggedUser);
-  const {_id } = loggedUser
-  console.log("id is",_id)
+  // console.log("userdata from Redux store profile:", loggedUser);
+  const { _id } = loggedUser
+  console.log("id is", _id)
 
-  useEffect(() => {
-    setFormData(loggedUser);
-  }, [loggedUser]);
+
 
 
   // to get post length
   const [postLength, setLength] = useState(0);
   useEffect(() => {
     axiosUserInstance
-     .get('/post/loadPost',{
-      headers: {
+      .get('/post/loadPost', {
+        headers: {
           'Authorization': `Bearer ${token}`,
-          role : 'user'
-      }
-  })
-     .then((response) => {
-      // console.log("post length response",response.data)
-      const filteredPosts = response.data.filter(post => post.user === _id);
-      console.log("Filtered posts:", filteredPosts);
-      setLength(filteredPosts.length);
-     })
-     .catch((error) => {
-       console.error('Error fetching posts:', error);
-     });
- }, []);
+          role: 'user'
+        }
+      })
+      .then((response) => {
+        // console.log("post length response",response.data)
+        const filteredPosts = response.data.filter(post => post.user === _id);
+        console.log("Filtered posts:", filteredPosts);
+        setLength(filteredPosts.length);
+      })
+      .catch((error) => {
+        console.error('Error fetching posts:', error);
+      });
+  }, []);
 
   const [showModal, setShowModal] = useState(false);
   const handleShowModal = () => {
@@ -58,127 +57,167 @@ export default function Profile() {
   const [formData, setFormData] = useState({})
   const [image, setImage] = useState(null);
   const [errors, setErrors] = useState({});
+  //fill with already available data
+  useEffect(() => {
+    setFormData(loggedUser);
+  }, [loggedUser]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevFormData) => ({
-        ...prevFormData,
-        [name]: value,
+      ...prevFormData,
+      [name]: value,
     }));
-    setErrors({ ...errors, [name]: "" }); 
-};
+    setErrors({ ...errors, [name]: "" });
+  };
 
-const handleImageChange = (e) => {
+  const handleImageChange = (e) => {
     const image = e.target.files[0];
     setImage(image);
     setFormData({ ...formData, image: image });
-}
-
-
-//after edit submit post
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const formData = new FormData();
-    const bio = document.querySelector('textarea[name="bio"]').value;
-    const firstName = document.querySelector('input[name="firstName"]').value;
-    const email = document.querySelector('input[name="email"]').value;
-    const location = document.querySelector('input[name="location"]').value;
-    const fileInput = document.querySelector('input[name="file"]');
-    const file = fileInput.files[0];
-
-    formData.append('firstName', firstName);
-    formData.append('email', email);
-    formData.append('bio', bio);
-    formData.append('location', location);
-    formData.append('file', file); // Append the file directly, without changing the field name
-
-    console.log("User ID for test:", loggedUser._id);
-    console.log("Form data details:");
-    console.log("Bio:", bio);
-    console.log("First Name:", firstName);
-    console.log("Email:", email);
-    console.log("Location:", location);
-    console.log("File Name:", file.name);
-    console.log("File Type:", file.type);
-    console.log("File Size:", file.size);
-
- 
-    const response = await axiosUserInstance.put(`/updateUser/${loggedUser._id}`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data' ,
-        Authorization: `Bearer ${token}`,
-            role : 'user'
-      }
-    });
-
-    if (response.status === 200) {
-      Swal.fire({
-        position: "top-end",
-        icon: "success",
-        title: "Profile updated successfully",
-        showConfirmButton: false,
-        timer: 1500
-      });
-      console.log("User profile updated successfully:", response.data);
-      dispatch(setUser(response.data));
-    }
-  
-}catch (err) {
-    console.log(err);
   }
-}
 
-//to delete user
-const deleteUser = async () => {
-  console.log("deleteUser function called");
-  console.log("kiran id is",_id)
-  try {
-   
+  //form validate function
+  const nameRegex = /^[A-Za-z]+$/;
+  const validateForm = (data) => {
+    const errors = {};
+    if (!data.firstName) {
+      errors.firstName = "First Name cannot be empty";
+    } else if (!nameRegex.test(data.firstName)) {
+      errors.firstName = "First Name must only contain alphabets";
+    }
+    if (!data.email) {
+      errors.email = "Please provide an email";
+    }
+
+    if (!data.bio) {
+      errors.bio = "Please provide bio min 6 max 20 characters";
+    } 
+
+    if(!data.location){
+        errors.location ="Please provide valid location"
+    }
+    return errors;
+  };
+
+  
+
+
+
+  //after edit submit post
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const validationErrors = validateForm(formData);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      // adjustModalHeight();
+      return; 
+    }
+
+    try {
+      const bio = document.querySelector('textarea[name="bio"]').value;
+      const firstName = document.querySelector('input[name="firstName"]').value;
+      const email = document.querySelector('input[name="email"]').value;
+      const location = document.querySelector('input[name="location"]').value;
+      const fileInput = document.querySelector('input[name="file"]');
+      const file = fileInput.files[0];
+
+
+      const formDataToSend = new FormData();
+      formDataToSend.append('firstName', firstName);
+      formDataToSend.append('email', email);
+      formDataToSend.append('bio', bio);
+      formDataToSend.append('location', location);
+      formDataToSend.append('file', file); // Append the file directly, without changing the field name
+
+      console.log("User ID for test:", loggedUser._id);
+      console.log("Form data details:");
+      console.log("Bio:", bio);
+      console.log("First Name:", firstName);
+      console.log("Email:", email);
+      console.log("Location:", location);
+      console.log("File Name:", file.name);
+      console.log("File Type:", file.type);
+      console.log("File Size:", file.size);
+
+
+      const response = await axiosUserInstance.put(`/updateUser/${loggedUser._id}`, formDataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+          role: 'user'
+        }
+      });
+
+      if (response.status === 200) {
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: "Profile updated successfully",
+          showConfirmButton: false,
+          timer: 1500
+        });
+        console.log("User profile updated successfully:", response.data);
+        dispatch(setUser(response.data));
+      }
+
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  //to delete user
+  const deleteUser = async () => {
+    console.log("deleteUser function called");
+    console.log("kiran id is", _id)
+    try {
+
       const result = await Swal.fire({
-          title: "Are you sure?",
-          text: "You won't be able to revert this!",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "#3085d6",
-          cancelButtonColor: "#d33",
-          confirmButtonText: "Yes, delete it!"
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
       });
 
       if (result.isConfirmed) {
-        console.log("kiran id is",_id)
-          const response = await axiosUserInstance.delete(`/DeleteUser/${_id}`,{
-            headers: {
-              Authorization: `Bearer ${token}`,
-              role : 'user'},
-          });
-          console.log("delete response",response)
-          if (response.status === 200) {
-              Swal.fire({
-                  title: "Deleted!",
-                  text: "User has been deleted.",
-                  icon: "success"
-              }).then(()=>{
-                dispatch(clearUser());
-                localStorage.removeItem("token");
-                navigate("/");
-              })
-          } 
-          else {
-              alert(response.data.message);
-          }
-      } 
-      else {
-          // Handle the cancel action here
+        console.log("kiran id is", _id)
+        const response = await axiosUserInstance.delete(`/DeleteUser/${_id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            role: 'user'
+          },
+        });
+        console.log("delete response", response)
+        if (response.status === 200) {
           Swal.fire({
-              title: "Cancelled",
-              text: "The action has been cancelled.",
-              icon: "info"
-          });
+            title: "Deleted!",
+            text: "User has been deleted.",
+            icon: "success"
+          }).then(() => {
+            dispatch(clearUser());
+            localStorage.removeItem("token");
+            navigate("/");
+          })
+        }
+        else {
+          alert(response.data.message);
+        }
       }
-  } catch (err) {
+      else {
+        // Handle the cancel action here
+        Swal.fire({
+          title: "Cancelled",
+          text: "The action has been cancelled.",
+          icon: "info"
+        });
+      }
+    } catch (err) {
       console.log(err);
+    }
   }
-}
 
   return (
     <div>
@@ -207,17 +246,17 @@ const deleteUser = async () => {
               <div>
                 <div style={{ display: "flex", alignItems: "center" }}>
                   <p style={{ marginLeft: 100, fontWeight: 1000 }}>{loggedUser.firstName}</p>
-                  <button style={{width:109,height:30,paddingLeft: 10,marginLeft: 20,paddingRight: 20,paddingTop: 4,paddingBottom: 8,borderRadius: 10,border: "none",cursor: "pointer",backgroundColor: "rgb(236, 233 ,233)",color:"black"}} onClick={handleShowModal}>Edit Profile</button>
+                  <button style={{ width: 109, height: 30, paddingLeft: 10, marginLeft: 20, paddingRight: 20, paddingTop: 4, paddingBottom: 8, borderRadius: 10, border: "none", cursor: "pointer", backgroundColor: "rgb(236, 233 ,233)", color: "black" }} onClick={handleShowModal}>Edit Profile</button>
                   {showModal && (
                     <div className="modal-overlay">
-                      <div className="modal">
+                      <div className="modalclass">
                         <span className="close" onClick={handleCloseModal}>
                           &times;
                         </span>
-                        <h2>Edit Profile</h2>
-                        <form onSubmit={handleSubmit}>
+                        {/* <h2>Edit Profile</h2> */}
+                        <form  onSubmit={handleSubmit}>
                           {/* Form fields */}
-                          <div className="inputfields">
+                          <div className="inputfieldsclass">
                             <label
                               htmlFor="username"
                               style={{ color: "white" }}
@@ -232,10 +271,11 @@ const deleteUser = async () => {
                               onChange={handleInputChange}
                             />
                             {errors.firstName && (
-              <p className="error-message text-red-500">{errors.firstName}</p>
-            )}
+                              <p className="error-message text-red-500">{errors.firstName}</p>
+                            )}
                           </div>
-                          <div className="inputfields">
+
+                          <div className="inputfieldsclass">
                             <label htmlFor="email" style={{ color: "white" }}>
                               Email:
                             </label>
@@ -245,13 +285,13 @@ const deleteUser = async () => {
                               value={formData?.email}
                               name="email"
                               onChange={handleInputChange}
-                              
                             />
                             {errors.email && (
-              <p className="error-message text-red-500">{errors.email}</p>
-            )}
+                              <p className="error-message text-red-500">{errors.email}</p>
+                            )}
                           </div>
-                          <div className="inputfields">
+
+                          <div className="inputfieldsclass">
                             <label htmlFor="bio" style={{ color: "white" }}>
                               Description bio:
                             </label>
@@ -263,33 +303,35 @@ const deleteUser = async () => {
                               onChange={handleInputChange}
                             ></textarea>
                             {errors.bio && (
-              <p className="error-message text-red-500">{errors.bio}</p>
-            )}
+                              <p className="error-message text-red-500">{errors.bio}</p>
+                            )}
                           </div>
-                          <div className="inputfields">
+
+                          <div className="inputfieldsclass">
                             <label
                               htmlFor="location"
                               style={{ color: "white" }}
                             >
                               Location:
                             </label>
-                            <input 
-                            type="text" 
-                            placeholder="Location" 
-                            value={formData?.location}
-                            name="location"
-                            onChange={handleInputChange}
+                            <input
+                              type="text"
+                              placeholder="Location"
+                              value={formData?.location}
+                              name="location"
+                              onChange={handleInputChange}
                             />
                             {errors.location && (
-              <p className="error-message text-red-500">{errors.location}</p>
-            )}
+                              <p className="error-message text-red-500">{errors.location}</p>
+                            )}
                           </div>
-                          <div className="inputfields">
+
+                          <div className="inputfieldsclass">
                             <label
                               htmlFor="fileInput"
                               style={{ color: "white" }}
                             >
-                             {image ? "Choose another pic" : "Select a profile Photo"}
+                              {image ? "Choose another pic" : "Select a profile Photo:"}
                             </label>
                             <input
                               type="file"
@@ -300,11 +342,12 @@ const deleteUser = async () => {
                               style={{ color: "white" }}
                             />
                           </div>
+
                           <div  >
-                          Selected File: {formData?.image ? <img src={`http://localhost:5000/${formData?.image}`} alt={formData?.image} style={{ color: "white" }} /> : 'No file selected'}
-                          {errors.file && (
-              <p className="error-message text-red-500">{errors.file}</p>
-            )}
+                            Selected File: {formData?.image ? <img src={`http://localhost:5000/${formData?.image}`} alt={formData?.image} style={{ color: "white" }} /> : 'No file selected'}
+                            {/* {errors.file && (
+                              <p className="error-message text-red-500">{errors.file}</p>
+                            )} */}
                           </div>
                           <button type="submit">Update</button>
                         </form>
@@ -312,29 +355,25 @@ const deleteUser = async () => {
                     </div>
                   )}
 
-
-
-                  {/* <img src={SettingIcon} style={{ marginLeft: 20, cursor: "pointer" }} alt="" onClick={() =>{console.log('Delete button clicked');  deleteUser(_id)}} /> */}
-
                   <img src={SettingIcon} style={{ marginLeft: 20, cursor: "pointer" }} alt="" onClick={deleteUser} />
                 </div>
-                <div style={{ display: "flex", alignItems: "center" ,paddingTop:10}}>
-                  <p style={{ marginLeft: 100 ,paddingTop:6}}>{postLength} Post</p>
+                <div style={{ display: "flex", alignItems: "center", paddingTop: 10 }}>
+                  <p style={{ marginLeft: 100, paddingTop: 6 }}>{postLength} Post</p>
                   <p style={{ marginLeft: 40 }}>{loggedUser.followers.length} Followers</p>
                   <p style={{ marginLeft: 40 }}>{loggedUser.following.length} Following</p>
                 </div>
                 <div style={{ alignItems: "center" }}>
-                <p style={{ marginLeft: 100, marginTop: 8 }}>{loggedUser.email}</p>
+                  <p style={{ marginLeft: 100, marginTop: 8 }}>{loggedUser.email}</p>
                   <p style={{ marginLeft: 100, marginTop: 8 }}>{loggedUser.bio}</p>
                   <p style={{ marginLeft: 100, marginTop: 8 }}>{loggedUser.location}</p>
-                
+
                 </div>
               </div>
             </div>
 
 
             <div className="postContainerForProfile">
-              <ProductTwo loggedUser={loggedUser}/>
+              <OwnPost loggedUser={loggedUser} />
             </div>
           </div>
         </div>
