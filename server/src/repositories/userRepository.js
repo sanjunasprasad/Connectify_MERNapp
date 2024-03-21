@@ -11,7 +11,7 @@ export const saveUser = async (firstName, lastName, phoneNo, email, password, is
 //from login to verify token
 export const checkUser = async (email) => {
     const existingUserData = await User.findOne({email:email});
-    // console.log("from repo:",existingUserData)
+    // console.log("from repo existingUserData:",existingUserData)
     return existingUserData;
 }
 

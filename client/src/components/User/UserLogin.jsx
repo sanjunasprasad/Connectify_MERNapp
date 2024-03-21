@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useSelector,useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import {  setToken } from "../../services/redux/slices/userSlice";
-import { axiosInstance }  from "../../services/axios/axios";
+import { setToken } from "../../services/redux/slices/userSlice";
+import { axiosInstance } from "../../services/axios/axios";
 import Swal from "sweetalert2"
 import 'sweetalert2/dist/sweetalert2.min.css'
 
@@ -11,7 +11,7 @@ import 'sweetalert2/dist/sweetalert2.min.css'
 function UserLogin() {
 
   const dispatch = useDispatch();
-  const loggeduserid = useSelector(state => state.user.user); 
+  const loggeduserid = useSelector(state => state.user.user);
   console.log("Current Redux Store State in login page:", loggeduserid);
 
   const navigate = useNavigate();
@@ -37,7 +37,7 @@ function UserLogin() {
     // console.log("validation error:", Object.keys(validationErrors).length);
     if (Object.keys(validationErrors).length === 0) {
       try {
-        const response = await  axiosInstance.post("/userLogin", formdata);
+        const response = await axiosInstance.post("/userLogin", formdata);
         // console.log("Responseeee after login:", response);
         if (response.status === 200) {
           localStorage.setItem("token", response.data);
@@ -61,17 +61,17 @@ function UserLogin() {
           navigate("/feedhome");
         }
       } catch (err) {
-        if (err.response && err.response.data) 
-        {
-          if (err.response.data.message === "User account is blocked.") 
-          {
+        if (err.response && err.response.data) {
+          if (err.response.data.message === "User account is blocked.") {
             setEmailExits("Your account is blocked!!!");
           }
-          if (err.response.data.message === "User account is deactivated.") 
-          {
+          if (err.response.data.message === "User account is deactivated.") {
             setEmailExits("Your account is deactivated!!!");
           }
-        } 
+          if (err.response.data.message === "Email address does not exist.") {
+            setEmailExits("Email address does not exist.!!!");
+          }
+        }
         else if (err.response && err.response.status === 401) {
           setEmailExits("Incorrect email or password");
         }
@@ -82,6 +82,7 @@ function UserLogin() {
   };
 
   const validateForm = (data) => {
+
     const errors = {};
     if (!data.email) {
       errors.email = "Email  cannot be empty";
@@ -93,19 +94,23 @@ function UserLogin() {
     return errors;
   };
 
+
+ 
+
+
   useEffect(() => {
     const token = localStorage.getItem("token");
-      // console.log("usertoken from extra useeffect",token)
+    // console.log("usertoken from extra useeffect",token)
     if (!token) {
-      navigate("/"); 
-    } 
+      navigate("/");
+    }
     else {
       navigate("/feedhome")
     }
   }, [navigate]);
 
 
-  
+
 
   return (
     <div>
@@ -122,7 +127,7 @@ function UserLogin() {
         >
           <h1 className="text-3xl font-semibold text-white mb-5">Login</h1>
           <form onSubmit={handleSubmit}>
-         
+
             <div className="mb-4">
               <label
                 className="block text-white text-sm font-bold mb-2"
@@ -168,7 +173,7 @@ function UserLogin() {
                 className="bg-gradient-to-r from-pink-600 via-pink-400 to-pink-500 hover:from-pink-500 hover:via-pink-400 hover:to-pink-600 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline"
                 type="submit"
                 value="Sign Up">Sign In</button>
-              <a className="inline-block align-baseline font-bold text-sm text-white hover:text-pink-600" href="#">Google Signin?</a>  
+              <Link to="/forgotpwemail"className="inline-block align-baseline font-bold text-sm text-white hover:text-pink-600" >Forgot Password?</Link>
             </div>
 
             <p className="text-white text-center mt-3">
@@ -179,7 +184,7 @@ function UserLogin() {
             )}
           </form>
         </div>
-        
+
       </div>
     </div>
   );

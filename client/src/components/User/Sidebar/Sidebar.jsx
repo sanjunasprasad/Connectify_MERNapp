@@ -344,7 +344,7 @@ function Sidebar() {
           <img src={Reels} alt="" className="logos" />
           {ShowSearch && (
             <ul style={{ marginLeft: "20px" }}>
-              <li className="listtext"> Reels</li>
+              <li className="listtext"> Saved</li>
             </ul>
           )}
         </div>

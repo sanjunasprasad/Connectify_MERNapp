@@ -89,11 +89,7 @@ function VerifyOTP() {
   
 
   return (
-    <div className="min-h-screen flex items-center justify-center "
-    style={{
-        background:
-          "linear-gradient(to bottom right, #E86D9C, #FAAFCE, #FEADB9)",
-      }}>
+    <div className="min-h-screen flex items-center justify-center "style={{background:"linear-gradient(to bottom right, #E86D9C, #FAAFCE, #FEADB9)",}}>
       <form  id="otpform" className="bg-white bg-opacity-25 backdrop-blur-lg p-10 rounded-lg shadow-lg w-96" onSubmit={handleSubmit}>
         <h1 className="text-3xl font-semibold text-white text-center mb-5">Verify OTP </h1>
         {!successMessage && ( <p className="text-center text-white">OTP sent to your Email,<br />Please enter here to verify.</p>)}

@@ -12,7 +12,6 @@ import Moreoptions from "../../../Icons/Moreoptions.png"
 // import  greyicon from "../../../Icons/Notifications.png" 
 // import  redicon from "../../../Icons/Unlike.png" 
 import commneticon from "../../../Icons/Comment.png"
-import Shareicon from "../../../Icons/SharePost.png"
 import Saveicon from "../../../Icons/Save.png"
 
 
@@ -196,8 +195,7 @@ useEffect(() => {
           </div>
           
 
-             {/* Share */}
-          <img src={Shareicon} className='logoforpost' alt="" />
+  
         </div>
 
                  {/* Save */}

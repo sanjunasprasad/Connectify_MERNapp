@@ -110,7 +110,6 @@ export default function Profile() {
     const validationErrors = validateForm(formData);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      // adjustModalHeight();
       return; 
     }
 

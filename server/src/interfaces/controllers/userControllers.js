@@ -4,8 +4,10 @@ import {loginUser} from '../../usecases/UserUseCases/loginUser.js';
 import { editUser } from '../../usecases/UserUseCases/editUser.js';
 import { deleteUser } from '../../usecases/UserUseCases/deleteUser.js';
 import { generateOTP, sendOTPByEmail } from '../../services/otpService.js';
+import User from  "../../entities/userModel.js"
 import cloudinary from "../../config/cloudinary.js";
-import path from "path";
+import bcrypt from 'bcrypt';
+
 
 
 let savedOTP,userMail
@@ -62,11 +64,15 @@ export const userLogin = async (req, res) => {
   try {
    
     const { email, password } = req.body;
+    // console.log("email and password from frontend controller",email,password)
     const response = await loginUser(email,password);
-    // console.log("from login controller token",response)
+    // console.log("from login controller response as token",response)
     if (!response) {
       return res.status(401).end(); 
-    } else if (response.blocked) {
+    } else if(response.notFound){
+      return res.status(401).json({ message: response.message });
+    }
+    else if (response.blocked) {
       return res.status(401).json({ message: response.message }); // User is blocked
     }else if(response.status){
       return res.status(401).json({ message: response.message }); 
@@ -78,6 +84,42 @@ export const userLogin = async (req, res) => {
     console.log(err);
   }
 };
+
+
+//forgot password to send otp and verify email
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+     console.log("email  from frontend:",email)
+     userMail=req.body.email
+    savedOTP = generateOTP(); 
+    await sendOTPByEmail(email, savedOTP);
+    res.status(200).json({ success: true, message: "OTP successfully resent to your email." });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const resetPassword = async(req,res) =>{
+  const {  confirmpassword } = req.body;
+  console.log("confirm password:",confirmpassword)
+  console.log("user mail:",userMail)
+  try {
+    const user = await User.findOne({ email: userMail });
+    console.log("reset pw requested user :",user)
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    const hashedPassword = await bcrypt.hash(confirmpassword, 10);
+    user.password = hashedPassword
+    await user.save();
+    return res.json({ success: true, message: 'Password updated successfully' });
+  } catch (error) {
+    console.error('Error updating password:', error);
+    return res.status(500).json({ success: false, message: 'Failed to update password' });
+  }
+}
 
 
 //user update

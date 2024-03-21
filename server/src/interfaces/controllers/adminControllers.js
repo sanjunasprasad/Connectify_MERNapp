@@ -77,7 +77,7 @@ export const deactivateUser = async(req,res) => {
     const { id } = req.params;
     console.log("id id ",id)
     const { status } = req.body;
-    console.log("ststus is",status)
+    console.log("status is",status)
     const user = await deactivate(id, status); 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
