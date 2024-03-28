@@ -2,7 +2,7 @@ import {Router} from 'express'
 const postRoute = Router();
 import { decodeToken } from '../../middlewares/auth.js';
 import { upload } from '../../middlewares/multer.js';
-import {createPost,loadPost,loadownPost,likePost,unlikePost,commentPost,getCommentedUser,deletePost} from "../controllers/postControllers.js"
+import {createPost,loadPost,loadownPost,likePost,unlikePost,commentPost,getCommentedUser,deletePost,savedPost,getSavedPost} from "../controllers/postControllers.js"
 
 
 
@@ -15,6 +15,8 @@ postRoute.post('/unlikepost/:postid', decodeToken,unlikePost);
 postRoute.post('/commentpost/:postid',decodeToken, commentPost); 
 postRoute.get('/getCommentUser/:postId',decodeToken,getCommentedUser) 
 postRoute.delete('/deletePost/:postId',decodeToken, deletePost); 
+postRoute.post('/savePost/:postId',decodeToken,savedPost);
+postRoute.get('/getSavedpost/:userId',decodeToken,getSavedPost)
 
 
 

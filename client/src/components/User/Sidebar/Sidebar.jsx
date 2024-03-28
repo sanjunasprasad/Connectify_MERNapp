@@ -90,6 +90,7 @@ function Sidebar() {
   // Create post
   const handleCreatePost = async () => {
     try {
+      console.log("creation iam called")
       const token = localStorage.getItem("token");
       const formData = new FormData();
       const caption = document.querySelector('textarea[name="caption"]').value;
@@ -271,6 +272,7 @@ function Sidebar() {
         </div>
 
         {/* sidebar items */}
+        {/* homeicon */}
         <Link to={"/"} style={{ textDecoration: "none", color: "white" }}>
           <div
             style={{
@@ -290,6 +292,8 @@ function Sidebar() {
           </div>
         </Link>
 
+
+        {/* searchicon */}
         <div
           style={{
             display: "flex",
@@ -308,6 +312,8 @@ function Sidebar() {
           )}
         </div>
 
+
+        {/* exploreicon */}
         <div
           style={{
             display: "flex",
@@ -332,6 +338,10 @@ function Sidebar() {
           )}
         </div>
 
+
+
+        {/* savedicon */}
+        <Link to={"/savedpost"} style={{ textDecoration: "none", color: "white" }}> 
         <div
           style={{
             display: "flex",
@@ -348,7 +358,10 @@ function Sidebar() {
             </ul>
           )}
         </div>
+        </Link>
 
+
+        {/* messageicon */}
         <div
           style={{
             display: "flex",
@@ -373,6 +386,9 @@ function Sidebar() {
           )}
         </div>
 
+
+
+        {/* notification icon */}
         <div
           style={{
             display: "flex",
@@ -389,7 +405,10 @@ function Sidebar() {
             </ul>
           )}
         </div>
+ 
 
+
+        {/* create post icon */}
         <div
           style={{
             display: "flex",
@@ -408,6 +427,7 @@ function Sidebar() {
           )}
         </div>
 
+          {/* profile icon */}
         <Link to={"/username"}>
           <div
             style={{
@@ -432,6 +452,7 @@ function Sidebar() {
           </div>
         </Link>
 
+          {/* logout icon */}
         <div
           style={{
             display: "flex",
@@ -451,6 +472,7 @@ function Sidebar() {
         </div>
       </div>
 
+        {/* search result */}
       {!ShowSearch && (
         <div
           style={{

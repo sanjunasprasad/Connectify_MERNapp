@@ -7,11 +7,6 @@ import store from './services/redux/store/store';
 import Modal from 'react-modal';
 import "./index.css"
 
-
-// const root = ReactDOM.createRoot(document.getElementById('root'));
-
-
-
 const rootElement = document.getElementById('root');
 Modal.setAppElement(rootElement);
 const root = ReactDOM.createRoot(rootElement);

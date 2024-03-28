@@ -6,7 +6,8 @@ import { Route, Routes } from "react-router-dom";
 
 import UserHomePage from "./pages/Home/UserHomePage";
 import Profile from "./pages/Profile/Profile";
-import Explore from "./pages/Explore/Explore"
+import Explore from "./pages/Explore/Explore";
+import Savedpost from './pages/Saved/Savedpost';
 import AdminPage from "./pages/AdminPage";
 import Chat from "./pages/Chat/Chat"
 import UserLogin from "./components/User/UserLogin";
@@ -19,6 +20,7 @@ import AdminLogin from './components/Admin/AdminLogin'
 import UserManage from './components/Admin/UserManage'
 import Notifications from './components/Admin/Notifications';
 import ResetPassword from './components/User/ResetPassword';
+
 
 
 
@@ -46,6 +48,7 @@ function App() {
             <Route element={<Profile />} path="/username" />
             <Route element={<FriendProfile/>} path="/username/:userid" />
             <Route element={<Explore />} path="/Explore" />
+            <Route element={<Savedpost />} path="/savedpost" /> 
      
 
 

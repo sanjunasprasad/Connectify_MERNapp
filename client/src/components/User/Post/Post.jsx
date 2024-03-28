@@ -103,6 +103,20 @@ useEffect(() => {
 
  
 
+const savePost = async () => {
+  const token = localStorage.getItem("token");
+  try {
+      await axiosUserInstance.post(`/post/savePost/${postlist._id}`, {userId: loggeduser._id},{
+
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'role': 'user'}
+      });
+      alert('Post saved successfully');
+  } catch (error) {
+      console.error('Error saving post:', error);
+  }
+}
   
   return (
     // area for profileimage+profilename on post top
@@ -198,8 +212,8 @@ useEffect(() => {
   
         </div>
 
-                 {/* Save */}
-        <div style={{ display: 'flex', alignItems: 'center' }}>
+        {/* Save */}
+        <div style={{ display: 'flex', alignItems: 'center' }} onClick={savePost}>
           <img src={Saveicon} alt="" />
         </div>
       </div>

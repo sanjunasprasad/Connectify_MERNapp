@@ -2,7 +2,7 @@ import { registerUser } from "../../usecases/UserUseCases/registerUser.js";
 import { findOneUser } from "../../repositories/userRepository.js";
 import {loginUser} from '../../usecases/UserUseCases/loginUser.js';
 import { editUser } from '../../usecases/UserUseCases/editUser.js';
-import { deleteUser } from '../../usecases/UserUseCases/deleteUser.js';
+import { deleteUserAndPosts} from '../../usecases/UserUseCases/deleteUser.js';
 import { generateOTP, sendOTPByEmail } from '../../services/otpService.js';
 import User from  "../../entities/userModel.js"
 import cloudinary from "../../config/cloudinary.js";
@@ -164,15 +164,14 @@ export const fetchProfile = async (req, res) => {
   }
 }
 
-export const deleteuser = async (req,res) =>{
-  try{
-      const userId = req.params.id;
-      console.log("id is to delete",userId)
-      const response = await deleteUser(userId);
-      // console.log("response delete",response)
-      res.status(200).json(response);
-  }catch(err){
-      console.log(err);
-      res.json({message:"Couldnt delete the user"})
+export const deleteuser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    console.log("user id",userId)
+    const { userResponse, postDeletionResponse } = await deleteUserAndPosts(userId);
+    res.status(200).json({ userResponse, postDeletionResponse });
+  } catch (err) {
+    console.log(err);
+    res.json({ message: "Couldn't delete the user and posts" });
   }
-}
+};

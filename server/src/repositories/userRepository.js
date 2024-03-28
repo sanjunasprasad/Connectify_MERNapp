@@ -1,4 +1,5 @@
 import User from  '../entities/userModel.js'
+import Post from  '../entities/postModel.js'
 
 
 //user registration
@@ -52,11 +53,20 @@ export const getAllUsers = async () => {
 
 
   // to delete user
+// Delete user
 export const deleteOneUser = async (id) => {
   const response = await User.findByIdAndDelete(id);
+  console.log("DELETE USER:",response)
   if (response) {
     return response;
   } else {
     return { message: "User not found" };
   }
+};
+
+// Delete posts associated with the user
+export const deletePostsByUser = async (userId) => {
+  const response = await Post.deleteMany({ user: userId });
+  console.log("DELETE USER POST:",response)
+  return response;
 };
