@@ -15,7 +15,8 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 
 
 
-const PORT = 8000;
+// const port = process.env.PORT || 3000
+const PORT = 8000
 const app = express();
 app.use(cors());
 configDotenv()
@@ -23,6 +24,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(express.static('public'));
 app.use('/public/videos', express.static('public/videos'));
+app.use('/public/image', express.static('public/image'));
 connectDB();
 
 

@@ -2,7 +2,7 @@
     background: rgb(50, 50, 50);
     border-radius: 1rem;
     display: grid;
-    grid-template-rows: 14vh 60vh 13vh;
+    grid-template-rows: 14vh 60vh 9vh;
 }
 
 .chat-header {
@@ -57,7 +57,7 @@
     background: white;
     display: flex;
     justify-content: space-between;
-    height: 3.5rem;
+    height: 4.0rem;
     align-items: center;
     gap: 1rem;
     padding: 0.8rem;
@@ -109,3 +109,31 @@
     margin-left: 49rem;
     height:45px;
   }
+
+
+  
+/* Add this CSS to your ChatBox.css file */
+.input-with-image-preview {
+    position: relative;
+  }
+  
+  .selected-image-preview {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 645px; /* Adjust the right position as needed */
+    max-width: 62px; /* Adjust the maximum width of the image preview */
+    max-height: 50px; /* Adjust the maximum height of the image preview */
+  }
+  
+
+  .close-icon {
+    position: absolute;
+    top: -17px; /* Adjust the top position of the close icon */
+    right: 635px; /* Adjust the right position of the close icon */
+    width: 15px; /* Adjust the width of the close icon */
+    height: 15px; /* Adjust the height of the close icon */
+    cursor: pointer; /* Add cursor pointer to indicate it's clickable */
+    z-index: 1; /* Ensure the close icon is above the image preview */
+  }
+  

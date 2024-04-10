@@ -17,8 +17,8 @@ function ChatRightbar() {
   const [followersAndFollowing, setFollowersAndFollowing] = useState([]);
   const [receivedMessage, setReceivedMessage] = useState(null);
   const user = useSelector(state => state.user.user);
-  const { _id ,firstName} = user
-    console.log("logged user in main rightbar",user)
+  const { _id } = user
+    // console.log("logged user in main rightbar",user)
   // console.log("1)loggeduser id in chatrightbar:", _id)
 
 //get followers+following
@@ -112,7 +112,6 @@ function ChatRightbar() {
       <div className="Right-side-chat">
         <ChatBox
           currentUser={user._id}
-          currentUserName={firstName}
           setSendMessage={setSendMessage}
           receivedMessage={receivedMessage}
         />

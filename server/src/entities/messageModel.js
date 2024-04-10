@@ -11,10 +11,10 @@ const MessageSchema = new mongoose.Schema(
     text: {
       type: String,
     },
-    // imageData: {
-    //   data: Buffer, // Instead of directly using Buffer type, use an object with a 'data' property
-    //   contentType: String, // Store content type of the image
-    // },
+    image: { // New field to store image URL
+      type: String,
+    },
+   
   },
   {
     timestamps: true,
