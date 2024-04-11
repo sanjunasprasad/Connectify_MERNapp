@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { axiosUserInstance } from "../../../services/axios/axios";
 import moment from 'moment';
 import InputEmoji from 'react-input-emoji'
+import Swal from "sweetalert2";
+import "sweetalert2/dist/sweetalert2.min.css";
 import videocall from "../../../Icons/videocall.png"
 import closeicon from "../../../Icons/close.png"
 import "./ChatBox.css"
@@ -20,7 +22,7 @@ const ChatBox = ({ currentUser, setSendMessage, receivedMessage }) => {
 
 
 
-  //VIDEOCALL
+
   const chat = useSelector(state => state.chat.chats);
   const chatId = chat ? chat._id : null;
   // console.log("chat in chatbox:",chat);
@@ -28,6 +30,8 @@ const ChatBox = ({ currentUser, setSendMessage, receivedMessage }) => {
   const friendId = chat?.members?.find((id) => id !== currentUser);
   // console.log("loggeduserid", currentUser)
   // console.log(" friend userid 88888", friendId)
+
+
   const getRelativeTime = (createdAt) => {
     return moment(createdAt).fromNow();
   };
@@ -78,13 +82,7 @@ const ChatBox = ({ currentUser, setSendMessage, receivedMessage }) => {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const { data } = await axiosUserInstance.get(`/messages/${chat._id}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'role': 'user'
-          }
-        })
+        const { data } = await axiosUserInstance.get(`/messages/${chat._id}`)
         setMessages(data);
         console.log("8)backend response all chatbox messages ", data)
       } catch (error) {
@@ -92,41 +90,43 @@ const ChatBox = ({ currentUser, setSendMessage, receivedMessage }) => {
       }
     };
     if (chat !== null) fetchMessages();
-  }, [chat]);
+  },); //removed dependency chat, it cause infinite rerender
 
 
 
-
-
-
-  //send from loggeduser to friend
+  //send message  from loggeduser to friend
   const handleSend = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append('senderId', currentUser);
-    formData.append('text', newMessage);
-    formData.append('chatId', chat._id);
+    const message = new FormData();
+    message.append('senderId', currentUser);
+    message.append('text', newMessage);
+    message.append('chatId', chat._id);
     if (selectedImage) {
-      formData.append('image', selectedImage);
+      message.append('image', selectedImage);
     }
+
     const receiverId = chat.members.find((id) => id !== currentUser);
     setSendMessage({ senderId: currentUser, text: newMessage, image: selectedImage, receiverId });
+      // send message to socket server
+  // setSendMessage({ ...message, receiverId });
     try {
-      const response = await axiosUserInstance.post("/messages", formData, {
+      const {data} = await axiosUserInstance.post("/messages", message, {
         headers: {
           'Content-Type': 'multipart/form-data' // Important for handling FormData on the backend
         }
       });
-      // Reset states after successful message sending
-      setMessages([...messages, response.data]);
+      setMessages([...messages, data]);
       setNewMessage("");
       setSelectedImage(null);
-      setImagePreview(null); 
+      setImagePreview(null);
+       
     } catch (error) {
       console.log("Error sending message:", error);
     }
   };
 
+
+  
 
   // Receive Message from parent component
   useEffect(() => {
@@ -143,11 +143,27 @@ const ChatBox = ({ currentUser, setSendMessage, receivedMessage }) => {
   }, [messages])
 
 
+
+  //videocall
   const handleVideocall = useCallback(() => {
     navigate(`/meeting/${currentUser}/${friendId}`);
+  }, [navigate, currentUser, friendId])
 
-  })
-
+  // if link is there
+  const [videoCallLink, setVideoCallLink] = useState(null);
+  useEffect(() => {
+    const link = localStorage.getItem('videoCallLink');
+    console.log("i got link chatbox:", link)
+    if (link) {
+      setVideoCallLink(link);
+      
+    }
+  }, []);
+  const handleButtonClick = () => {
+    // Assuming you want to redirect to the video call page
+    navigate(`/meeting/${currentUser}/${friendId}`);
+    localStorage.removeItem('videoCallLink'); 
+};
 
 
 
@@ -188,18 +204,20 @@ const ChatBox = ({ currentUser, setSendMessage, receivedMessage }) => {
                 >
                   <span>{message.text}</span>{" "}
                   {message.image && (
-                    <img 
-                    src={`http://localhost:8000/${message.image}`}   
-                    style={{ maxHeight: '150px' }} alt="Message Image" />
+                    <img
+                      src={`http://localhost:8000/${message.image}`}
+                      style={{ maxHeight: '150px' }} alt="Message Image" />
                   )}
                   <span>{getRelativeTime(message.createdAt)}</span>
                 </div>
               </>
             ))}
-
-            {/* {vcallLink && <a href={vcallLink} target="_blank">Video Call Link</a>} */}
+            {videoCallLink && (
+              <div className="px-4 py-3 leading-normal text-red-700 bg-orange-100 rounded-lg" role="alert">
+                <p>Click to join videocall:<button className="font-bold hover:underline" onClick={handleButtonClick} > {videoCallLink}</button></p>
+              </div>
+            )}
           </div>
-
 
           {/* chat-sender */}
           <div className="chat-sender">

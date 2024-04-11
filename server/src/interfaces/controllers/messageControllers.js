@@ -25,7 +25,6 @@ export const addMessage = async (req, res) => {
 };
 
 export const getMessages = async (req, res) => {
-  console.log("received===========")
   const { chatId } = req.params;
   console.log("chatid",chatId)
   try {

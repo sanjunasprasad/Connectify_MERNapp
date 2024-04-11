@@ -12,9 +12,9 @@ const ZegoVcall = () => {
     const VURL = 'http://localhost:8000'
     const [newMessage, setNewMessage] = useState(`${VURL}/meeting/${userId}/${id}`);
     const [socket, setSocket] = useState(null);
-    const token = localStorage.getItem('token');
+    // const token = localStorage.getItem('token');
   
-    const myMeetingRef = useRef(null);
+   
 
 
     useEffect(() => {
