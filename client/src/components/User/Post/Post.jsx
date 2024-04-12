@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { axiosUserInstance } from "../../../services/axios/axios";
@@ -34,11 +34,33 @@ export default function Post({ postlist }) {
   };
 
   //LIKE DISLIKE
-  //  useEffect (() =>{
-  //   console.log("Like state for post", postlist._id, Like);
-  //  })
-  // const [postLength, SetpostLength] = useState(postlist.likes.length)
+  const [liked, setLiked] = useState(() => {
+    const storedLiked = localStorage.getItem(`post_liked_${postlist._id}_${loggeduser._id}`);
+    return storedLiked ? JSON.parse(storedLiked) : postlist?.likes.some(like => like.user === loggeduser._id);
+  });
+  const [likes, setLikes] = useState(() => { return postlist?.likes.length || 0});
 
+  const handleLike = async () => {
+    try {
+      const newLiked = !liked;
+      setLiked(newLiked);
+      const token = localStorage.getItem("token");
+      const response = await axiosUserInstance.put(`/post/likepost/${postlist._id}`, {userId: loggeduser._id}, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'role': 'user'
+        }
+      });
+      console.log("like response is", response);
+      if (response.status === 200) {
+        setLikes(prevLikes => (newLiked ? prevLikes + 1 : prevLikes - 1));
+        localStorage.setItem(`post_liked_${postlist._id}_${loggeduser._id}`, JSON.stringify(newLiked));
+      }
+    } catch (error) {
+      console.error('Error occurred while liking the post:', error);
+    }
+  };
+  
 
 
 
@@ -86,7 +108,6 @@ export default function Post({ postlist }) {
   //   const isPostSaved = savedPosts.some(savedPostId => savedPostId === _id);
   //   setIsSaved(isPostSaved);
   // }, [_id, savedPosts]);
-
   const savePost = async () => {
     const token = localStorage.getItem("token");
     try {
@@ -106,12 +127,36 @@ export default function Post({ postlist }) {
   }
 
 
-
-  //liked people modal
+//fetch post liked users only
   const [modalOpen, setModalOpen] = useState(false);
-  const showLikedPeople = async () => {
+  const [likedUsers, setLikedUsers] = useState([]);
+  const showLikedPeople = () => {
     setModalOpen(true);
   };
+
+  useEffect(() => {
+    const fetchLikedUsers = async () => {
+      const token = localStorage.getItem("token");
+      try {
+        const response = await axiosUserInstance.get(`/post/likedusers/${postlist._id}`,{
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'role': 'user'
+          }
+        });
+        if (response.status === 200) {
+          setLikedUsers(response.data.likedUsers);
+        }
+      } catch (error) {
+        console.error('Error occurred while fetching liked users:', error);
+      }
+    };
+
+    if (modalOpen) {
+      fetchLikedUsers();
+    }
+  }, [modalOpen, postlist._id]);
+
 
   return (
 
@@ -235,7 +280,7 @@ export default function Post({ postlist }) {
           <div style={{ display: 'flex', alignItems: "center", justifyContent: "space-between" }}>
             {/* Likes  */}
             <div >
-              {/* <img src={? redicon : greyicon} className='logoforpost' alt="" /> */}
+              <img src={liked ? redicon : greyicon} className='logoforpost' alt=""   onClick={handleLike}/> 
             </div>
 
 
@@ -253,7 +298,10 @@ export default function Post({ postlist }) {
             )}
           </div>
         </div>
-        {/* <p style={{ display: "flex", marginTop: "0px" }} onClick={showLikedPeople}> {postLength} like</p>    likes count  */}
+     
+
+       {/* likes count  */}
+        <p style={{ display: "flex", marginTop: "0px" }} onClick={showLikedPeople}>{likes} likes</p> 
         <p style={{ textAlign: 'start', }}>{postlist.caption}</p> {/* caption */}
         <div style={{ cursor: "pointer" }} onClick={handleShowmodal}>
           <p style={{ textAlign: "start", color: "#A8A8A8" }}>View all comments</p>
@@ -274,12 +322,12 @@ export default function Post({ postlist }) {
         <div className='scrollable-likeddiv'>
           <p style={{ marginTop: 0, marginLeft: 33 }}>Likes</p>
           <hr></hr>
-          {postlist.likes.map((like, index) => (
+          {likedUsers.map((user, index) => (
             <div key={index} style={{ display: 'flex', marginLeft: 30 }}>
-              <img src={like.user.image} style={{ width: 30, height: 30, borderRadius: '50%', objectFit: 'cover', marginTop: 35 }} alt="User" />
+              <img src={user.image} style={{ width: 30, height: 30, borderRadius: '50%', objectFit: 'cover', marginTop: 35 }} alt="User" />
               <div style={{ marginLeft: 20 }}>
-                <p style={{ marginTop: 30 }}>{like.user.firstName}</p>
-                <p style={{ color: '#A8A8A8', marginTop: -4 }}>{like.user.lastName}</p>
+                <p style={{ marginTop: 30 }}>{user.firstName}</p>
+                <p style={{ color: '#A8A8A8', marginTop: -4 }}>{user.lastName}</p>
               </div>
             </div>
           ))}

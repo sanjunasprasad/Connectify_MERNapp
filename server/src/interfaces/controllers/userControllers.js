@@ -164,7 +164,7 @@ export const fetchProfile = async (req, res) => {
   }
 }
 
-export const deleteuser = async (req, res) => {
+export const deleteUser = async (req, res) => {
   try {
     const userId = req.params.id;
     console.log("user id",userId)
@@ -175,3 +175,5 @@ export const deleteuser = async (req, res) => {
     res.json({ message: "Couldn't delete the user and posts" });
   }
 };
+
+
