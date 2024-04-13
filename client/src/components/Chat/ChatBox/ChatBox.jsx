@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate ,Link} from "react-router-dom";
 import { axiosUserInstance } from "../../../services/axios/axios";
 import moment from 'moment';
 import InputEmoji from 'react-input-emoji'
@@ -84,7 +84,7 @@ const ChatBox = ({ currentUser, setSendMessage, receivedMessage }) => {
       try {
         const { data } = await axiosUserInstance.get(`/messages/${chat._id}`)
         setMessages(data);
-        console.log("8)backend response all chatbox messages ", data)
+        // console.log("8)backend response all chatbox messages ", data)
       } catch (error) {
         console.log(error);
       }
@@ -130,7 +130,7 @@ const ChatBox = ({ currentUser, setSendMessage, receivedMessage }) => {
 
   // Receive Message from parent component
   useEffect(() => {
-    console.log("Message Arrived chatbox of reciver on chat of sended user: ", receivedMessage)
+    // console.log("Message Arrived chatbox of reciver on chat of sended user: ", receivedMessage)
     if (receivedMessage !== null && receivedMessage.chatId === chat._id) {
       setMessages([...messages, receivedMessage]);
     }
@@ -160,9 +160,8 @@ const ChatBox = ({ currentUser, setSendMessage, receivedMessage }) => {
     }
   }, []);
   const handleButtonClick = () => {
-    // Assuming you want to redirect to the video call page
     navigate(`/meeting/${currentUser}/${friendId}`);
-    localStorage.removeItem('videoCallLink'); 
+    // localStorage.removeItem('videoCallLink'); 
 };
 
 
@@ -175,6 +174,7 @@ const ChatBox = ({ currentUser, setSendMessage, receivedMessage }) => {
           <div className='chat-header'>
             <div >
               <div>
+              <Link to={`/username/${friendId}`} style={{ textDecoration: "none", color: "white" }}> 
                 <img
                   src={userData?.user?.image
                     ? userData.user.image
@@ -183,10 +183,17 @@ const ChatBox = ({ currentUser, setSendMessage, receivedMessage }) => {
                   className="followerImage"
                   style={{ width: "45px", height: "45px", marginTop: '2rem', marginLeft: '4rem' }}
                 />
+                </Link>
+
+                
                 <div style={{ fontSize: '0.8rem', marginLeft: '8rem', marginTop: '-2rem' }}>
+                 <Link to={`/username/${friendId}`} style={{ textDecoration: "none", color: "white" }}> 
                   <span>{userData?.user?.firstName} {userData?.user?.lastName}</span>
+                  </Link>
                   <img src={videocall} className='videocall' alt="" onClick={handleVideocall} />
                 </div>
+             
+
               </div>
             </div>
           </div>

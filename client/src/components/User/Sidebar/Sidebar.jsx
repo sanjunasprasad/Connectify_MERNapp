@@ -13,7 +13,6 @@ import SearchIcon from "../../../Icons/Search.png";
 import Exploreicon from "../../../Icons/Explore.png";
 import Reels from "../../../Icons/Reels.png";
 import Messages from "../../../Icons/Messenger.png";
-import Notifications from "../../../Icons/Notifications.png";
 import createicon from "../../../Icons/New post.png";
 import Instragramicon from "../../../Icons/Instagram.png";
 import More from "../../../Icons/Settings.png";
@@ -439,7 +438,7 @@ function Sidebar() {
             }}
           >
             <img
-              // src={loggedUser.image}
+              src={loggedUser?.image}
               alt=""
               className="profileicon"
             />

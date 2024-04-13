@@ -170,44 +170,7 @@ export const commentPost = async (req, res) => {
   }
 };
 
-//commented user name
-export const getCommentedUser = async (req, res) => {
-  try {
-    const postId = req.params.postId;
-    // console.log("postId", postId);
-    const commentsuserId = Array.isArray(req.query.commentsuserId)
-      ? req.query.commentsuserId
-      : [req.query.commentsuserId];
-    // console.log("commentsuserId", commentsuserId);
-    const commentIds = Array.isArray(req.query.commentId)
-      ? req.query.commentId
-      : [req.query.commentId];
-    // console.log("commentIds:", commentIds);
 
-    let userDetails = [];
-    for (let i = 0; i < commentIds.length; i++) {
-      const users = await User.find(
-        { _id: commentsuserId[i] },
-        "firstName image"
-      );
-      // console.log("users getting", users);
-      if (users.length > 0) {
-        const user = users[0]; // Assuming there is only one user for each comment
-        userDetails.push({
-          firstName: user.firstName,
-          userImage: user.image,
-          userId: user._id,
-        });
-      } else {
-        userDetails.push({ firstName: "Unknown", userImage: "" });
-      }
-    }
-    res.json({ userDetails });
-  } catch (error) {
-    console.error("Error fetching usernames:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
 
 //delete our post
 export const deletePost = async (req, res) => {

@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, {  useState } from 'react';
+import {  useDispatch } from 'react-redux';
+import { setPosts } from "../../../services/redux/slices/postSlice"
 import Modal from "react-modal";
 import moment from 'moment';
 import Swal from "sweetalert2"
@@ -16,7 +18,7 @@ import Likeicon from "../../../Icons/Notifications.png"
 
 function OwnPost({ post }) {
 
-
+  const dispatch = useDispatch();
   const isImage = post.file.endsWith(".jpg") || post.file.endsWith(".jpeg") || post.file.endsWith(".png") || post.file.endsWith(".gif");
   const isVideo = post.file.endsWith(".mp4") || post.file.endsWith(".mov") || post.file.endsWith(".avi") || post.file.endsWith(".mkv");
   // show icon love,comment on post top
@@ -118,7 +120,7 @@ function OwnPost({ post }) {
     });
   };
 
-
+  
   const handleEditPost = async (postId, caption, postimage) => {
     const token = localStorage.getItem("token");
     const { value: updatedCaption } = await Swal.fire({
@@ -137,7 +139,7 @@ function OwnPost({ post }) {
       cancelButtonText: "Cancel"
     });
 
-    if (updatedCaption) {
+    if (updatedCaption ) {
       try {
         const response = await axiosUserInstance.put(`/post/editPost/${postId}`, { caption: updatedCaption }, {
           headers: {
@@ -145,21 +147,18 @@ function OwnPost({ post }) {
             'role': 'user'
           }
         });
-        console.log(response.data.message);
-        alert("Updated");
+        console.log("editedddddd response",response.data);
+        // dispatch(setPosts(response.data));
+        // setPosts({ ...post, caption: updatedCaption });
+        Swal.fire("Post  updated successfully!");
         handleCloseModal();
       } catch (error) {
         console.error(error);
       }
     }
-
   };
 
-
-
-
-
-
+  
 
 
 

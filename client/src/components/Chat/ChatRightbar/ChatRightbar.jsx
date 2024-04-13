@@ -48,7 +48,7 @@ function ChatRightbar() {
 
   // Connect to Socket.io
   useEffect(() => {
-    socket.current = io("ws://localhost:4000");
+    socket.current = io("ws://localhost:8000");
     socket.current.emit("new-user-add", user._id);
     socket.current.on("get-users", (users) => {
       setOnlineUsers(users);

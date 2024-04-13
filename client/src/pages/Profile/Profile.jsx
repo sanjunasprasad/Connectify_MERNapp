@@ -38,7 +38,7 @@ export default function Profile() {
         }
       })
       .then((response) => {
-        console.log("post length response", response.data)
+        // console.log("post length response", response.data)
         setShowPosts(response.data);
         setLength(response.data.length);
       })

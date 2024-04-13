@@ -49,7 +49,7 @@ function Rightbar() {
           'role': 'user'}
        }).then(response => {
           setResponseData(response.data);
-          // console.log("POST RESPONSE##### ",response.data) 
+          console.log("POST RESPONSE##### ",response.data) 
           
           })
           .catch(error => {
@@ -59,7 +59,43 @@ function Rightbar() {
  
   },[_id])
 
+//follow+unfollow
+const [followStatus, setFollowStatus] = useState({});
+const handleFollow = async (userid) => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await axiosUserInstance.post(`/friend/follow/${userid}`,{ loggeduser: _id },{
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'role': 'user'}
+    });
+    // console.log("response for follow:",response)
+    setFollowStatus(prevState => ({
+      ...prevState,
+      [userid]: true
+  }));
+  } catch (error) {
+    console.error('Error following user:', error);
+  }
+};
 
+const handleUnfollow = async (userid) => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await axiosUserInstance.post(`/friend/unfollow/${userid}`,{loggeduser:_id},{
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'role': 'user'}
+    });
+    // console.log("response for unfollow:",response)
+    setFollowStatus(prevState => ({
+      ...prevState,
+      [userid]: false
+  }));
+  } catch (error) {
+    console.error('Error unfollowing user:', error);
+  }
+};
 
   const posts = useSelector(state => state.post.posts) || []; //mapping for post component,useselector needed
   // console.log("post from rightbar selector through redux",posts)
@@ -86,28 +122,29 @@ function Rightbar() {
                 <p style={{textAlign:'start'}}><Link to={`/username`} >{loggeduser.firstName}</Link></p>
                 <p style={{marginTop:-4 , textAlign:'start' , color:"#A8A8A8"}}>{loggeduser.email}</p>
               </div>
-              <div style={{marginLeft:"100px" , cursor:"pointer"}}>
-                <p style={{color:"#0095f6" , fontSize:15 , fontWeight:"500"}}>Switch</p>
-              </div>
+             
             </div>
             )}
  
              {/* suggestion list */}
             <div style={{display:"flex"}}>
               <div>
-              <p style={{color:"#A8A8A8" , textAlign:'start',marginLeft:'30',marginTop:50 }}>People you may know</p>
+              <p style={{color:"#A8A8A8" , textAlign:'start',marginLeft:30,marginTop:50 }}>People you may know</p>
               {/* list */}
               {responseData.map(user => (
               <div key={user._id} style={{display:"flex" , alignItems:"center" , marginLeft:20 , marginTop:10}}>
                   <img src={user.image}style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover" }} alt="" />
                     <div>
-                      <p style={{ marginLeft: 10 , textAlign:"start"  }}>  
-                      { loggeduser && loggeduser._id === user._id ? (<Link to={`/username`} >{user.firstName}</Link>) : (<Link to={`/username/${user._id}`} >{user.firstName}</Link> )}
-                     </p>
+                      <p style={{ marginLeft: 10 , textAlign:"start"  }}>  <Link to={`/username/${user._id}`} >{user.firstName}</Link> </p>
                       <p style={{marginTop:-5 , color:"#A8A8A8" , marginLeft:10}}>Sugggested for you</p>
                     </div>
+
                     <div style={{marginLeft:"130px" , cursor:"pointer"}}>
-                      <p style={{color:"#0095f6"}}>Follow</p>
+                    {followStatus[user._id] ? (
+                            <p style={{ color: "#0095f6" }} onClick={() => handleUnfollow(user._id)}>Unfollow</p>
+                        ) : (
+                            <p style={{ color: "#0095f6" }} onClick={() => handleFollow(user._id)}>Follow</p>
+                        )}
                     </div>
               </div>
                 ))} 
